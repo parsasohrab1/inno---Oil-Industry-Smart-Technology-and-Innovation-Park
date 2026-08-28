@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { CalendarDays, Users, CheckCircle2, Megaphone } from 'lucide-react'
-import { useDataset } from '@/hooks/useDataset'
+import { useApi } from '@/hooks/useApi'
 import { LoadingState, ErrorState } from '@/components/PageState'
 import { PageHeader, Kpi, Card, Badge, ProgressBar } from '@/components/ui'
 import { ChartFrame, Bars } from '@/components/charts'
@@ -16,16 +16,16 @@ const TONE: Record<EventStatus, 'green' | 'blue' | 'amber' | 'red'> = {
 }
 
 export default function Events() {
-  const { data, loading, error } = useDataset()
+  const { data, loading, error } = useApi<ParkEvent[]>('/api/events')
 
   const byType = useMemo(() => {
     if (!data) return []
     const map = new Map<string, { type: string; count: number; registered: number }>()
-    for (const e of data.events) {
-      const row = map.get(e.type) ?? { type: e.type, count: 0, registered: 0 }
+    for (const ev of data) {
+      const row = map.get(ev.type) ?? { type: ev.type, count: 0, registered: 0 }
       row.count += 1
-      row.registered += e.registeredCount
-      map.set(e.type, row)
+      row.registered += ev.registeredCount
+      map.set(ev.type, row)
     }
     return [...map.values()]
   }, [data])
@@ -34,8 +34,8 @@ export default function Events() {
   if (error) return <ErrorState error={error} />
   if (!data) return null
 
-  const now = Date.parse(data.generatedAt)
-  const e = data.events
+  const now = Date.now()
+  const e = data
   const upcoming = e.filter((x) => x.status === 'برنامه‌ریزی‌شده' && Date.parse(x.startDate) > now)
   const held = e.filter((x) => x.status === 'برگزارشده').length
   const totalRegistered = e.reduce((s, x) => s + x.registeredCount, 0)

@@ -1,13 +1,19 @@
-import { Menu, Moon, Sun, Bell } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Menu, Moon, Sun, LogOut } from 'lucide-react'
 import { useUi } from '@/store/ui'
-import { useDataset } from '@/hooks/useDataset'
-import { jDate } from '@/lib/format'
+import { useAuth, type Role } from '@/store/auth'
+
+const ROLE_LABEL: Record<Role, string> = {
+  admin: 'مدیر پارک',
+  operator: 'اپراتور',
+  company: 'مدیر شرکت',
+  startup: 'استارتاپ',
+  investor: 'سرمایه‌گذار',
+  mentor: 'منتور',
+}
 
 export function Header() {
   const { toggleSidebar, toggleTheme, theme } = useUi()
-  const { data } = useDataset()
-  const unread = data?.notifications.filter((n) => !n.read).length ?? 0
+  const { user, logout } = useAuth()
 
   return (
     <header className="sticky top-0 z-20 border-b bg-[rgb(var(--surface))]/85 backdrop-blur">
@@ -20,22 +26,25 @@ export function Header() {
           <h1 className="truncate font-display text-lg font-bold text-petro-700 dark:text-petro-300 sm:text-xl">
             به اولین پارک هوشمند کشور خوش آمدید
           </h1>
-          <p className="hidden text-xs text-[rgb(var(--muted))] sm:block">
-            {data ? `آخرین به‌روزرسانی داده: ${jDate(data.generatedAt)}` : 'در حال بارگذاری…'}
-          </p>
         </div>
 
-        <Link to="/notifications" className="btn relative !p-2" aria-label="نوتیفیکیشن‌ها">
-          <Bell className="h-5 w-5" />
-          {unread > 0 && (
-            <span className="absolute -top-1 -left-1 grid h-5 min-w-5 place-items-center rounded-full bg-oil-rust px-1 text-[10px] font-bold text-white">
-              {unread > 99 ? '۹۹+' : unread.toLocaleString('fa-IR')}
+        {user && (
+          <div className="hidden items-center gap-2 rounded-xl border px-3 py-1.5 text-sm sm:flex">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-petro-600/15 text-xs font-bold text-petro-700 dark:text-petro-300">
+              {user.name.slice(0, 1)}
             </span>
-          )}
-        </Link>
+            <div className="leading-tight">
+              <div className="font-medium">{user.name}</div>
+              <div className="text-[11px] text-[rgb(var(--muted))]">{ROLE_LABEL[user.role]}</div>
+            </div>
+          </div>
+        )}
 
         <button className="btn !p-2" onClick={toggleTheme} aria-label="تغییر پوسته">
           {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </button>
+        <button className="btn !p-2" onClick={logout} aria-label="خروج" title="خروج">
+          <LogOut className="h-5 w-5" />
         </button>
       </div>
     </header>

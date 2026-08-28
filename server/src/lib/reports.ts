@@ -198,9 +198,10 @@ export function toCsv(def: ReportDef, rows: Array<Record<string, unknown>>): str
     const s = v === null || v === undefined ? '' : String(v)
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
+  const BOM = String.fromCharCode(0xfeff)
   const head = def.columns.map((c) => esc(c.header)).join(',')
   const body = rows.map((r) => def.columns.map((c) => esc(r[c.key])).join(',')).join('\n')
-  return `﻿${head}\n${body}\n`
+  return `${BOM}${head}\n${body}\n`
 }
 
 export async function toXlsx(def: ReportDef, rows: Array<Record<string, unknown>>): Promise<Buffer> {

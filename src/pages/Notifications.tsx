@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { Bell, ShieldAlert, Coins, CalendarDays, Cpu } from 'lucide-react'
-import { useDataset } from '@/hooks/useDataset'
+import { useApi } from '@/hooks/useApi'
 import { LoadingState, ErrorState } from '@/components/PageState'
 import { PageHeader, Kpi, Card, Badge } from '@/components/ui'
 import { relTime, jDateTime } from '@/lib/format'
@@ -24,11 +24,11 @@ const CAT_ICON: Record<Notification['category'], typeof Bell> = {
 }
 
 export default function Notifications() {
-  const { data, loading, error } = useDataset()
+  const { data, loading, error } = useApi<Notification[]>('/api/notifications')
   const [cat, setCat] = useState<Notification['category'] | 'همه'>('همه')
 
   const cats = useMemo(
-    () => (data ? [...new Set(data.notifications.map((n) => n.category))] : []),
+    () => (data ? [...new Set(data.map((n) => n.category))] : []),
     [data],
   )
 
@@ -36,7 +36,7 @@ export default function Notifications() {
   if (error) return <ErrorState error={error} />
   if (!data) return null
 
-  const all = data.notifications
+  const all = data
   const list = cat === 'همه' ? all : all.filter((n) => n.category === cat)
   const unread = all.filter((n) => !n.read).length
   const critical = all.filter((n) => n.severity === 'critical').length

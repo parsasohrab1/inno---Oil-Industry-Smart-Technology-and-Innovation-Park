@@ -1,11 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { X, Flame } from 'lucide-react'
-import { NAV, NAV_GROUPS } from '@/app/nav'
+import { NAV_GROUPS, navForRole } from '@/app/nav'
 import { useUi } from '@/store/ui'
+import { useAuth } from '@/store/auth'
 
 export function Sidebar() {
   const { sidebarOpen, setSidebar } = useUi()
+  const role = useAuth((s) => s.user?.role)
+  const items = navForRole(role)
 
   return (
     <>
@@ -44,26 +47,26 @@ export function Sidebar() {
         </div>
 
         <nav className="h-[calc(100vh-4rem)] space-y-6 overflow-y-auto px-3 py-4">
-          {NAV_GROUPS.map((group) => (
+          {NAV_GROUPS.filter((group) => items.some((n) => n.group === group)).map((group) => (
             <div key={group}>
               <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wide text-[rgb(var(--muted))]">
                 {group}
               </div>
               <div className="space-y-1">
-                {NAV.filter((n) => n.group === group).map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    end={item.to === '/'}
-                    className={({ isActive }) =>
-                      clsx('nav-link', isActive && 'nav-link-active')
-                    }
-                    onClick={() => window.innerWidth < 1024 && setSidebar(false)}
-                  >
-                    <item.icon className="h-[18px] w-[18px] shrink-0" />
-                    <span>{item.label}</span>
-                  </NavLink>
-                ))}
+                {items
+                  .filter((n) => n.group === group)
+                  .map((item) => (
+                    <NavLink
+                      key={`${group}:${item.to}`}
+                      to={item.to}
+                      end={item.to === '/' || item.to === '/company'}
+                      className={({ isActive }) => clsx('nav-link', isActive && 'nav-link-active')}
+                      onClick={() => window.innerWidth < 1024 && setSidebar(false)}
+                    >
+                      <item.icon className="h-[18px] w-[18px] shrink-0" />
+                      <span>{item.label}</span>
+                    </NavLink>
+                  ))}
               </div>
             </div>
           ))}

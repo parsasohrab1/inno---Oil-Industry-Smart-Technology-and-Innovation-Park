@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "node --watch --disable-warning=ExperimentalWarning src/index.ts",
     "start": "node --disable-warning=ExperimentalWarning dist/index.js",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node -e \"require('fs').mkdirSync('dist/db',{recursive:true});require('fs').copyFileSync('src/db/schema.sql','dist/db/schema.sql')\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "seed": "node --disable-warning=ExperimentalWarning src/db/seed.ts --reset"
   },

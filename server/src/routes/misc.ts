@@ -1,11 +1,23 @@
 import { Router } from 'express'
 import { getEntity, listEntities, putEntity } from '../db/index.ts'
 import { requireAuth, requirePermission } from '../middleware/auth.ts'
-import type { Notification } from '../types.ts'
+import type { Notification, ParkEvent } from '../types.ts'
 
 export const miscRouter: ReturnType<typeof Router> = Router()
 
 miscRouter.use(requireAuth)
+
+// رویدادهای پارک — همه نقش‌های واردشده
+miscRouter.get('/events', (_req, res) => {
+  res.json(listEntities<ParkEvent>('events'))
+})
+
+// نوتیفیکیشن‌ها — اپراتور همه، سایرین بدون اعلان‌های مخصوص اپراتور
+miscRouter.get('/notifications', (req, res) => {
+  const all = listEntities<Notification>('notifications')
+  const staff = req.auth!.role === 'admin' || req.auth!.role === 'operator'
+  res.json(staff ? all : all.filter((n) => n.audience !== 'اپراتور'))
+})
 
 miscRouter.post('/notifications/:id/read', (req, res) => {
   const n = getEntity<Notification>('notifications', req.params.id)
