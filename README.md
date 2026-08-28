@@ -1,4 +1,39 @@
 # inno---Oil-Industry-Smart-Technology-and-Innovation-Park
+
+> **داشبورد صنعتی هوشمند پارک فناوری نفت** — پیاده‌سازی لایه Cyber از معماری PCS مستندشده در SRS پایین.
+
+## راه‌اندازی سریع
+
+```bash
+npm install
+cp .env.example .env      # اختیاری
+npm run dev               # http://localhost:5173
+```
+
+دستورهای دیگر:
+
+| دستور | کاربرد |
+| :--- | :--- |
+| `npm run build` | ساخت نسخه تولید (بررسی نوع + Vite build) |
+| `npm run preview` | پیش‌نمایش نسخه build |
+| `npm run typecheck` | فقط بررسی نوع TypeScript |
+| `npm run lint` | اجرای ESLint |
+
+**پشته فنی:** React 18 · TypeScript · Vite · Tailwind CSS · Recharts · React Router · Zustand — رابط کاملاً فارسی و راست‌چین.
+
+داده‌ها فعلاً از یک **دیتاست سنتتیک بازتولیدپذیر** (`src/data/generate.ts`) تأمین می‌شوند. برای اتصال به API واقعی
+`VITE_DATA_SOURCE=api` و `VITE_API_BASE_URL` را تنظیم کنید (قرارداد داده در [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)).
+
+### ماژول‌های پیاده‌سازی‌شده
+
+نمای کلی پارک · دوقلوی دیجیتال · شرکت‌های مستقر · جذب سرمایه · توسعه بازار داخلی · توسعه بازار بین‌المللی ·
+منتورینگ (۶ حوزه) · داوری و ارزش‌گذاری استارت‌آپ‌ها · مالی و اجاره‌بها · تردد و امنیت · فضاها و رزرو جلسات ·
+رویدادها · نوتیفیکیشن‌های هوشمند
+
+نسخه Python مولد داده در [`data-generation/`](data-generation/) قرار دارد.
+
+---
+
 # مستندات SRS جامع سامانه هوشمندسازی پارک فناوری نفت
 
 
