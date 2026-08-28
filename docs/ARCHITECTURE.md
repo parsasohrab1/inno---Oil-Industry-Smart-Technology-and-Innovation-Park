@@ -33,11 +33,45 @@ src/
 2. `hooks/useDataset.ts` نتیجه را یک‌بار می‌گیرد و در حافظه ماژول کش می‌کند.
 3. صفحات، دیتاست خام را به `services/analytics.ts` می‌دهند تا KPIها و سری‌های نمودار محاسبه شود.
 
-## اتصال به API واقعی (گام بعدی)
+## بک‌اند واقعی (`server/`)
 
-قرارداد پیشنهادی: بک‌اند باید یک شیء `Dataset` (مطابق `src/lib/types.ts`) از مسیر
-`/api/dataset` برگرداند، یا مسیرهای ریز به‌ازای هر موجودیت ارائه دهد و `services/`
-به‌صورت ماژولار بازنویسی شود.
+پیاده‌سازی شد. Express + `node:sqlite` (بدون وابستگی نیتیو، اجرای مستقیم TypeScript روی Node ۲۲٫۵+).
+
+```
+server/src/
+├── index.ts          bootstrap + mount روت‌ها + seed خودکار
+├── db/
+│   ├── schema.sql     DDL (users, entities, contract_events, audit_log, meta)
+│   ├── index.ts       اتصال SQLite + helper‌های entities + audit()
+│   └── seed.ts        بارگذاری دیتاست سنتتیک + قراردادها + ۶ کاربر نمونه
+├── lib/
+│   ├── synth.ts       مولد دیتاست (پورت TS از src/data/generate.ts فرانت)
+│   ├── auth.ts        bcrypt + JWT
+│   ├── rbac.ts        نگاشت نقش → مجوز (Permission)
+│   ├── dataset.ts     assembleDataset() از جداول
+│   ├── contracts.ts   زنجیره هش، اجرای خودکار شرط‌ها
+│   └── reports.ts     تعریف گزارش‌ها + خروجی xlsx/csv/html
+├── middleware/auth.ts requireAuth / requireRole / requirePermission
+└── routes/           auth, dataset, company, contracts, mentor, investor, reports, admin, misc
+```
+
+**احراز هویت:** JWT در پاسخ `login`/`register`، کلاینت آن را در `localStorage` نگه می‌دارد و در
+هدر `Authorization: Bearer` می‌فرستد. میدلور `requireAuth` توکن را تأیید و `req.auth` را پر می‌کند.
+
+**کنترل دسترسی:** شش نقش (`admin`, `operator`, `company`, `startup`, `investor`, `mentor`).
+هر روت با `requirePermission('...')` محافظت می‌شود و داده به‌صورت ردیفی محدود می‌گردد
+(کاربر شرکت فقط `company_id` خودش).
+
+**قرارداد هوشمند:** جدول `contract_events` یک دفتر فقط‌افزودنی با زنجیره هش است:
+`hash = sha256({event, prevHash})`. `verifyContractChain()` صحت کل زنجیره را بررسی می‌کند.
+`runContractConditions()` شرط‌ها را اجرا می‌کند: جریمه دیرکرد ≥۲ ماه، مسدودسازی گیت،
+تمدید خودکار یا انقضا در سررسید.
+
+**گزارش‌گیری:** `GET /api/reports/:id.(xlsx|csv|html)` — xlsx با ExcelJS، html نسخه قابل چاپ
+(کاربر از مرورگر PDF می‌گیرد).
+
+**جای‌گذاری منبع داده:** انبار `entities` عمومی است؛ برای مهاجرت به Postgres کافی است
+helper‌های `db/index.ts` بازنویسی شوند.
 
 ## یکپارچگی‌های کلیدی پیاده‌سازی‌شده در منطق سنتتیک
 
