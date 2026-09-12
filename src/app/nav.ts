@@ -15,6 +15,7 @@ import {
   ScrollText,
   Users,
   Briefcase,
+  Store,
   type LucideIcon,
 } from 'lucide-react'
 import type { Role } from '@/store/auth'
@@ -55,6 +56,7 @@ export const NAV: NavItem[] = [
     group: 'توسعه',
     roles: ['admin', 'operator', 'investor'],
   },
+  { to: '/tech-bazaar', label: 'فن بازار', icon: Store, group: 'توسعه', roles: ALL },
 
   { to: '/finance', label: 'مالی و اجاره‌بها', icon: Coins, group: 'عملیات', roles: STAFF },
   { to: '/access', label: 'تردد و امنیت', icon: ShieldCheck, group: 'عملیات', roles: STAFF },
