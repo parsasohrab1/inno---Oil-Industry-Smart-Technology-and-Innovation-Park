@@ -19,6 +19,7 @@ import Notifications from '@/pages/Notifications'
 import Contracts from '@/pages/Contracts'
 import Reports from '@/pages/Reports'
 import NotFound from '@/pages/NotFound'
+import TechBazaar from '@/pages/TechBazaar'
 import CompanyHome from '@/pages/company/CompanyHome'
 import CompanyContracts from '@/pages/company/CompanyContracts'
 import CompanyReports from '@/pages/company/CompanyReports'
@@ -27,6 +28,7 @@ import MentorHome from '@/pages/mentor/MentorHome'
 import AdminUsers from '@/pages/admin/Users'
 
 const staff = ['admin', 'operator'] as const
+const allRoles = ['admin', 'operator', 'company', 'startup', 'investor', 'mentor'] as const
 
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -64,6 +66,7 @@ export const router = createBrowserRouter([
         path: 'startups',
         element: <RequireRole roles={['admin', 'operator', 'investor']}><Startups /></RequireRole>,
       },
+      { path: 'tech-bazaar', element: <RequireRole roles={[...allRoles]}><TechBazaar /></RequireRole> },
 
       { path: 'finance', element: <RequireRole roles={[...staff]}><Finance /></RequireRole> },
       { path: 'access', element: <RequireRole roles={[...staff]}><Access /></RequireRole> },
