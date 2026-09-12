@@ -13,7 +13,7 @@ export function AppShell() {
       <div
         className={clsx(
           'flex min-h-screen flex-col transition-[padding] duration-200',
-          sidebarOpen ? 'lg:pe-72' : 'lg:pe-0',
+          sidebarOpen ? 'lg:pr-72' : 'lg:pr-0',
         )}
       >
         <Header />
