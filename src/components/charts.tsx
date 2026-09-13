@@ -55,17 +55,25 @@ export function ChartFrame({
   height?: number
   action?: ReactNode
 }) {
+  const chartHeight = Math.max(220, height - 16)
+
   return (
     <section className="card min-w-0 overflow-hidden">
       <div className="flex items-center justify-between border-b px-4 py-3 sm:px-5">
-        <div>
+        <div className="min-w-0">
           <h3 className="text-sm font-bold">{title}</h3>
           {subtitle && <p className="text-xs text-[rgb(var(--muted))]">{subtitle}</p>}
         </div>
         {action}
       </div>
-      <div className="min-w-0 px-2 py-3 sm:px-3" style={{ height, minHeight: height }}>
-        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={height - 16}>
+      <div className="grid min-w-0 w-full px-2 py-3 sm:px-3" style={{ height, minHeight: height }}>
+        <ResponsiveContainer
+          width="99%"
+          height={chartHeight}
+          minWidth={1}
+          minHeight={220}
+          debounce={50}
+        >
           {children as ReactElement}
         </ResponsiveContainer>
       </div>
