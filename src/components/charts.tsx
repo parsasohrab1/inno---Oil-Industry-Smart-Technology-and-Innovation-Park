@@ -56,7 +56,7 @@ export function ChartFrame({
   action?: ReactNode
 }) {
   return (
-    <section className="card">
+    <section className="card min-w-0 overflow-hidden">
       <div className="flex items-center justify-between border-b px-4 py-3 sm:px-5">
         <div>
           <h3 className="text-sm font-bold">{title}</h3>
@@ -64,8 +64,8 @@ export function ChartFrame({
         </div>
         {action}
       </div>
-      <div className="px-2 py-3 sm:px-3" style={{ height }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="min-w-0 px-2 py-3 sm:px-3" style={{ height, minHeight: height }}>
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={height - 16}>
           {children as ReactElement}
         </ResponsiveContainer>
       </div>
