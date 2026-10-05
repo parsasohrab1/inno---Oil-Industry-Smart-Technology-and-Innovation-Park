@@ -3,12 +3,12 @@ import { useUi } from '@/store/ui'
 import { useAuth, type Role } from '@/store/auth'
 
 const ROLE_LABEL: Record<Role, string> = {
-  admin: 'مدیر پارک',
-  operator: 'اپراتور',
-  company: 'مدیر شرکت',
-  startup: 'استارتاپ',
-  investor: 'سرمایه‌گذار',
-  mentor: 'منتور',
+  admin: 'Park manager',
+  operator: 'Operator',
+  company: 'Company manager',
+  startup: 'Startup',
+  investor: 'Investor',
+  mentor: 'Mentor',
 }
 
 export function Header() {
@@ -18,13 +18,13 @@ export function Header() {
   return (
     <header className="sticky top-0 z-20 border-b bg-[rgb(var(--surface))]/85 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center gap-3 px-4 sm:px-6">
-        <button className="btn !p-2" onClick={toggleSidebar} aria-label="منو">
+        <button className="btn !p-2" onClick={toggleSidebar} aria-label="Menu">
           <Menu className="h-5 w-5" />
         </button>
 
         <div className="min-w-0 flex-1">
           <h1 className="truncate font-display text-lg font-bold text-petro-700 dark:text-petro-300 sm:text-xl">
-            به اولین پارک هوشمند کشور خوش آمدید
+            Welcome to the country's first smart park
           </h1>
         </div>
 
@@ -40,10 +40,10 @@ export function Header() {
           </div>
         )}
 
-        <button className="btn !p-2" onClick={toggleTheme} aria-label="تغییر پوسته">
+        <button className="btn !p-2" onClick={toggleTheme} aria-label="Change theme">
           {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </button>
-        <button className="btn !p-2" onClick={logout} aria-label="خروج" title="خروج">
+        <button className="btn !p-2" onClick={logout} aria-label="Log out" title="Log out">
           <LogOut className="h-5 w-5" />
         </button>
       </div>

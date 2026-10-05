@@ -36,11 +36,11 @@ interface ContractDetail {
 }
 
 const STATE_LABEL: Record<Contract['state'], string> = {
-  draft: 'پیش‌نویس',
-  pending_signatures: 'در انتظار امضا',
-  active: 'فعال',
-  expired: 'منقضی',
-  terminated: 'فسخ‌شده',
+  draft: 'Draft',
+  pending_signatures: 'Awaiting signature',
+  active: 'Active',
+  expired: 'Expired',
+  terminated: 'Terminated',
 }
 const STATE_TONE: Record<Contract['state'], 'gray' | 'amber' | 'green' | 'red'> = {
   draft: 'gray',
@@ -50,14 +50,14 @@ const STATE_TONE: Record<Contract['state'], 'gray' | 'amber' | 'green' | 'red'> 
   terminated: 'red',
 }
 const EVENT_LABEL: Record<string, string> = {
-  created: 'ایجاد قرارداد',
-  signed: 'امضا',
-  activated: 'فعال‌سازی',
-  penalty_applied: 'اعمال جریمه',
-  renewed: 'تمدید خودکار',
-  expired: 'انقضا',
-  terminated: 'فسخ',
-  gate_access_changed: 'تغییر دسترسی گیت',
+  created: 'Contract created',
+  signed: 'Signed',
+  activated: 'Activated',
+  penalty_applied: 'Penalty applied',
+  renewed: 'Auto-renewed',
+  expired: 'Expired',
+  terminated: 'Terminated',
+  gate_access_changed: 'Gate access changed',
 }
 
 export default function Contracts() {
@@ -79,33 +79,33 @@ export default function Contracts() {
       const r = await api.post<{ processed: number; touched: string[]; appliedEvents: number }>(
         '/api/contracts/run-conditions/all',
       )
-      setMsg(`اجرای خودکار انجام شد: ${r.processed} قرارداد بررسی، ${r.appliedEvents} رویداد ثبت شد.`)
+      setMsg(`Automatic execution completed: ${r.processed} contracts checked, ${r.appliedEvents} events recorded.`)
       reload()
     } catch (e) {
-      setMsg(e instanceof ApiError ? e.message : 'خطا')
+      setMsg(e instanceof ApiError ? e.message : 'Error')
     }
   }
 
   const cols: Column<Contract>[] = [
-    { key: 'id', header: 'شناسه', sortValue: (r) => r.id },
-    { key: 'companyName', header: 'شرکت', sortValue: (r) => r.companyName },
+    { key: 'id', header: 'ID', sortValue: (r) => r.id },
+    { key: 'companyName', header: 'Company', sortValue: (r) => r.companyName },
     {
       key: 'monthlyRent',
-      header: 'اجاره ماهانه',
+      header: 'Monthly rent',
       align: 'end',
       sortValue: (r) => r.monthlyRent,
       render: (r) => <span className="fa-nums">{rial(r.monthlyRent)}</span>,
     },
     {
       key: 'endDate',
-      header: 'پایان',
+      header: 'End',
       align: 'center',
       sortValue: (r) => r.endDate,
       render: (r) => <span className="fa-nums">{jDateShort(r.endDate)}</span>,
     },
     {
       key: 'state',
-      header: 'وضعیت',
+      header: 'Status',
       align: 'center',
       sortValue: (r) => r.state,
       render: (r) => <Badge tone={STATE_TONE[r.state]}>{STATE_LABEL[r.state]}</Badge>,
@@ -116,7 +116,7 @@ export default function Contracts() {
       align: 'center',
       render: (r) => (
         <button className="text-xs text-petro-600 hover:underline" onClick={() => setOpenId(r.id)}>
-          جزئیات
+          Details
         </button>
       ),
     },
@@ -125,12 +125,12 @@ export default function Contracts() {
   return (
     <div>
       <PageHeader
-        title="قراردادهای هوشمند"
-        subtitle="امضای دیجیتال دوطرفه، دفتر رویداد تغییرناپذیر (زنجیره هش) و اجرای خودکار شرط‌ها"
+        title="Smart contracts"
+        subtitle="Two-party digital signature, immutable event ledger (hash chain) and automatic execution of conditions"
         actions={
           can('contracts:run-conditions') && (
             <button className="btn btn-primary !text-sm" onClick={runAll}>
-              <Play className="h-4 w-4" /> اجرای خودکار شرط‌ها
+              <Play className="h-4 w-4" /> Run conditions automatically
             </button>
           )
         }
@@ -138,18 +138,18 @@ export default function Contracts() {
       {msg && <div className="mb-4 rounded-xl bg-petro-600/10 px-4 py-3 text-sm text-petro-700 dark:text-petro-300">{msg}</div>}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل قراردادها" value={rows.length} icon={ScrollText} />
-        <Kpi label="فعال" value={active} icon={ShieldCheck} tone="brand" />
-        <Kpi label="در انتظار امضا" value={pending} icon={ShieldAlert} tone="gold" />
+        <Kpi label="Total contracts" value={rows.length} icon={ScrollText} />
+        <Kpi label="Active" value={active} icon={ShieldCheck} tone="brand" />
+        <Kpi label="Awaiting signature" value={pending} icon={ShieldAlert} tone="gold" />
         <Kpi
-          label="مجموع اجاره ماهانه"
+          label="Total monthly rent"
           value={rial(rows.filter((c) => c.state === 'active').reduce((s, c) => s + c.monthlyRent, 0))}
           icon={ScrollText}
         />
       </div>
 
       <div className="mt-4">
-        <Card title="فهرست قراردادها">
+        <Card title="Contract list">
           <DataTable columns={cols} rows={rows} pageSize={15} initialSort={{ key: 'state', dir: 'asc' }} />
         </Card>
       </div>
@@ -171,7 +171,7 @@ function ContractDrawer({ id, onClose, onChange }: { id: string; onClose: () => 
       reload()
       onChange()
     } catch (e) {
-      setMsg(e instanceof ApiError ? e.message : 'خطا')
+      setMsg(e instanceof ApiError ? e.message : 'Error')
     }
   }
 
@@ -194,15 +194,15 @@ function ContractDrawer({ id, onClose, onChange }: { id: string; onClose: () => 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <Badge tone={STATE_TONE[data.contract.state]}>{STATE_LABEL[data.contract.state]}</Badge>
               <Badge tone={data.chain.valid ? 'green' : 'red'}>
-                {data.chain.valid ? 'زنجیره هش معتبر ✓' : `زنجیره از رویداد ${data.chain.brokenAtSeq} خراب است`}
+                {data.chain.valid ? 'Hash chain valid ✓' : `Chain is broken at event ${data.chain.brokenAtSeq}`}
               </Badge>
             </div>
 
             <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-              <div><dt className="text-[rgb(var(--muted))]">شرکت</dt><dd>{data.contract.companyName}</dd></div>
-              <div><dt className="text-[rgb(var(--muted))]">اجاره ماهانه</dt><dd className="fa-nums">{rial(data.contract.monthlyRent)}</dd></div>
-              <div><dt className="text-[rgb(var(--muted))]">شروع</dt><dd className="fa-nums">{jDateShort(data.contract.startDate)}</dd></div>
-              <div><dt className="text-[rgb(var(--muted))]">پایان</dt><dd className="fa-nums">{jDateShort(data.contract.endDate)}</dd></div>
+              <div><dt className="text-[rgb(var(--muted))]">Company</dt><dd>{data.contract.companyName}</dd></div>
+              <div><dt className="text-[rgb(var(--muted))]">Monthly rent</dt><dd className="fa-nums">{rial(data.contract.monthlyRent)}</dd></div>
+              <div><dt className="text-[rgb(var(--muted))]">Start</dt><dd className="fa-nums">{jDateShort(data.contract.startDate)}</dd></div>
+              <div><dt className="text-[rgb(var(--muted))]">End</dt><dd className="fa-nums">{jDateShort(data.contract.endDate)}</dd></div>
             </dl>
 
             {msg && <p className="mt-3 rounded-lg bg-oil-gold/15 px-3 py-2 text-sm text-oil-amber">{msg}</p>}
@@ -210,25 +210,25 @@ function ContractDrawer({ id, onClose, onChange }: { id: string; onClose: () => 
             <div className="mt-4 flex flex-wrap gap-2">
               {can('contracts:sign:park') && !data.contract.signatures.some((s) => s.party === 'park') && (
                 <button className="btn btn-primary !text-sm" onClick={() => act(`/api/contracts/${id}/sign`, {})}>
-                  <PenLine className="h-4 w-4" /> امضای طرف پارک
+                  <PenLine className="h-4 w-4" /> Park party signature
                 </button>
               )}
               {can('contracts:run-conditions') && (
                 <button className="btn !text-sm" onClick={() => act(`/api/contracts/${id}/run-conditions`)}>
-                  <Play className="h-4 w-4" /> اجرای شرط‌ها
+                  <Play className="h-4 w-4" /> Run conditions
                 </button>
               )}
               {can('contracts:terminate') && data.contract.state === 'active' && (
                 <button
                   className="btn !text-sm"
-                  onClick={() => act(`/api/contracts/${id}/terminate`, { reason: 'فسخ توسط مدیر پارک' })}
+                  onClick={() => act(`/api/contracts/${id}/terminate`, { reason: 'Terminated by the park manager' })}
                 >
-                  فسخ قرارداد
+                  Terminate contract
                 </button>
               )}
             </div>
 
-            <h4 className="mt-6 mb-2 text-sm font-bold">دفتر رویداد تغییرناپذیر ({data.events.length})</h4>
+            <h4 className="mt-6 mb-2 text-sm font-bold">Immutable event ledger ({data.events.length})</h4>
             <ol className="space-y-2">
               {data.events.map((e) => (
                 <li key={e.seq} className="rounded-lg border p-3 text-xs">
@@ -238,7 +238,7 @@ function ContractDrawer({ id, onClose, onChange }: { id: string; onClose: () => 
                     </span>
                     <span className="fa-nums text-[rgb(var(--muted))]">{jDateTime(e.createdAt)}</span>
                   </div>
-                  <div className="mt-1 text-[rgb(var(--muted))]">عامل: {e.actor}</div>
+                  <div className="mt-1 text-[rgb(var(--muted))]">Actor: {e.actor}</div>
                   {Object.keys(e.payload).length > 0 && (
                     <pre className="mt-1 overflow-x-auto rounded bg-black/5 p-2 text-[11px] dark:bg-white/5" dir="ltr">
                       {JSON.stringify(e.payload, null, 1)}

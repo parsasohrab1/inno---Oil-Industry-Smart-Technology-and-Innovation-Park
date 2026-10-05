@@ -3,7 +3,7 @@ import { generateDataset } from './generate'
 
 let _cache: Dataset | null = null
 
-/** دیتاست سنتتیک — یک‌بار تولید و در حافظه نگه داشته می‌شود. */
+/** Synthetic dataset — generated once and kept in memory. */
 export function getDataset(): Dataset {
   if (!_cache) _cache = generateDataset()
   return _cache

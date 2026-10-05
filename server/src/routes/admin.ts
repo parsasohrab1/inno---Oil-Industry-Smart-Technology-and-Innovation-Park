@@ -29,11 +29,11 @@ const createUserSchema = z.object({
 adminRouter.post('/users', requirePermission('users:manage'), async (req, res) => {
   const parsed = createUserSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات کاربر نامعتبر است', details: parsed.error.flatten() })
+    res.status(400).json({ error: 'User data is invalid', details: parsed.error.flatten() })
     return
   }
   if (db.prepare('SELECT id FROM users WHERE email = ?').get(parsed.data.email)) {
-    res.status(409).json({ error: 'این ایمیل قبلاً ثبت شده است' })
+    res.status(409).json({ error: 'This email is already registered' })
     return
   }
   const id = randomUUID()
@@ -54,7 +54,7 @@ adminRouter.post('/users', requirePermission('users:manage'), async (req, res) =
 
 adminRouter.delete('/users/:id', requirePermission('users:manage'), (req, res) => {
   if (req.params.id === req.auth!.userId) {
-    res.status(400).json({ error: 'نمی‌توانید حساب خودتان را حذف کنید' })
+    res.status(400).json({ error: 'You cannot delete your own account' })
     return
   }
   db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id)

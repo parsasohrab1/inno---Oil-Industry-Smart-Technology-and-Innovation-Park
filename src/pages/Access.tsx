@@ -14,7 +14,7 @@ export default function Access() {
 
   const trend = useMemo(() => {
     if (!data) return []
-    return attendanceTrend(data).map((r) => ({ date: r.date.slice(5), حضور: r.present }))
+    return attendanceTrend(data).map((r) => ({ date: r.date.slice(5), Attendance: r.present }))
   }, [data])
 
   if (loading) return <LoadingState />
@@ -27,59 +27,59 @@ export default function Access() {
   const companiesById = new Map(data.companies.map((c) => [c.id, c.name]))
 
   const cols: Column<VehicleLog>[] = [
-    { key: 'licensePlate', header: 'پلاک', sortValue: (r) => r.licensePlate, render: (r) => <span className="fa-nums">{r.licensePlate}</span> },
+    { key: 'licensePlate', header: 'Plate', sortValue: (r) => r.licensePlate, render: (r) => <span className="fa-nums">{r.licensePlate}</span> },
     {
       key: 'companyOrigin',
-      header: 'شرکت مبدأ',
+      header: 'Originating company',
       sortValue: (r) => companiesById.get(r.companyOrigin) ?? '',
       render: (r) => companiesById.get(r.companyOrigin) ?? r.companyOrigin,
     },
     {
       key: 'entryTime',
-      header: 'زمان ورود',
+      header: 'Entry time',
       align: 'center',
       sortValue: (r) => r.entryTime,
       render: (r) => <span className="fa-nums">{jDateTime(r.entryTime)}</span>,
     },
     {
       key: 'exitTime',
-      header: 'زمان خروج',
+      header: 'Exit time',
       align: 'center',
       sortValue: (r) => r.exitTime ?? '',
       render: (r) => <span className="fa-nums">{r.exitTime ? jDateTime(r.exitTime) : '—'}</span>,
     },
     {
       key: 'authorized',
-      header: 'مجوز گیت',
+      header: 'Gate permit',
       align: 'center',
       sortValue: (r) => (r.authorized ? 1 : 0),
       render: (r) =>
-        r.authorized ? <Badge tone="green">باز شد</Badge> : <Badge tone="red">مسدود (بدهی/بدون مجوز)</Badge>,
+        r.authorized ? <Badge tone="green">Opened</Badge> : <Badge tone="red">Blocked (debt/no permit)</Badge>,
     },
   ]
 
   return (
     <div>
       <PageHeader
-        title="تردد و امنیت فیزیکی"
-        subtitle="حضور و غیاب مبتنی بر تشخیص چهره و کنترل تردد خودرو با پلاک‌خوان (LPR)"
+        title="Traffic and physical security"
+        subtitle="Face-recognition-based attendance and vehicle traffic control with a plate reader (LPR)"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل ترددهای ثبت‌شده" value={v.length} icon={Car} />
-        <Kpi label="خودرو داخل پارک" value={inbound} icon={ShieldCheck} tone="brand" />
-        <Kpi label="رکورد حضور و غیاب" value={data.attendance.length} icon={UserCheck} />
-        <Kpi label="تلاش تردد غیرمجاز" value={unauthorized} icon={ShieldAlert} tone="rust" />
+        <Kpi label="Total recorded traffic" value={v.length} icon={Car} />
+        <Kpi label="Vehicles inside the park" value={inbound} icon={ShieldCheck} tone="brand" />
+        <Kpi label="Attendance records" value={data.attendance.length} icon={UserCheck} />
+        <Kpi label="Unauthorized traffic attempts" value={unauthorized} icon={ShieldAlert} tone="rust" />
       </div>
 
       <div className="mt-4">
-        <ChartFrame title="روند حضور روزانه کارکنان" subtitle="تعداد ترددهای ثبت‌شده در ورودی اصلی">
-          <Lines data={trend} xKey="date" series={[{ key: 'حضور', name: 'حضور' }]} area />
+        <ChartFrame title="Daily employee attendance trend" subtitle="Number of traffic records at the main entrance">
+          <Lines data={trend} xKey="date" series={[{ key: 'Attendance', name: 'Attendance' }]} area />
         </ChartFrame>
       </div>
 
       <div className="mt-4">
-        <Card title="گزارش تردد خودرو (LPR) — یکپارچه با سیستم مالی">
+        <Card title="Vehicle traffic report (LPR) — integrated with the finance system">
           <DataTable columns={cols} rows={v} pageSize={12} initialSort={{ key: 'entryTime', dir: 'desc' }} />
         </Card>
       </div>

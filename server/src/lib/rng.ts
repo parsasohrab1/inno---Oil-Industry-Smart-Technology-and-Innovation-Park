@@ -1,4 +1,4 @@
-/** مولد اعداد شبه‌تصادفی با seed (mulberry32) — تولید داده سنتتیک بازتولیدپذیر. */
+/** Seeded pseudo-random number generator (mulberry32) — reproducible synthetic data generation. */
 export function mulberry32(seed: number) {
   let a = seed >>> 0
   return function () {

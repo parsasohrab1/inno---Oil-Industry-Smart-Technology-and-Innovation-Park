@@ -21,7 +21,7 @@ export function AppShell() {
           <Outlet />
         </main>
         <footer className="mx-auto w-full max-w-[1400px] px-4 pb-6 pt-2 text-center text-xs text-[rgb(var(--muted))] sm:px-6">
-          سامانه مدیریت یکپارچه پارک هوشمند نفت (OIPMS) — نسخه ۰٫۱ · داده‌ها سنتتیک و صرفاً برای نمایش است
+          Oil Smart Park Integrated Management System (OIPMS) — version 0.1 · data is synthetic and for demonstration only
         </footer>
       </div>
     </div>

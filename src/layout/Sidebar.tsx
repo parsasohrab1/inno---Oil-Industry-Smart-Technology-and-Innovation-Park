@@ -12,7 +12,7 @@ export function Sidebar() {
 
   return (
     <>
-      {/* پوشش موبایل */}
+      {/* mobile overlay */}
       <div
         className={clsx(
           'fixed inset-0 z-30 bg-black/40 lg:hidden',
@@ -33,14 +33,14 @@ export function Sidebar() {
               <Flame className="h-5 w-5" />
             </span>
             <div className="leading-tight">
-              <div className="text-sm font-bold">پارک هوشمند نفت</div>
+              <div className="text-sm font-bold">Oil Smart Park</div>
               <div className="text-[11px] text-[rgb(var(--muted))]">Naft Smart Park</div>
             </div>
           </div>
           <button
             className="btn !p-2 lg:hidden"
             onClick={() => setSidebar(false)}
-            aria-label="بستن منو"
+            aria-label="Close menu"
           >
             <X className="h-4 w-4" />
           </button>

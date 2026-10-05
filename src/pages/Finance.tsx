@@ -10,9 +10,9 @@ import { rial, nf, pct, jDateShort } from '@/lib/format'
 import type { PaymentStatus, RentalInvoice } from '@/lib/types'
 
 const STATUS_LABEL: Record<PaymentStatus, string> = {
-  Paid: 'پرداخت‌شده',
-  Overdue: 'معوق',
-  Pending: 'در انتظار',
+  Paid: 'Paid',
+  Overdue: 'Overdue',
+  Pending: 'Pending',
 }
 const STATUS_TONE: Record<PaymentStatus, 'green' | 'red' | 'amber'> = {
   Paid: 'green',
@@ -42,65 +42,65 @@ export default function Finance() {
 
   const series = rentByPeriod(data).map((r) => ({
     period: r.period,
-    صورتحساب: +(r.billed / 1e9).toFixed(1),
-    وصول: +(r.collected / 1e9).toFixed(1),
-    معوق: +(r.overdue / 1e9).toFixed(1),
+    Invoiced: +(r.billed / 1e9).toFixed(1),
+    Collected: +(r.collected / 1e9).toFixed(1),
+    Overdue: +(r.overdue / 1e9).toFixed(1),
   }))
 
   const debtorRows = debtors(data)
   const debtorCols: Column<(typeof debtorRows)[number]>[] = [
-    { key: 'companyName', header: 'شرکت', sortValue: (r) => r.companyName },
+    { key: 'companyName', header: 'Company', sortValue: (r) => r.companyName },
     {
       key: 'months',
-      header: 'ماه معوقه',
+      header: 'Months overdue',
       align: 'center',
       sortValue: (r) => r.months,
       render: (r) => <span className="fa-nums">{nf(r.months)}</span>,
     },
     {
       key: 'amount',
-      header: 'مبلغ بدهی',
+      header: 'Debt amount',
       align: 'end',
       sortValue: (r) => r.amount,
       render: (r) => <span className="fa-nums">{rial(r.amount)}</span>,
     },
     {
       key: 'gate',
-      header: 'وضعیت دسترسی',
+      header: 'Access status',
       align: 'center',
       render: (r) =>
-        r.gateRevoked ? <Badge tone="red">گیت و چهره مسدود</Badge> : <Badge tone="amber">تذکر پرداخت</Badge>,
+        r.gateRevoked ? <Badge tone="red">Gate and face blocked</Badge> : <Badge tone="amber">Payment reminder</Badge>,
     },
   ]
 
   const invoices = filter === 'all' ? data.rentalInvoices : data.rentalInvoices.filter((r) => r.status === filter)
   const invCols: Column<RentalInvoice>[] = [
-    { key: 'companyName', header: 'شرکت', sortValue: (r) => r.companyName },
-    { key: 'period', header: 'دوره', align: 'center' },
+    { key: 'companyName', header: 'Company', sortValue: (r) => r.companyName },
+    { key: 'period', header: 'Period', align: 'center' },
     {
       key: 'totalRent',
-      header: 'مبلغ اجاره',
+      header: 'Rent amount',
       align: 'end',
       sortValue: (r) => r.totalRent,
       render: (r) => <span className="fa-nums">{rial(r.totalRent)}</span>,
     },
     {
       key: 'dueDate',
-      header: 'سررسید',
+      header: 'Due date',
       align: 'center',
       sortValue: (r) => r.dueDate,
       render: (r) => <span className="fa-nums">{jDateShort(r.dueDate)}</span>,
     },
     {
       key: 'penalty',
-      header: 'جریمه',
+      header: 'Penalty',
       align: 'end',
       sortValue: (r) => r.penalty,
       render: (r) => <span className="fa-nums">{r.penalty ? rial(r.penalty) : '—'}</span>,
     },
     {
       key: 'status',
-      header: 'وضعیت',
+      header: 'Status',
       align: 'center',
       sortValue: (r) => r.status,
       render: (r) => <Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge>,
@@ -110,47 +110,47 @@ export default function Finance() {
   return (
     <div>
       <PageHeader
-        title="مالی و اجاره‌بها"
-        subtitle="کنترل هوشمند صورتحساب، وصول مطالبات و اتصال به گیت‌های تردد"
+        title="Finance and rent"
+        subtitle="Smart invoice control, receivables collection and connection to traffic gates"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل صورتحساب دوره" value={rial(kpis.billed)} icon={Coins} />
-        <Kpi label="وصول‌شده" value={rial(kpis.collected)} icon={CheckCircle2} />
-        <Kpi label="مطالبات معوق" value={rial(kpis.overdue)} icon={TrendingDown} tone="rust" />
-        <Kpi label="نرخ وصول" value={pct(kpis.rate)} icon={AlertTriangle} tone="gold" />
+        <Kpi label="Total invoiced for the period" value={rial(kpis.billed)} icon={Coins} />
+        <Kpi label="Collected" value={rial(kpis.collected)} icon={CheckCircle2} />
+        <Kpi label="Overdue receivables" value={rial(kpis.overdue)} icon={TrendingDown} tone="rust" />
+        <Kpi label="Collection rate" value={pct(kpis.rate)} icon={AlertTriangle} tone="gold" />
       </div>
 
       <div className="mt-4">
-        <ChartFrame title="صورتحساب، وصول و مطالبات معوق" subtitle="میلیارد ریال به تفکیک دوره">
+        <ChartFrame title="Invoices, collections and overdue receivables" subtitle="Billion rials by period">
           <Bars
             data={series}
             xKey="period"
             series={[
-              { key: 'صورتحساب', name: 'صورتحساب' },
-              { key: 'وصول', name: 'وصول', color: '#d4a24e' },
-              { key: 'معوق', name: 'معوق', color: '#b4531f' },
+              { key: 'Invoiced', name: 'Invoiced' },
+              { key: 'Collected', name: 'Collected', color: '#d4a24e' },
+              { key: 'Overdue', name: 'Overdue', color: '#b4531f' },
             ]}
           />
         </ChartFrame>
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <Card title="شرکت‌های بدهکار — اتصال به کنترل تردد">
+        <Card title="Companies in arrears — connection to traffic control">
           <DataTable columns={debtorCols} rows={debtorRows} pageSize={8} />
         </Card>
         <Card
-          title="صورتحساب‌ها"
+          title="Invoices"
           action={
             <select
               className="rounded-lg border bg-transparent px-2 py-1 text-xs"
               value={filter}
               onChange={(e) => setFilter(e.target.value as PaymentStatus | 'all')}
             >
-              <option value="all">همه</option>
-              <option value="Paid">پرداخت‌شده</option>
-              <option value="Overdue">معوق</option>
-              <option value="Pending">در انتظار</option>
+              <option value="all">All</option>
+              <option value="Paid">Paid</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Pending">Pending</option>
             </select>
           }
         >

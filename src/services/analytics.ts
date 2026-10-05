@@ -2,7 +2,7 @@ import type { Dataset } from '@/lib/types'
 
 export interface KpiTrend {
   value: number
-  delta: number // درصد تغییر نسبت به دوره قبل
+  delta: number // percent change relative to the previous period
 }
 
 export interface OverviewKpis {
@@ -42,12 +42,12 @@ export function overviewKpis(d: Dataset): OverviewKpis {
     monthlyRentBillun: totalRent / monthsSpan / 1e9,
     collectionRate: (paidRent / totalRent) * 100,
     overdueCompanies,
-    activeMentoring: d.mentoring.filter((m) => m.status === 'در حال انجام').length,
+    activeMentoring: d.mentoring.filter((m) => m.status === 'In progress').length,
     upcomingEvents: d.events.filter(
-      (e) => e.status === 'برنامه‌ریزی‌شده' && Date.parse(e.startDate) > now,
+      (e) => e.status === 'Planned' && Date.parse(e.startDate) > now,
     ).length,
     approvedFundingRial: d.fundingRequests
-      .filter((f) => f.stage === 'مصوب')
+      .filter((f) => f.stage === 'Approved')
       .reduce((s, f) => s + f.amountRequestedRial, 0),
     startupsRecommended: d.startups.filter((s) => s.investmentRecommendation).length,
     criticalAlerts: d.notifications.filter((n) => n.severity === 'critical' && !n.read).length,
@@ -97,7 +97,7 @@ export function debtors(d: Dataset) {
 }
 
 export function fundingFunnel(d: Dataset) {
-  const order = ['ثبت درخواست', 'بررسی اولیه', 'ارزیابی فنی', 'مذاکره', 'مصوب', 'رد شده'] as const
+  const order = ['Request submitted', 'Initial review', 'Technical evaluation', 'Negotiation', 'Approved', 'Rejected'] as const
   return order.map((stage) => {
     const rows = d.fundingRequests.filter((f) => f.stage === stage)
     return {
@@ -117,8 +117,8 @@ export function mentoringByArea(d: Dataset) {
     const row =
       map.get(m.area) ?? { area: m.area, total: 0, active: 0, completed: 0, avgProgress: 0 }
     row.total += 1
-    if (m.status === 'در حال انجام') row.active += 1
-    if (m.status === 'تکمیل‌شده') row.completed += 1
+    if (m.status === 'In progress') row.active += 1
+    if (m.status === 'Completed') row.completed += 1
     row.avgProgress += m.progressPercent
     map.set(m.area, row)
   }

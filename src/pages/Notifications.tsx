@@ -8,24 +8,24 @@ import { relTime, jDateTime } from '@/lib/format'
 import type { Notification } from '@/lib/types'
 
 const SEVERITY: Record<Notification['severity'], { tone: 'red' | 'amber' | 'green' | 'blue'; label: string }> = {
-  critical: { tone: 'red', label: 'بحرانی' },
-  warning: { tone: 'amber', label: 'هشدار' },
-  success: { tone: 'green', label: 'موفق' },
-  info: { tone: 'blue', label: 'اطلاع' },
+  critical: { tone: 'red', label: 'Critical' },
+  warning: { tone: 'amber', label: 'Warning' },
+  success: { tone: 'green', label: 'Success' },
+  info: { tone: 'blue', label: 'Info' },
 }
 
 const CAT_ICON: Record<Notification['category'], typeof Bell> = {
-  مالی: Coins,
-  امنیتی: ShieldAlert,
-  رویداد: CalendarDays,
-  سرمایه‌گذاری: Coins,
-  منتورینگ: Bell,
-  سیستمی: Cpu,
+  Financial: Coins,
+  Security: ShieldAlert,
+  Event: CalendarDays,
+  Investment: Coins,
+  Mentoring: Bell,
+  System: Cpu,
 }
 
 export default function Notifications() {
   const { data, loading, error } = useApi<Notification[]>('/api/notifications')
-  const [cat, setCat] = useState<Notification['category'] | 'همه'>('همه')
+  const [cat, setCat] = useState<Notification['category'] | 'All'>('All')
 
   const cats = useMemo(
     () => (data ? [...new Set(data.map((n) => n.category))] : []),
@@ -37,26 +37,26 @@ export default function Notifications() {
   if (!data) return null
 
   const all = data
-  const list = cat === 'همه' ? all : all.filter((n) => n.category === cat)
+  const list = cat === 'All' ? all : all.filter((n) => n.category === cat)
   const unread = all.filter((n) => !n.read).length
   const critical = all.filter((n) => n.severity === 'critical').length
 
   return (
     <div>
       <PageHeader
-        title="نوتیفیکیشن‌های هوشمند"
-        subtitle="اعلان‌های خودکار برای اپراتورها و شرکت‌ها — مالی، امنیتی، رویداد و سرمایه‌گذاری"
+        title="Smart notifications"
+        subtitle="Automatic alerts for operators and companies — financial, security, events and investment"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل نوتیفیکیشن‌ها" value={all.length} icon={Bell} />
-        <Kpi label="خوانده‌نشده" value={unread} icon={Bell} tone="gold" />
-        <Kpi label="بحرانی" value={critical} icon={ShieldAlert} tone="rust" />
-        <Kpi label="دسته‌ها" value={cats.length} icon={Cpu} tone="neutral" />
+        <Kpi label="Total notifications" value={all.length} icon={Bell} />
+        <Kpi label="Unread" value={unread} icon={Bell} tone="gold" />
+        <Kpi label="Critical" value={critical} icon={ShieldAlert} tone="rust" />
+        <Kpi label="Categories" value={cats.length} icon={Cpu} tone="neutral" />
       </div>
 
       <div className="my-4 flex flex-wrap gap-2">
-        {(['همه', ...cats] as const).map((c) => (
+        {(['All', ...cats] as const).map((c) => (
           <button
             key={c}
             onClick={() => setCat(c)}

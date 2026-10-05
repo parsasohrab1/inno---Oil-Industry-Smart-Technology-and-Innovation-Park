@@ -25,7 +25,7 @@ const ORIGIN = process.env.CORS_ORIGIN ?? 'http://localhost:5173'
 mkdirSync(join(__dirname, '../data'), { recursive: true })
 migrate()
 if (!getMeta('generatedAt')) {
-  console.log('🌱 پایگاه داده خالی است — بارگذاری دیتاست اولیه…')
+  console.log('🌱 The database is empty — loading the initial dataset…')
   await seed()
 }
 
@@ -45,7 +45,7 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true, generatedAt: getMeta('generatedAt'), time: new Date().toISOString() })
 })
 
-// فهرست عمومی شرکت‌ها برای فرم ثبت‌نام (بدون احراز هویت)
+// public list of companies for the registration form (no authentication)
 app.get('/api/public/companies', (_req, res) => {
   res.json(
     listEntities<{ id: string; name: string }>('companies').map((c) => ({ id: c.id, name: c.name })),
@@ -62,17 +62,17 @@ app.use('/api/reports', reportsRouter)
 app.use('/api/admin', adminRouter)
 
 app.use((_req, res) => {
-  res.status(404).json({ error: 'مسیر یافت نشد' })
+  res.status(404).json({ error: 'Route not found' })
 })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err)
-  res.status(500).json({ error: 'خطای داخلی سرور' })
+  res.status(500).json({ error: 'Internal server error' })
 })
 
 const server = app.listen(PORT, () => {
-  console.log(`🚀 سرور OIPMS روی http://localhost:${PORT} — CORS: ${ORIGIN}`)
+  console.log(`🚀 OIPMS server on http://localhost:${PORT} — CORS: ${ORIGIN}`)
 })
 
 process.on('SIGINT', () => {

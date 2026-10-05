@@ -35,7 +35,7 @@ export function assembleDataset(): Dataset {
   }
 }
 
-/** برش دیتاست برای یک شرکت خاص (کاربران نقش شرکت/استارتاپ) */
+/** Slice of the dataset for a specific company (company/startup role users) */
 export function assembleCompanyDataset(companyId: string): Partial<Dataset> & { company: Company | null } {
   const company = listEntities<Company>('companies', companyId)[0] ?? null
   return {
@@ -47,7 +47,7 @@ export function assembleCompanyDataset(companyId: string): Partial<Dataset> & { 
     fundingRequests: listEntities<FundingRequest>('fundingRequests', companyId),
     balanceSheets: listEntities<BalanceSheet>('balanceSheets', companyId),
     events: listEntities<ParkEvent>('events'),
-    notifications: listEntities<Notification>('notifications').filter((n) => n.audience !== 'اپراتور'),
+    notifications: listEntities<Notification>('notifications').filter((n) => n.audience !== 'Operator'),
     generatedAt: getMeta('generatedAt') ?? new Date().toISOString(),
   }
 }

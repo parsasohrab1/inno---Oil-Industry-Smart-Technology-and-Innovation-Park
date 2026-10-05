@@ -5,12 +5,12 @@ import { useAuth } from '@/store/auth'
 import { ApiError } from '@/lib/api'
 
 const DEMO: Array<{ label: string; email: string; password: string }> = [
-  { label: 'مدیر پارک', email: 'admin@naftpark.ir', password: 'admin1234' },
-  { label: 'اپراتور', email: 'operator@naftpark.ir', password: 'operator1234' },
-  { label: 'مدیر شرکت', email: 'company@naftpark.ir', password: 'company1234' },
-  { label: 'استارتاپ', email: 'startup@naftpark.ir', password: 'startup1234' },
-  { label: 'سرمایه‌گذار', email: 'investor@naftpark.ir', password: 'investor1234' },
-  { label: 'منتور', email: 'mentor@naftpark.ir', password: 'mentor1234' },
+  { label: 'Park manager', email: 'admin@naftpark.ir', password: 'admin1234' },
+  { label: 'Operator', email: 'operator@naftpark.ir', password: 'operator1234' },
+  { label: 'Company manager', email: 'company@naftpark.ir', password: 'company1234' },
+  { label: 'Startup', email: 'startup@naftpark.ir', password: 'startup1234' },
+  { label: 'Investor', email: 'investor@naftpark.ir', password: 'investor1234' },
+  { label: 'Mentor', email: 'mentor@naftpark.ir', password: 'mentor1234' },
 ]
 
 export default function Login() {
@@ -29,7 +29,7 @@ export default function Login() {
       await login(creds?.email ?? email, creds?.password ?? password)
       navigate('/', { replace: true })
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'خطا در برقراری ارتباط با سرور')
+      setError(err instanceof ApiError ? err.message : 'Error connecting to the server')
     } finally {
       setBusy(false)
     }
@@ -42,13 +42,13 @@ export default function Login() {
           <span className="grid h-14 w-14 place-items-center rounded-2xl bg-petro-600 text-white">
             <Flame className="h-7 w-7" />
           </span>
-          <h1 className="font-display text-xl font-bold">سامانه پارک هوشمند نفت</h1>
-          <p className="text-sm text-[rgb(var(--muted))]">برای ورود، حساب کاربری خود را وارد کنید</p>
+          <h1 className="font-display text-xl font-bold">Oil Smart Park System</h1>
+          <p className="text-sm text-[rgb(var(--muted))]">Enter your user account to sign in</p>
         </div>
 
         <form onSubmit={submit} className="card card-pad space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium">ایمیل</label>
+            <label className="mb-1 block text-sm font-medium">Email</label>
             <input
               type="email"
               required
@@ -60,7 +60,7 @@ export default function Login() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">رمز عبور</label>
+            <label className="mb-1 block text-sm font-medium">Password</label>
             <input
               type="password"
               required
@@ -73,18 +73,18 @@ export default function Login() {
           {error && <p className="rounded-lg bg-oil-rust/10 px-3 py-2 text-sm text-oil-rust">{error}</p>}
           <button type="submit" disabled={busy} className="btn btn-primary w-full justify-center disabled:opacity-60">
             <LogIn className="h-4 w-4" />
-            {busy ? 'در حال ورود…' : 'ورود'}
+            {busy ? 'Signing in…' : 'Sign in'}
           </button>
           <p className="text-center text-xs text-[rgb(var(--muted))]">
-            حساب ندارید؟{' '}
+            Don't have an account?{' '}
             <Link to="/register" className="text-petro-600 hover:underline">
-              ثبت‌نام شرکت / سرمایه‌گذار / منتور
+              Register as a company / investor / mentor
             </Link>
           </p>
         </form>
 
         <div className="mt-4">
-          <p className="mb-2 text-center text-xs text-[rgb(var(--muted))]">ورود سریع با حساب‌های نمونه</p>
+          <p className="mb-2 text-center text-xs text-[rgb(var(--muted))]">Quick sign-in with sample accounts</p>
           <div className="grid grid-cols-3 gap-2">
             {DEMO.map((d) => (
               <button

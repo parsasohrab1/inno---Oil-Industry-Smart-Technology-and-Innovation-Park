@@ -30,32 +30,32 @@ export default function Startups() {
   const totalSuggested = s.reduce((a, x) => a + x.suggestedInvestmentRial, 0)
 
   const cols: Column<StartupEvaluation>[] = [
-    { key: 'teamName', header: 'تیم', sortValue: (r) => r.teamName },
-    { key: 'ideaTitle', header: 'ایده', sortValue: (r) => r.ideaTitle },
+    { key: 'teamName', header: 'Team', sortValue: (r) => r.teamName },
+    { key: 'ideaTitle', header: 'Idea', sortValue: (r) => r.ideaTitle },
     {
       key: 'teamScore',
-      header: 'تیم (۳۰٪)',
+      header: 'Team (30%)',
       align: 'center',
       sortValue: (r) => r.teamScore,
       render: (r) => <span className="fa-nums">{nf1(r.teamScore)}</span>,
     },
     {
       key: 'productScore',
-      header: 'محصول (۳۵٪)',
+      header: 'Product (35%)',
       align: 'center',
       sortValue: (r) => r.productScore,
       render: (r) => <span className="fa-nums">{nf1(r.productScore)}</span>,
     },
     {
       key: 'marketScore',
-      header: 'بازار (۳۵٪)',
+      header: 'Market (35%)',
       align: 'center',
       sortValue: (r) => r.marketScore,
       render: (r) => <span className="fa-nums">{nf1(r.marketScore)}</span>,
     },
     {
       key: 'aiFinalScore',
-      header: 'امتیاز نهایی AI',
+      header: 'Final AI score',
       align: 'center',
       sortValue: (r) => r.aiFinalScore,
       render: (r) => (
@@ -66,7 +66,7 @@ export default function Startups() {
     },
     {
       key: 'valuationRial',
-      header: 'ارزش‌گذاری',
+      header: 'Valuation',
       align: 'end',
       sortValue: (r) => r.valuationRial,
       render: (r) => (
@@ -78,49 +78,49 @@ export default function Startups() {
     },
     {
       key: 'rec',
-      header: 'توصیه',
+      header: 'Recommendation',
       align: 'center',
       sortValue: (r) => (r.investmentRecommendation ? 1 : 0),
       render: (r) =>
-        r.investmentRecommendation ? <Badge tone="green">سرمایه‌گذاری</Badge> : <Badge tone="gray">پایش</Badge>,
+        r.investmentRecommendation ? <Badge tone="green">Invest</Badge> : <Badge tone="gray">Monitor</Badge>,
     },
   ]
 
   const scatter = topValuations(data, 12).map((x) => ({
-    team: x.teamName.replace('تیم ', ''),
-    'ارزش (میلیارد ریال)': +(x.valuationRial / 1e9).toFixed(1),
+    team: x.teamName.replace('Team ', ''),
+    'Value (billion rials)': +(x.valuationRial / 1e9).toFixed(1),
   }))
 
   return (
     <div>
       <PageHeader
-        title="داوری و ارزش‌گذاری هوشمند استارت‌آپ‌ها"
-        subtitle="امتیازدهی سه‌محوره (تیم/محصول/بازار) و برآورد ارزش شرکت به ریال"
+        title="Smart startup judging and valuation"
+        subtitle="Three-axis scoring (team/product/market) and estimation of company value in rials"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل طرح‌های ارزیابی‌شده" value={s.length} icon={Rocket} />
-        <Kpi label="میانگین امتیاز AI" value={nf1(avgScore)} icon={Brain} tone="gold" />
-        <Kpi label="توصیه به سرمایه‌گذاری" value={recommended} icon={Award} tone="brand" />
-        <Kpi label="مجموع ارزش پرتفوی" value={rial(totalValuation)} icon={DollarSign} />
+        <Kpi label="Total evaluated projects" value={s.length} icon={Rocket} />
+        <Kpi label="Average AI score" value={nf1(avgScore)} icon={Brain} tone="gold" />
+        <Kpi label="Investment recommendations" value={recommended} icon={Award} tone="brand" />
+        <Kpi label="Total portfolio value" value={rial(totalValuation)} icon={DollarSign} />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <ChartFrame title="توزیع سطح آمادگی فناوری (TRL)">
-          <Bars data={trlDist} xKey="trl" series={[{ key: 'count', name: 'تعداد طرح' }]} />
+        <ChartFrame title="Technology readiness level (TRL) distribution">
+          <Bars data={trlDist} xKey="trl" series={[{ key: 'count', name: 'Number of projects' }]} />
         </ChartFrame>
-        <ChartFrame title="ارزشمندترین تیم‌ها" subtitle="میلیارد ریال">
+        <ChartFrame title="Most valuable teams" subtitle="Billion rials">
           <Bars
             data={scatter}
             xKey="team"
-            series={[{ key: 'ارزش (میلیارد ریال)', name: 'ارزش' }]}
+            series={[{ key: 'Value (billion rials)', name: 'Value' }]}
             format={(n) => nf1(n)}
           />
         </ChartFrame>
       </div>
 
       <div className="mt-4">
-        <Card title={`سرمایه پیشنهادی کل: ${rial(totalSuggested)}`}>
+        <Card title={`Total suggested investment: ${rial(totalSuggested)}`}>
           <DataTable columns={cols} rows={s} pageSize={12} initialSort={{ key: 'aiFinalScore', dir: 'desc' }} />
         </Card>
       </div>

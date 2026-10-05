@@ -35,12 +35,12 @@ export function ReportsPanel() {
         <Card key={r.id} title={r.title}>
           <div className="mb-3">
             <Badge tone={r.scope === 'all' ? 'blue' : 'green'}>
-              {r.scope === 'all' ? 'کل پارک' : 'مخصوص شرکت شما'}
+              {r.scope === 'all' ? 'Whole park' : 'Specific to your company'}
             </Badge>
           </div>
           <div className="flex flex-wrap gap-2">
             <button className="btn !text-xs" disabled={busy === `${r.id}:html`} onClick={() => run(r.id, 'html')}>
-              <Printer className="h-3.5 w-3.5" /> چاپ / PDF
+              <Printer className="h-3.5 w-3.5" /> Print / PDF
             </button>
             <button className="btn !text-xs" disabled={busy === `${r.id}:xlsx`} onClick={() => run(r.id, 'xlsx')}>
               <FileSpreadsheet className="h-3.5 w-3.5" /> Excel

@@ -1,4 +1,4 @@
-/** پالت رنگ نمودارها — سبز نفتی، طلایی، خاکی و رنگ‌های مکمل. */
+/** Chart color palette — oil green, gold, earth tones and complementary colors. */
 export const CHART_COLORS = [
   '#1f9e66',
   '#d4a24e',

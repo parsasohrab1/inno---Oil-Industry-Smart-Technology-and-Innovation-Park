@@ -17,7 +17,7 @@ interface InvestorInterest {
   startupName: string
   amountRial: number
   note: string
-  status: 'اعلام علاقه' | 'در حال مذاکره' | 'قرارداد' | 'انصراف'
+  status: 'Interest expressed' | 'Negotiating' | 'Contract' | 'Withdrawn'
   createdAt: string
 }
 
@@ -33,7 +33,7 @@ investorRouter.get('/startups', requirePermission('startups:read:all'), (req, re
 investorRouter.get('/startups/:id', requirePermission('startups:read:all'), (req, res) => {
   const s = getEntity<StartupEvaluation>('startups', req.params.id)
   if (!s) {
-    res.status(404).json({ error: 'استارتاپ یافت نشد' })
+    res.status(404).json({ error: 'Startup not found' })
     return
   }
   res.json(s)
@@ -52,19 +52,19 @@ const interestSchema = z.object({
 investorRouter.post('/interests', requirePermission('investment:express-interest'), (req, res) => {
   const parsed = interestSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات نامعتبر است' })
+    res.status(400).json({ error: 'Data is invalid' })
     return
   }
   const startup = getEntity<StartupEvaluation>('startups', parsed.data.startupId)
   if (!startup) {
-    res.status(404).json({ error: 'استارتاپ یافت نشد' })
+    res.status(404).json({ error: 'Startup not found' })
     return
   }
   const dup = listEntities<InvestorInterest>('investorInterests').find(
-    (i) => i.investorId === req.auth!.userId && i.startupId === startup.id && i.status !== 'انصراف',
+    (i) => i.investorId === req.auth!.userId && i.startupId === startup.id && i.status !== 'Withdrawn',
   )
   if (dup) {
-    res.status(409).json({ error: 'قبلاً برای این استارتاپ اعلام علاقه کرده‌اید' })
+    res.status(409).json({ error: 'You have already expressed interest in this startup' })
     return
   }
   const interest: InvestorInterest = {
@@ -75,7 +75,7 @@ investorRouter.post('/interests', requirePermission('investment:express-interest
     startupName: startup.teamName,
     amountRial: parsed.data.amountRial,
     note: parsed.data.note ?? '',
-    status: 'اعلام علاقه',
+    status: 'Interest expressed',
     createdAt: new Date().toISOString(),
   }
   putEntity('investorInterests', interest.id, null, interest)
@@ -95,7 +95,7 @@ investorRouter.get('/interests', requirePermission('investment:read'), (req, res
     interests: mine,
     portfolio,
     totalCommittedRial: mine
-      .filter((i) => i.status !== 'انصراف')
+      .filter((i) => i.status !== 'Withdrawn')
       .reduce((s, i) => s + i.amountRial, 0),
   })
 })
@@ -103,10 +103,10 @@ investorRouter.get('/interests', requirePermission('investment:read'), (req, res
 investorRouter.post('/interests/:id/withdraw', requirePermission('investment:express-interest'), (req, res) => {
   const interest = getEntity<InvestorInterest>('investorInterests', req.params.id)
   if (!interest || interest.investorId !== req.auth!.userId) {
-    res.status(404).json({ error: 'مورد یافت نشد' })
+    res.status(404).json({ error: 'Item not found' })
     return
   }
-  interest.status = 'انصراف'
+  interest.status = 'Withdrawn'
   putEntity('investorInterests', interest.id, null, interest)
   res.json({ ok: true, interest })
 })

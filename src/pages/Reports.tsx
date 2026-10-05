@@ -5,8 +5,8 @@ export default function Reports() {
   return (
     <div>
       <PageHeader
-        title="گزارش‌گیری"
-        subtitle="خروجی گزارش‌ها در قالب Excel، CSV و نسخه قابل چاپ (PDF از طریق مرورگر)"
+        title="Reporting"
+        subtitle="Report output in Excel, CSV and a printable version (PDF through the browser)"
       />
       <ReportsPanel />
     </div>

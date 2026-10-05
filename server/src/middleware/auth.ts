@@ -23,7 +23,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   const header = req.header('authorization')
   const token = header?.startsWith('Bearer ') ? header.slice(7) : null
   if (!token) {
-    res.status(401).json({ error: 'نیاز به احراز هویت' })
+    res.status(401).json({ error: 'Authentication required' })
     return
   }
   try {
@@ -36,18 +36,18 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     }
     next()
   } catch {
-    res.status(401).json({ error: 'توکن نامعتبر یا منقضی‌شده' })
+    res.status(401).json({ error: 'Token is invalid or expired' })
   }
 }
 
 export function requireRole(...roles: Role[]) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.auth) {
-      res.status(401).json({ error: 'نیاز به احراز هویت' })
+      res.status(401).json({ error: 'Authentication required' })
       return
     }
     if (!roles.includes(req.auth.role)) {
-      res.status(403).json({ error: 'دسترسی این نقش مجاز نیست' })
+      res.status(403).json({ error: 'This role is not allowed access' })
       return
     }
     next()
@@ -57,21 +57,21 @@ export function requireRole(...roles: Role[]) {
 export function requirePermission(perm: Permission) {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.auth) {
-      res.status(401).json({ error: 'نیاز به احراز هویت' })
+      res.status(401).json({ error: 'Authentication required' })
       return
     }
     if (!can(req.auth.role, perm)) {
-      res.status(403).json({ error: `مجوز لازم را ندارید: ${perm}` })
+      res.status(403).json({ error: `You do not have the required permission: ${perm}` })
       return
     }
     next()
   }
 }
 
-/** برای کاربران شرکت/استارتاپ، companyId الزامی است */
+/** For company/startup users, companyId is mandatory */
 export function requireOwnCompany(req: Request, res: Response, next: NextFunction): void {
   if (!req.auth?.companyId) {
-    res.status(403).json({ error: 'این حساب به هیچ شرکتی متصل نیست' })
+    res.status(403).json({ error: 'This account is not linked to any company' })
     return
   }
   next()

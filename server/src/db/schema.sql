@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   created_at    TEXT NOT NULL
 );
 
--- انبار عمومی موجودیت‌ها: هر ردیف یک رکورد دامنه به‌صورت JSON
+-- Generic entity store: each row is a domain record as JSON
 CREATE TABLE IF NOT EXISTS entities (
   collection TEXT NOT NULL,
   id         TEXT NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS entities (
 );
 CREATE INDEX IF NOT EXISTS idx_entities_coll_company ON entities (collection, company_id);
 
--- ثبت رویداد تغییرناپذیر (زنجیره هش) برای قراردادهای هوشمند
+-- Immutable event log (hash chain) for smart contracts
 CREATE TABLE IF NOT EXISTS contract_events (
   id          TEXT PRIMARY KEY,
   contract_id TEXT NOT NULL,

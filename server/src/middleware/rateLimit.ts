@@ -5,7 +5,7 @@ interface Bucket {
   resetAt: number
 }
 
-/** محدودساز نرخ ساده و درون‌حافظه‌ای (بدون وابستگی خارجی). */
+/** Simple in-memory rate limiter (no external dependency). */
 export function rateLimit(opts: { windowMs: number; limit: number }) {
   const buckets = new Map<string, Bucket>()
 
@@ -21,7 +21,7 @@ export function rateLimit(opts: { windowMs: number; limit: number }) {
     res.setHeader('RateLimit-Limit', String(opts.limit))
     res.setHeader('RateLimit-Remaining', String(Math.max(0, opts.limit - b.count)))
     if (b.count > opts.limit) {
-      res.status(429).json({ error: 'تعداد درخواست‌ها بیش از حد مجاز است؛ کمی بعد دوباره تلاش کنید' })
+      res.status(429).json({ error: 'Too many requests; try again in a moment' })
       return
     }
     next()

@@ -25,12 +25,12 @@ interface AuditRow {
 }
 
 const ROLE_LABEL: Record<Role, string> = {
-  admin: 'مدیر پارک',
-  operator: 'اپراتور',
-  company: 'مدیر شرکت',
-  startup: 'استارتاپ',
-  investor: 'سرمایه‌گذار',
-  mentor: 'منتور',
+  admin: 'Park manager',
+  operator: 'Operator',
+  company: 'Company manager',
+  startup: 'Startup',
+  investor: 'Investor',
+  mentor: 'Mentor',
 }
 
 export default function AdminUsers() {
@@ -56,12 +56,12 @@ export default function AdminUsers() {
         role: form.role,
         companyId: needsCompany ? form.companyId : null,
       })
-      setMsg('کاربر ایجاد شد.')
+      setMsg('User created.')
       setForm({ name: '', email: '', password: '', role: 'operator', companyId: '' })
       users.reload()
       audit.reload()
     } catch (e2) {
-      setMsg(e2 instanceof ApiError ? e2.message : 'خطا در ایجاد کاربر')
+      setMsg(e2 instanceof ApiError ? e2.message : 'Error creating user')
     }
   }
 
@@ -71,18 +71,18 @@ export default function AdminUsers() {
       users.reload()
       audit.reload()
     } catch (e) {
-      setMsg(e instanceof ApiError ? e.message : 'خطا در حذف')
+      setMsg(e instanceof ApiError ? e.message : 'Error deleting')
     }
   }
 
   const cols: Column<AdminUser>[] = [
-    { key: 'name', header: 'نام', sortValue: (r) => r.name },
-    { key: 'email', header: 'ایمیل', sortValue: (r) => r.email, render: (r) => <span dir="ltr">{r.email}</span> },
-    { key: 'role', header: 'نقش', align: 'center', sortValue: (r) => r.role, render: (r) => <Badge tone="blue">{ROLE_LABEL[r.role]}</Badge> },
-    { key: 'companyId', header: 'شرکت', align: 'center', render: (r) => r.companyId ?? '—' },
+    { key: 'name', header: 'Name', sortValue: (r) => r.name },
+    { key: 'email', header: 'Email', sortValue: (r) => r.email, render: (r) => <span dir="ltr">{r.email}</span> },
+    { key: 'role', header: 'Role', align: 'center', sortValue: (r) => r.role, render: (r) => <Badge tone="blue">{ROLE_LABEL[r.role]}</Badge> },
+    { key: 'companyId', header: 'Company', align: 'center', render: (r) => r.companyId ?? '—' },
     {
       key: 'createdAt',
-      header: 'ایجاد',
+      header: 'Created',
       align: 'center',
       sortValue: (r) => r.createdAt,
       render: (r) => <span className="fa-nums">{jDateTime(r.createdAt)}</span>,
@@ -92,7 +92,7 @@ export default function AdminUsers() {
       header: '',
       align: 'center',
       render: (r) => (
-        <button className="btn !p-1.5 text-oil-rust" onClick={() => remove(r.id)} title="حذف">
+        <button className="btn !p-1.5 text-oil-rust" onClick={() => remove(r.id)} title="Delete">
           <Trash2 className="h-3.5 w-3.5" />
         </button>
       ),
@@ -100,23 +100,23 @@ export default function AdminUsers() {
   ]
 
   const auditCols: Column<AuditRow>[] = [
-    { key: 'ts', header: 'زمان', sortValue: (r) => r.ts, render: (r) => <span className="fa-nums">{jDateTime(r.ts)}</span> },
-    { key: 'role', header: 'نقش', align: 'center', render: (r) => r.role ?? '—' },
-    { key: 'action', header: 'عملیات', render: (r) => <span dir="ltr" className="font-mono text-xs">{r.action}</span> },
-    { key: 'target', header: 'هدف', render: (r) => <span dir="ltr" className="text-xs">{r.target ?? '—'}</span> },
+    { key: 'ts', header: 'Time', sortValue: (r) => r.ts, render: (r) => <span className="fa-nums">{jDateTime(r.ts)}</span> },
+    { key: 'role', header: 'Role', align: 'center', render: (r) => r.role ?? '—' },
+    { key: 'action', header: 'Action', render: (r) => <span dir="ltr" className="font-mono text-xs">{r.action}</span> },
+    { key: 'target', header: 'Target', render: (r) => <span dir="ltr" className="text-xs">{r.target ?? '—'}</span> },
   ]
 
   return (
     <div>
-      <PageHeader title="مدیریت کاربران و دسترسی" subtitle="ایجاد و حذف حساب‌ها و مشاهده لاگ ممیزی سامانه" />
+      <PageHeader title="User and access management" subtitle="Create and delete accounts and view the system audit log" />
       {msg && <div className="mb-4 rounded-xl bg-petro-600/10 px-4 py-3 text-sm text-petro-700 dark:text-petro-300">{msg}</div>}
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card title="کاربر جدید">
+        <Card title="New user">
           <form onSubmit={create} className="space-y-3">
-            <input className="inp" placeholder="نام" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <input className="inp" placeholder="Name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <input className="inp" dir="ltr" type="email" placeholder="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-            <input className="inp" dir="ltr" type="password" placeholder="رمز (حداقل ۸)" minLength={8} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
+            <input className="inp" dir="ltr" type="password" placeholder="Password (at least 8)" minLength={8} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
             <select className="inp" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Role })}>
               {(Object.keys(ROLE_LABEL) as Role[]).map((r) => (
                 <option key={r} value={r}>{ROLE_LABEL[r]}</option>
@@ -124,25 +124,25 @@ export default function AdminUsers() {
             </select>
             {needsCompany && (
               <select className="inp" required value={form.companyId} onChange={(e) => setForm({ ...form, companyId: e.target.value })}>
-                <option value="">— شرکت —</option>
+                <option value="">— Company —</option>
                 {companies.data?.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             )}
             <button className="btn btn-primary w-full justify-center">
-              <Plus className="h-4 w-4" /> ایجاد کاربر
+              <Plus className="h-4 w-4" /> Create user
             </button>
           </form>
         </Card>
 
-        <Card title={<span className="flex items-center gap-2"><UsersIcon className="h-4 w-4" /> کاربران ({users.data?.length ?? 0})</span>} className="lg:col-span-2">
+        <Card title={<span className="flex items-center gap-2"><UsersIcon className="h-4 w-4" /> Users ({users.data?.length ?? 0})</span>} className="lg:col-span-2">
           <DataTable columns={cols} rows={users.data ?? []} pageSize={10} initialSort={{ key: 'createdAt', dir: 'desc' }} />
         </Card>
       </div>
 
       <div className="mt-4">
-        <Card title={<span className="flex items-center gap-2"><ScrollText className="h-4 w-4" /> لاگ ممیزی</span>}>
+        <Card title={<span className="flex items-center gap-2"><ScrollText className="h-4 w-4" /> Audit log</span>}>
           <DataTable columns={auditCols} rows={audit.data ?? []} pageSize={12} initialSort={{ key: 'ts', dir: 'desc' }} />
         </Card>
       </div>

@@ -17,7 +17,7 @@ export function migrate(): void {
   db.exec(schema)
 }
 
-// ===== کمک‌توابع دسترسی به انبار entities =====
+// ===== Helper functions for accessing the entities store =====
 
 export interface EntityRow {
   collection: string

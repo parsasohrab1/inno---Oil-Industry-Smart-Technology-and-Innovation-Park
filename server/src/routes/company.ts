@@ -20,13 +20,13 @@ const cid = (req: { auth?: { companyId: string | null } }) => req.auth!.companyI
 companyRouter.get('/me', (req, res) => {
   const company = getEntity<Company>('companies', cid(req))
   if (!company) {
-    res.status(404).json({ error: 'شرکت یافت نشد' })
+    res.status(404).json({ error: 'Company not found' })
     return
   }
   res.json(company)
 })
 
-// ===== صورتحساب‌ها =====
+// ===== Invoices =====
 companyRouter.get('/invoices', requirePermission('invoices:read:own'), (req, res) => {
   res.json(listEntities<RentalInvoice>('rentalInvoices', cid(req)))
 })
@@ -34,11 +34,11 @@ companyRouter.get('/invoices', requirePermission('invoices:read:own'), (req, res
 companyRouter.post('/invoices/:id/pay', requirePermission('invoices:pay:own'), (req, res) => {
   const inv = getEntity<RentalInvoice>('rentalInvoices', req.params.id)
   if (!inv || inv.tenantId !== cid(req)) {
-    res.status(404).json({ error: 'صورتحساب یافت نشد' })
+    res.status(404).json({ error: 'Invoice not found' })
     return
   }
   if (inv.status === 'Paid') {
-    res.status(409).json({ error: 'این صورتحساب قبلاً پرداخت شده است' })
+    res.status(409).json({ error: 'This invoice has already been paid' })
     return
   }
   inv.status = 'Paid'
@@ -50,7 +50,7 @@ companyRouter.post('/invoices/:id/pay', requirePermission('invoices:pay:own'), (
   res.json({ ok: true, invoice: inv })
 })
 
-// ===== قراردادها =====
+// ===== Contracts =====
 companyRouter.get('/contracts', requirePermission('contracts:read:own'), (req, res) => {
   res.json(listEntities('contracts', cid(req)))
 })
@@ -60,16 +60,16 @@ const signSchema = z.object({ signerName: z.string().min(2) })
 companyRouter.post('/contracts/:id/sign', requirePermission('contracts:sign:tenant'), (req, res) => {
   const parsed = signSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'نام امضاکننده الزامی است' })
+    res.status(400).json({ error: 'Signer name is required' })
     return
   }
   const contract = getContract(req.params.id)
   if (!contract || contract.companyId !== cid(req)) {
-    res.status(404).json({ error: 'قرارداد یافت نشد' })
+    res.status(404).json({ error: 'Contract not found' })
     return
   }
   if (contract.signatures.some((s) => s.party === 'tenant')) {
-    res.status(409).json({ error: 'این قرارداد قبلاً توسط شرکت امضا شده است' })
+    res.status(409).json({ error: 'This contract has already been signed by the company' })
     return
   }
   const signedAt = new Date().toISOString()
@@ -84,14 +84,14 @@ companyRouter.post('/contracts/:id/sign', requirePermission('contracts:sign:tena
   const bothSigned = contract.signatures.some((s) => s.party === 'park')
   if (bothSigned && contract.state === 'pending_signatures') {
     contract.state = 'active'
-    appendContractEvent(contract.id, 'activated', { note: 'هر دو طرف امضا کردند' }, 'سیستم')
+    appendContractEvent(contract.id, 'activated', { note: 'Both parties signed' }, 'System')
   }
   saveContract(contract)
   audit({ userId: req.auth!.userId, role: req.auth!.role, action: 'contract.sign.tenant', target: contract.id })
   res.json({ ok: true, contract })
 })
 
-// ===== درخواست تأمین مالی =====
+// ===== Financing request =====
 companyRouter.get('/funding', requirePermission('funding:read:own'), (req, res) => {
   res.json(listEntities<FundingRequest>('fundingRequests', cid(req)))
 })
@@ -104,7 +104,7 @@ const fundingSchema = z.object({
 companyRouter.post('/funding', requirePermission('funding:apply:own'), (req, res) => {
   const parsed = fundingSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات درخواست نامعتبر است' })
+    res.status(400).json({ error: 'Request data is invalid' })
     return
   }
   const company = getEntity<Company>('companies', cid(req))
@@ -115,7 +115,7 @@ companyRouter.post('/funding', requirePermission('funding:apply:own'), (req, res
     companyName: company?.name ?? '—',
     fund: parsed.data.fund,
     amountRequestedRial: parsed.data.amountRequestedRial,
-    stage: 'ثبت درخواست',
+    stage: 'Request submitted',
     submittedDate: new Date().toISOString().slice(0, 10),
     successProbability: 40,
   }
@@ -124,7 +124,7 @@ companyRouter.post('/funding', requirePermission('funding:apply:own'), (req, res
   res.status(201).json(fr)
 })
 
-// ===== رزرو اتاق جلسات =====
+// ===== Meeting room booking =====
 companyRouter.get('/bookings', requirePermission('bookings:read:own'), (req, res) => {
   res.json(listEntities<MeetingBooking>('bookings', cid(req)))
 })
@@ -140,13 +140,13 @@ const bookingSchema = z.object({
 companyRouter.post('/bookings', requirePermission('bookings:create:own'), (req, res) => {
   const parsed = bookingSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات رزرو نامعتبر است', details: parsed.error.flatten() })
+    res.status(400).json({ error: 'Booking data is invalid', details: parsed.error.flatten() })
     return
   }
   const start = new Date(parsed.data.startTime)
   const end = new Date(start.getTime() + parsed.data.durationMinutes * 60000)
 
-  // بررسی تداخل با رزروهای تأییدشده همان اتاق
+  // check for conflicts with confirmed bookings of the same room
   const clash = listEntities<MeetingBooking>('bookings').some(
     (b) =>
       b.roomName === parsed.data.roomName &&
@@ -155,7 +155,7 @@ companyRouter.post('/bookings', requirePermission('bookings:create:own'), (req, 
       end > new Date(b.startTime),
   )
   if (clash) {
-    res.status(409).json({ error: 'این اتاق در بازه انتخابی قبلاً رزرو شده است' })
+    res.status(409).json({ error: 'This room is already booked in the selected interval' })
     return
   }
 
@@ -181,7 +181,7 @@ companyRouter.post('/bookings', requirePermission('bookings:create:own'), (req, 
 companyRouter.post('/bookings/:id/cancel', requirePermission('bookings:cancel:own'), (req, res) => {
   const b = getEntity<MeetingBooking>('bookings', req.params.id)
   if (!b || b.companyId !== cid(req)) {
-    res.status(404).json({ error: 'رزرو یافت نشد' })
+    res.status(404).json({ error: 'Booking not found' })
     return
   }
   b.status = 'Cancelled'
@@ -190,7 +190,7 @@ companyRouter.post('/bookings/:id/cancel', requirePermission('bookings:cancel:ow
   res.json({ ok: true, booking: b })
 })
 
-// ===== منتورینگ من =====
+// ===== My mentoring =====
 companyRouter.get('/mentoring', requirePermission('mentoring:read:own'), (req, res) => {
   res.json(listEntities<MentoringEngagement>('mentoring', cid(req)))
 })

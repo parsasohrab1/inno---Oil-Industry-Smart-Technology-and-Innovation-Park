@@ -55,17 +55,17 @@ export const DEFAULT_CONFIG: GenConfig = {
 }
 
 const ROOMS = [
-  'فردوسی', 'سعدی', 'حافظ', 'مولوی', 'خیام', 'نظامی', 'عطار', 'سنایی',
-  'جامی', 'رودکی', 'پروین', 'شهریار', 'صائب', 'بیدل', 'باباطاهر', 'اوحدی',
+  'Ferdowsi', 'Saadi', 'Hafez', 'Molavi', 'Khayyam', 'Nezami', 'Attar', 'Sanai',
+  'Jami', 'Rudaki', 'Parvin', 'Shahriar', 'Saeb', 'Bidel', 'Baba Taher', 'Ouhadi',
 ]
 const GATES = ['G1', 'G2', 'G3']
 const FUNDS = [
-  'صندوق پژوهش و فناوری وزارت نفت',
-  'صندوق نوآوری و شکوفایی',
-  'صندوق توسعه ملی — بخش نفت',
-  'صندوق خطرپذیر پارسیان',
-  'سرمایه‌گذاران فرشته صنعت نفت',
-  'صندوق سرمایه‌گذاری جسورانه دانش‌بنیان',
+  'Ministry of Petroleum Research and Technology Fund',
+  'Innovation and Prosperity Fund',
+  'National Development Fund — Oil Sector',
+  'Parsian Venture Fund',
+  'Oil Industry Angel Investors',
+  'Knowledge-based Venture Capital Fund',
 ]
 
 const iso = (d: Date) => d.toISOString()
@@ -199,8 +199,8 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
     }
   })
 
-  const STAGES = ['ایده', 'نمونه اولیه', 'MVP', 'رشد', 'مقیاس‌پذیری'] as const
-  const PATENT: PatentStatus[] = ['ثبت‌شده', 'در حال ثبت', 'ندارد', 'در دست بررسی']
+  const STAGES = ['Idea', 'Prototype', 'MVP', 'Growth', 'Scale-up'] as const
+  const PATENT: PatentStatus[] = ['Registered', 'Pending registration', 'None', 'Under review']
   const startups: StartupEvaluation[] = Array.from({ length: cfg.startups }, (_, i) => {
     const teamScore = rng.float(40, 95)
     const marketScore = rng.float(30, 90)
@@ -229,12 +229,12 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
   })
 
   const MARKETS: Array<[string, MarketRow['region']]> = [
-    ['ایران', 'داخلی'], ['ترکیه', 'همسایه'], ['عراق', 'همسایه'], ['امارات', 'خاورمیانه'],
-    ['عربستان', 'خاورمیانه'], ['قطر', 'خاورمیانه'], ['عمان', 'خاورمیانه'], ['کویت', 'خاورمیانه'],
-    ['ترکمنستان', 'آسیای میانه'], ['قزاقستان', 'آسیای میانه'], ['آذربایجان', 'همسایه'],
-    ['پاکستان', 'همسایه'], ['هند', 'شرق آسیا'], ['چین', 'شرق آسیا'], ['روسیه', 'همسایه'],
-    ['نیجریه', 'آفریقا'], ['آنگولا', 'آفریقا'], ['ونزوئلا', 'آمریکای لاتین'],
-    ['مالزی', 'شرق آسیا'], ['اندونزی', 'شرق آسیا'],
+    ['Iran', 'Domestic'], ['Turkey', 'Neighboring'], ['Iraq', 'Neighboring'], ['UAE', 'Middle East'],
+    ['Saudi Arabia', 'Middle East'], ['Qatar', 'Middle East'], ['Oman', 'Middle East'], ['Kuwait', 'Middle East'],
+    ['Turkmenistan', 'Central Asia'], ['Kazakhstan', 'Central Asia'], ['Azerbaijan', 'Neighboring'],
+    ['Pakistan', 'Neighboring'], ['India', 'East Asia'], ['China', 'East Asia'], ['Russia', 'Neighboring'],
+    ['Nigeria', 'Africa'], ['Angola', 'Africa'], ['Venezuela', 'Latin America'],
+    ['Malaysia', 'East Asia'], ['Indonesia', 'East Asia'],
   ]
   const markets: MarketRow[] = MARKETS.map(([country, region]) => ({
     country,
@@ -249,24 +249,24 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
     politicalStability: rng.int(15, 95),
   }))
 
-  const DOM_SECTORS = ['پالایش', 'پتروشیمی', 'اکتشاف و تولید', 'خطوط لوله', 'حفاری'] as const
+  const DOM_SECTORS = ['Refining', 'Petrochemical', 'Exploration & Production', 'Pipelines', 'Drilling'] as const
   const BUYERS = [
-    'شرکت ملی نفت ایران', 'شرکت ملی پالایش و پخش', 'شرکت ملی مناطق نفت‌خیز جنوب',
-    'شرکت نفت مناطق مرکزی', 'پتروشیمی خلیج فارس', 'شرکت خطوط لوله و مخابرات نفت',
-    'شرکت مهندسی و توسعه نفت',
+    'National Iranian Oil Company', 'National Iranian Oil Refining and Distribution Company', 'National Iranian South Oil Company',
+    'Central Oil Fields Company', 'Persian Gulf Petrochemical', 'Oil Pipelines and Telecommunication Company',
+    'Oil Engineering and Development Company',
   ]
   const domesticOpportunities: DomesticOpportunity[] = Array.from({ length: 40 }, (_, i) => ({
     id: `OPP-${2000 + i}`,
-    title: faker.ideaTitle().replace('سامانه', 'تأمین'),
+    title: faker.ideaTitle().replace('system', 'supply'),
     buyer: rng.pick(BUYERS),
     sector: rng.pick(DOM_SECTORS),
     estimatedValueRial: Math.round(rng.float(5e9, 900e9)),
     deadline: isoDate(faker.dateBetween(-20, 120, now)),
     matchedCompanyIds: rng.sample(companies, rng.int(0, 4)).map((c) => c.id),
-    status: rng.weighted(['باز', 'در حال ارزیابی', 'برنده', 'بسته'] as const, [0.5, 0.25, 0.1, 0.15]),
+    status: rng.weighted(['Open', 'Under evaluation', 'Won', 'Closed'] as const, [0.5, 0.25, 0.1, 0.15]),
   }))
 
-  const MENT_STATUS: MentoringStatus[] = ['در حال انجام', 'تکمیل‌شده', 'برنامه‌ریزی‌شده', 'متوقف']
+  const MENT_STATUS: MentoringStatus[] = ['In progress', 'Completed', 'Planned', 'Suspended']
   const mentoring: MentoringEngagement[] = []
   for (const c of companies) {
     for (const area of rng.sample(MENTORING_AREAS, rng.int(2, 4))) {
@@ -279,7 +279,7 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
         startDate: isoDate(faker.dateBetween(-365, 0, now)),
         status,
         progressPercent:
-          status === 'تکمیل‌شده' ? 100 : status === 'برنامه‌ریزی‌شده' ? 0 : rng.int(10, 92),
+          status === 'Completed' ? 100 : status === 'Planned' ? 0 : rng.int(10, 92),
         mentorName: faker.name(),
         nextSession: isoDate(faker.dateBetween(1, 90, now)),
       })
@@ -287,16 +287,16 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
   }
 
   const EVENT_TYPES = [
-    'دمو دی', 'ریورس پیچ', 'پیچ', 'کارگاه آموزشی', 'همایش', 'مسابقه نوآوری', 'شبکه‌سازی',
+    'Demo Day', 'Reverse Pitch', 'Pitch', 'Training workshop', 'Conference', 'Innovation competition', 'Networking',
   ] as const
-  const LOCATIONS = ['سالن همایش مرکزی', 'اتاق جلسات اصلی', 'محوطه باز پارک', 'سالن شماره ۲', 'پاویون نوآوری']
+  const LOCATIONS = ['Central conference hall', 'Main meeting room', 'Park open area', 'Hall No. 2', 'Innovation pavilion']
   const events: ParkEvent[] = Array.from({ length: cfg.events }, (_, i) => {
     const start = faker.dateBetween(-120, 150, now)
     const max = rng.int(20, 480)
     const past = start.getTime() < now
     const status: EventStatus = past
-      ? rng.weighted(['برگزارشده', 'لغوشده'] as const, [0.9, 0.1])
-      : rng.weighted(['برنامه‌ریزی‌شده', 'در حال برگزاری', 'لغوشده'] as const, [0.85, 0.08, 0.07])
+      ? rng.weighted(['Held', 'Cancelled'] as const, [0.9, 0.1])
+      : rng.weighted(['Planned', 'In progress', 'Cancelled'] as const, [0.85, 0.08, 0.07])
     return {
       id: `E${1000 + i}`,
       title: `${rng.pick(EVENT_TYPES)} — ${faker.ideaTitle()}`,
@@ -318,7 +318,7 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
       balanceSheets.push({
         companyId: c.id,
         companyName: c.name,
-        period: `فصل ${p + 1} ۱۴۰۵`,
+        period: `Quarter ${p + 1} 1405`,
         revenue,
         costs,
         netProfit: revenue - costs,
@@ -330,7 +330,7 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
   }
 
   const FUND_STAGES = [
-    'ثبت درخواست', 'بررسی اولیه', 'ارزیابی فنی', 'مذاکره', 'مصوب', 'رد شده',
+    'Request submitted', 'Initial review', 'Technical evaluation', 'Negotiation', 'Approved', 'Rejected',
   ] as const
   const fundingRequests: FundingRequest[] = Array.from({ length: cfg.fundingRequests }, (_, i) => {
     const c = rng.pick(companies)
@@ -343,7 +343,7 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
       amountRequestedRial: Math.round(rng.float(2e9, 200e9)),
       stage,
       submittedDate: isoDate(faker.dateBetween(-300, -1, now)),
-      successProbability: stage === 'مصوب' ? 100 : stage === 'رد شده' ? 0 : +rng.float(15, 88).toFixed(0),
+      successProbability: stage === 'Approved' ? 100 : stage === 'Rejected' ? 0 : +rng.float(15, 88).toFixed(0),
     }
   })
 
@@ -357,15 +357,15 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
     .forEach((r) =>
       pushNote({
         severity: r.monthsOverdue >= 2 ? 'critical' : 'warning',
-        category: 'مالی',
-        title: `بدهی اجاره‌بها — ${r.companyName}`,
+        category: 'Financial',
+        title: `Rent arrears — ${r.companyName}`,
         body:
           r.monthsOverdue >= 2
-            ? `${r.monthsOverdue} ماه معوقه. دسترسی گیت و تشخیص چهره برای این شرکت غیرفعال شد.`
-            : `صورتحساب دوره ${r.period} سررسید شده و پرداخت نشده است.`,
+            ? `${r.monthsOverdue} months overdue. Gate access and face recognition were disabled for this company.`
+            : `The invoice for period ${r.period} is due and has not been paid.`,
         createdAt: iso(faker.dateBetween(-7, 0, now)),
         read: rng.bool(0.3),
-        audience: 'اپراتور',
+        audience: 'Operator',
       }),
     )
   vehicles
@@ -374,40 +374,40 @@ export function generateDataset(partial: Partial<GenConfig> = {}): Dataset {
     .forEach((v) =>
       pushNote({
         severity: 'warning',
-        category: 'امنیتی',
-        title: 'تلاش تردد غیرمجاز خودرو',
-        body: `پلاک ${v.licensePlate} — گیت باز نشد (بدهی شرکت مبدأ یا نبود مجوز).`,
+        category: 'Security',
+        title: 'Unauthorized vehicle entry attempt',
+        body: `Plate ${v.licensePlate} — the gate did not open (debt of the originating company or no permit).`,
         createdAt: v.entryTime,
         read: rng.bool(0.5),
-        audience: 'اپراتور',
+        audience: 'Operator',
       }),
     )
   events
-    .filter((e) => e.status === 'برنامه‌ریزی‌شده')
+    .filter((e) => e.status === 'Planned')
     .slice(0, 8)
     .forEach((e) =>
       pushNote({
         severity: 'info',
-        category: 'رویداد',
-        title: `رویداد پیش‌رو: ${e.type}`,
+        category: 'Event',
+        title: `Upcoming event: ${e.type}`,
         body: `${e.title} — ${e.location}`,
         createdAt: iso(faker.dateBetween(-3, 0, now)),
         read: rng.bool(0.4),
-        audience: 'همه',
+        audience: 'All',
       }),
     )
   fundingRequests
-    .filter((f) => f.stage === 'مصوب')
+    .filter((f) => f.stage === 'Approved')
     .slice(0, 5)
     .forEach((f) =>
       pushNote({
         severity: 'success',
-        category: 'سرمایه‌گذاری',
-        title: `تأمین مالی مصوب شد — ${f.companyName}`,
-        body: `${f.fund} درخواست ${f.companyName} را تصویب کرد.`,
+        category: 'Investment',
+        title: `Financing approved — ${f.companyName}`,
+        body: `${f.fund} approved the request of ${f.companyName}.`,
         createdAt: iso(faker.dateBetween(-10, 0, now)),
         read: rng.bool(0.5),
-        audience: 'همه',
+        audience: 'All',
       }),
     )
   notifications.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))

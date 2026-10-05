@@ -36,12 +36,12 @@ const loginSchema = z.object({
 authRouter.post('/login', async (req, res) => {
   const parsed = loginSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'ایمیل یا رمز عبور نامعتبر است' })
+    res.status(400).json({ error: 'Email or password is invalid' })
     return
   }
   const row = db.prepare('SELECT * FROM users WHERE email = ?').get(parsed.data.email) as UserRow | undefined
   if (!row || !(await verifyPassword(parsed.data.password, row.password_hash))) {
-    res.status(401).json({ error: 'ایمیل یا رمز عبور اشتباه است' })
+    res.status(401).json({ error: 'Email or password is incorrect' })
     return
   }
   const user = toUser(row)
@@ -57,28 +57,28 @@ const registerSchema = z.object({
   companyId: z.string().optional(),
 })
 
-// ثبت‌نام عمومی فقط برای نقش‌های بیرونی (شرکت/استارتاپ/سرمایه‌گذار/منتور)
+// public registration only for external roles (company/startup/investor/mentor)
 authRouter.post('/register', async (req, res) => {
   const parsed = registerSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات ثبت‌نام ناقص یا نامعتبر است', details: parsed.error.flatten() })
+    res.status(400).json({ error: 'Registration data is incomplete or invalid', details: parsed.error.flatten() })
     return
   }
   const { email, password, name, role, companyId } = parsed.data
   if ((role === 'company' || role === 'startup') && !companyId) {
-    res.status(400).json({ error: 'برای نقش شرکت/استارتاپ، شناسه شرکت الزامی است' })
+    res.status(400).json({ error: 'For the company/startup role, the company ID is required' })
     return
   }
   if (companyId) {
     const c = db.prepare("SELECT id FROM entities WHERE collection = 'companies' AND id = ?").get(companyId)
     if (!c) {
-      res.status(400).json({ error: 'شرکت با این شناسه یافت نشد' })
+      res.status(400).json({ error: 'No company found with this ID' })
       return
     }
   }
   const dup = db.prepare('SELECT id FROM users WHERE email = ?').get(email)
   if (dup) {
-    res.status(409).json({ error: 'این ایمیل قبلاً ثبت شده است' })
+    res.status(409).json({ error: 'This email is already registered' })
     return
   }
   const id = randomUUID()
@@ -100,7 +100,7 @@ authRouter.post('/register', async (req, res) => {
 authRouter.get('/me', requireAuth, (req, res) => {
   const row = db.prepare('SELECT * FROM users WHERE id = ?').get(req.auth!.userId) as UserRow | undefined
   if (!row) {
-    res.status(404).json({ error: 'کاربر یافت نشد' })
+    res.status(404).json({ error: 'User not found' })
     return
   }
   const user = toUser(row)

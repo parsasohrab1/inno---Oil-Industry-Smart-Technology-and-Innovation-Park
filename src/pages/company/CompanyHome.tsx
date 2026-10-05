@@ -42,38 +42,38 @@ export default function CompanyHome() {
     setMsg(null)
     try {
       await api.post(`/api/company/invoices/${id}/pay`)
-      setMsg('پرداخت با موفقیت ثبت شد. در صورت رفع کامل بدهی، دسترسی گیت فعال می‌شود.')
+      setMsg('Payment was recorded successfully. If the debt is fully cleared, gate access will be activated.')
       invoices.reload()
     } catch (e) {
-      setMsg(e instanceof ApiError ? e.message : 'خطا در پرداخت')
+      setMsg(e instanceof ApiError ? e.message : 'Payment error')
     }
   }
 
   const TABS: Array<{ id: Tab; label: string }> = [
-    { id: 'overview', label: 'نمای کلی' },
-    { id: 'invoices', label: `صورتحساب‌ها (${inv.length})` },
-    { id: 'bookings', label: `رزرو جلسات (${bookings.data?.length ?? 0})` },
-    { id: 'funding', label: `تأمین مالی (${funding.data?.length ?? 0})` },
-    { id: 'mentoring', label: `منتورینگ (${mentoring.data?.length ?? 0})` },
+    { id: 'overview', label: 'Overview' },
+    { id: 'invoices', label: `Invoices (${inv.length})` },
+    { id: 'bookings', label: `Meeting bookings (${bookings.data?.length ?? 0})` },
+    { id: 'funding', label: `Financing (${funding.data?.length ?? 0})` },
+    { id: 'mentoring', label: `Mentoring (${mentoring.data?.length ?? 0})` },
   ]
 
   return (
     <div>
-      <PageHeader title={`پنل ${c.name}`} subtitle="میز کار شرکت مستقر — صورتحساب، قرارداد، رزرو و منتورینگ" />
+      <PageHeader title={`${c.name} panel`} subtitle="Resident company desk — invoices, contract, booking and mentoring" />
 
       {gateBlocked && (
         <div className="mb-4 rounded-xl border border-oil-rust/30 bg-oil-rust/10 px-4 py-3 text-sm text-oil-rust">
-          ⚠️ به دلیل بدهی معوق ۲ ماه یا بیشتر، دسترسی گیت خودرو و تشخیص چهره کارکنان این شرکت غیرفعال است.
-          برای رفع محدودیت، صورتحساب‌های معوق را پرداخت کنید.
+          ⚠️ Due to overdue debt of 2 months or more, vehicle gate access and face recognition of this company's employees is disabled.
+          To lift the restriction, pay the overdue invoices.
         </div>
       )}
       {msg && <div className="mb-4 rounded-xl bg-petro-600/10 px-4 py-3 text-sm text-petro-700 dark:text-petro-300">{msg}</div>}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="متراژ اجاره‌ای" value={c.areaM2} unit="متر مربع" icon={Building2} />
-        <Kpi label="بدهی جاری" value={rial(outstanding)} icon={Wallet} tone={outstanding > 0 ? 'rust' : 'brand'} />
-        <Kpi label="صورتحساب معوق" value={overdue.length} icon={Coins} tone={overdue.length ? 'rust' : 'neutral'} />
-        <Kpi label="منتورینگ فعال" value={(mentoring.data ?? []).filter((m) => m.status === 'در حال انجام').length} icon={GraduationCap} />
+        <Kpi label="Leased area" value={c.areaM2} unit="square meters" icon={Building2} />
+        <Kpi label="Current debt" value={rial(outstanding)} icon={Wallet} tone={outstanding > 0 ? 'rust' : 'brand'} />
+        <Kpi label="Overdue invoices" value={overdue.length} icon={Coins} tone={overdue.length ? 'rust' : 'neutral'} />
+        <Kpi label="Active mentoring" value={(mentoring.data ?? []).filter((m) => m.status === 'In progress').length} icon={GraduationCap} />
       </div>
 
       <div className="my-4 flex flex-wrap gap-2">
@@ -93,27 +93,27 @@ export default function CompanyHome() {
 
       {tab === 'overview' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <Card title="مشخصات شرکت">
+          <Card title="Company profile">
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <Info k="حوزه فعالیت" v={c.field} />
-              <Info k="تعداد کارکنان" v={nf(c.employeeCount)} />
-              <Info k="سطح بلوغ فناوری" v={`${nf(c.maturityLevel)} از ۵`} />
-              <Info k="نرخ اجاره هر متر" v={rial(c.rentalRatePerM2)} />
-              <Info k="دانش‌بنیان" v={c.isKnowledgeBased ? 'بله' : 'خیر'} />
-              <Info k="ثبت اختراع" v={c.hasPatent ? 'دارد' : 'ندارد'} />
-              <Info k="تاریخ تأسیس" v={jDateShort(c.establishmentDate)} />
+              <Info k="Field of activity" v={c.field} />
+              <Info k="Number of employees" v={nf(c.employeeCount)} />
+              <Info k="Technology maturity level" v={`${nf(c.maturityLevel)} of 5`} />
+              <Info k="Rent rate per meter" v={rial(c.rentalRatePerM2)} />
+              <Info k="Knowledge-based" v={c.isKnowledgeBased ? 'Yes' : 'No'} />
+              <Info k="Patent" v={c.hasPatent ? 'Yes' : 'None'} />
+              <Info k="Establishment date" v={jDateShort(c.establishmentDate)} />
             </dl>
           </Card>
-          <Card title="اقدامات سریع">
+          <Card title="Quick actions">
             <div className="space-y-2 text-sm">
-              <p className="text-[rgb(var(--muted))]">از تب‌های بالا برای پرداخت صورتحساب، رزرو اتاق جلسه، ثبت درخواست تأمین مالی و پیگیری منتورینگ استفاده کنید.</p>
+              <p className="text-[rgb(var(--muted))]">Use the tabs above to pay invoices, book a meeting room, submit a financing request and track mentoring.</p>
             </div>
           </Card>
         </div>
       )}
 
       {tab === 'invoices' && (
-        <Card title="صورتحساب‌های اجاره‌بها">
+        <Card title="Rent invoices">
           <InvoiceTable rows={inv} onPay={pay} />
         </Card>
       )}
@@ -125,7 +125,7 @@ export default function CompanyHome() {
       {tab === 'funding' && <FundingPanel rows={funding.data ?? []} reload={funding.reload} setMsg={setMsg} />}
 
       {tab === 'mentoring' && (
-        <Card title="مسیرهای منتورینگ شرکت">
+        <Card title="Company mentoring paths">
           <MentoringTable rows={mentoring.data ?? []} />
         </Card>
       )}
@@ -142,35 +142,35 @@ function Info({ k, v }: { k: string; v: string }) {
   )
 }
 
-const INV_LABEL = { Paid: 'پرداخت‌شده', Overdue: 'معوق', Pending: 'در انتظار' } as const
+const INV_LABEL = { Paid: 'Paid', Overdue: 'Overdue', Pending: 'Pending' } as const
 const INV_TONE = { Paid: 'green', Overdue: 'red', Pending: 'amber' } as const
 
 function InvoiceTable({ rows, onPay }: { rows: RentalInvoice[]; onPay: (id: string) => void }) {
   const cols: Column<RentalInvoice>[] = [
-    { key: 'period', header: 'دوره', align: 'center' },
+    { key: 'period', header: 'Period', align: 'center' },
     {
       key: 'totalRent',
-      header: 'مبلغ',
+      header: 'Amount',
       align: 'end',
       sortValue: (r) => r.totalRent,
       render: (r) => <span className="fa-nums">{rial(r.totalRent)}</span>,
     },
     {
       key: 'penalty',
-      header: 'جریمه',
+      header: 'Penalty',
       align: 'end',
       render: (r) => <span className="fa-nums">{r.penalty ? rial(r.penalty) : '—'}</span>,
     },
     {
       key: 'dueDate',
-      header: 'سررسید',
+      header: 'Due date',
       align: 'center',
       sortValue: (r) => r.dueDate,
       render: (r) => <span className="fa-nums">{jDateShort(r.dueDate)}</span>,
     },
     {
       key: 'status',
-      header: 'وضعیت',
+      header: 'Status',
       align: 'center',
       sortValue: (r) => r.status,
       render: (r) => <Badge tone={INV_TONE[r.status]}>{INV_LABEL[r.status]}</Badge>,
@@ -184,7 +184,7 @@ function InvoiceTable({ rows, onPay }: { rows: RentalInvoice[]; onPay: (id: stri
           <span className="text-xs text-[rgb(var(--muted))]">—</span>
         ) : (
           <button className="btn btn-primary !py-1 !text-xs" onClick={() => onPay(r.id)}>
-            پرداخت
+            Pay
           </button>
         ),
     },
@@ -194,27 +194,27 @@ function InvoiceTable({ rows, onPay }: { rows: RentalInvoice[]; onPay: (id: stri
 
 function MentoringTable({ rows }: { rows: MentoringEngagement[] }) {
   const cols: Column<MentoringEngagement>[] = [
-    { key: 'area', header: 'حوزه', sortValue: (r) => r.area },
-    { key: 'mentorName', header: 'منتور', sortValue: (r) => r.mentorName },
+    { key: 'area', header: 'Area', sortValue: (r) => r.area },
+    { key: 'mentorName', header: 'Mentor', sortValue: (r) => r.mentorName },
     {
       key: 'progressPercent',
-      header: 'پیشرفت',
+      header: 'Progress',
       align: 'center',
       sortValue: (r) => r.progressPercent,
       render: (r) => <span className="fa-nums">{pct(r.progressPercent, 0)}</span>,
     },
     {
       key: 'nextSession',
-      header: 'جلسه بعدی',
+      header: 'Next session',
       align: 'center',
       render: (r) => <span className="fa-nums">{jDateShort(r.nextSession)}</span>,
     },
-    { key: 'status', header: 'وضعیت', align: 'center', render: (r) => <Badge tone="blue">{r.status}</Badge> },
+    { key: 'status', header: 'Status', align: 'center', render: (r) => <Badge tone="blue">{r.status}</Badge> },
   ]
   return <DataTable columns={cols} rows={rows} pageSize={10} />
 }
 
-const ROOMS = ['فردوسی', 'سعدی', 'حافظ', 'مولوی', 'خیام', 'نظامی', 'عطار', 'سنایی']
+const ROOMS = ['Ferdowsi', 'Saadi', 'Hafez', 'Molavi', 'Khayyam', 'Nezami', 'Attar', 'Sanai']
 
 function BookingsPanel({
   rows,
@@ -239,10 +239,10 @@ function BookingsPanel({
         durationMinutes: Number(form.durationMinutes),
         participantCount: Number(form.participantCount),
       })
-      setMsg('رزرو با موفقیت ثبت شد.')
+      setMsg('Booking was recorded successfully.')
       reload()
     } catch (e2) {
-      setMsg(e2 instanceof ApiError ? e2.message : 'خطا در ثبت رزرو')
+      setMsg(e2 instanceof ApiError ? e2.message : 'Error recording the booking')
     } finally {
       setBusy(false)
     }
@@ -251,24 +251,24 @@ function BookingsPanel({
   async function cancel(id: string) {
     try {
       await api.post(`/api/company/bookings/${id}/cancel`)
-      setMsg('رزرو لغو شد.')
+      setMsg('Booking cancelled.')
       reload()
     } catch {
-      setMsg('خطا در لغو رزرو')
+      setMsg('Error cancelling the booking')
     }
   }
 
   const cols: Column<MeetingBooking>[] = [
-    { key: 'roomName', header: 'اتاق', sortValue: (r) => r.roomName },
+    { key: 'roomName', header: 'Room', sortValue: (r) => r.roomName },
     {
       key: 'startTime',
-      header: 'زمان',
+      header: 'Time',
       align: 'center',
       sortValue: (r) => r.startTime,
       render: (r) => <span className="fa-nums">{jDateTime(r.startTime)}</span>,
     },
-    { key: 'durationMinutes', header: 'مدت', align: 'center', render: (r) => <span className="fa-nums">{nf(r.durationMinutes)} دقیقه</span> },
-    { key: 'status', header: 'وضعیت', align: 'center', render: (r) => <Badge tone={r.status === 'Cancelled' ? 'red' : 'blue'}>{r.status === 'Cancelled' ? 'لغوشده' : r.status === 'Completed' ? 'برگزارشده' : 'تأییدشده'}</Badge> },
+    { key: 'durationMinutes', header: 'Duration', align: 'center', render: (r) => <span className="fa-nums">{nf(r.durationMinutes)} minutes</span> },
+    { key: 'status', header: 'Status', align: 'center', render: (r) => <Badge tone={r.status === 'Cancelled' ? 'red' : 'blue'}>{r.status === 'Cancelled' ? 'Cancelled' : r.status === 'Completed' ? 'Held' : 'Confirmed'}</Badge> },
     {
       key: 'act',
       header: '',
@@ -276,7 +276,7 @@ function BookingsPanel({
       render: (r) =>
         r.status === 'Confirmed' ? (
           <button className="btn !py-1 !text-xs" onClick={() => cancel(r.id)}>
-            لغو
+            Cancel
           </button>
         ) : null,
     },
@@ -284,10 +284,10 @@ function BookingsPanel({
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
-      <Card title="رزرو اتاق جدید" className="lg:col-span-1">
+      <Card title="Book a new room" className="lg:col-span-1">
         <form onSubmit={create} className="space-y-3">
           <label className="block text-sm">
-            <span className="mb-1 block text-[rgb(var(--muted))]">اتاق</span>
+            <span className="mb-1 block text-[rgb(var(--muted))]">Room</span>
             <select className="inp" value={form.roomName} onChange={(e) => setForm({ ...form, roomName: e.target.value })}>
               {ROOMS.map((r) => (
                 <option key={r}>{r}</option>
@@ -295,29 +295,29 @@ function BookingsPanel({
             </select>
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-[rgb(var(--muted))]">تاریخ (میلادی)</span>
+            <span className="mb-1 block text-[rgb(var(--muted))]">Date (Gregorian)</span>
             <input type="date" required className="inp" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
           </label>
           <div className="grid grid-cols-2 gap-2">
             <label className="block text-sm">
-              <span className="mb-1 block text-[rgb(var(--muted))]">ساعت</span>
+              <span className="mb-1 block text-[rgb(var(--muted))]">Time</span>
               <input type="time" required className="inp" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block text-[rgb(var(--muted))]">مدت (دقیقه)</span>
+              <span className="mb-1 block text-[rgb(var(--muted))]">Duration (minutes)</span>
               <input type="number" min={15} max={480} step={15} className="inp" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: +e.target.value })} />
             </label>
           </div>
           <label className="block text-sm">
-            <span className="mb-1 block text-[rgb(var(--muted))]">تعداد شرکت‌کننده</span>
+            <span className="mb-1 block text-[rgb(var(--muted))]">Number of participants</span>
             <input type="number" min={1} max={200} className="inp" value={form.participantCount} onChange={(e) => setForm({ ...form, participantCount: +e.target.value })} />
           </label>
           <button className="btn btn-primary w-full justify-center" disabled={busy}>
-            <Plus className="h-4 w-4" /> ثبت رزرو
+            <Plus className="h-4 w-4" /> Record booking
           </button>
         </form>
       </Card>
-      <Card title="رزروهای شرکت" className="lg:col-span-2">
+      <Card title="Company bookings" className="lg:col-span-2">
         <DataTable columns={cols} rows={rows} pageSize={10} initialSort={{ key: 'startTime', dir: 'desc' }} />
       </Card>
     </div>
@@ -325,11 +325,11 @@ function BookingsPanel({
 }
 
 const FUNDS = [
-  'صندوق پژوهش و فناوری وزارت نفت',
-  'صندوق نوآوری و شکوفایی',
-  'صندوق توسعه ملی — بخش نفت',
-  'صندوق خطرپذیر پارسیان',
-  'سرمایه‌گذاران فرشته صنعت نفت',
+  'Ministry of Petroleum Research and Technology Fund',
+  'Innovation and Prosperity Fund',
+  'National Development Fund — Oil Sector',
+  'Parsian Venture Fund',
+  'Oil Industry Angel Investors',
 ]
 
 function FundingPanel({
@@ -349,34 +349,34 @@ function FundingPanel({
     setBusy(true)
     try {
       await api.post('/api/company/funding', { fund: form.fund, amountRequestedRial: Number(form.amount) })
-      setMsg('درخواست تأمین مالی ثبت شد و در صف بررسی قرار گرفت.')
+      setMsg('The financing request was recorded and placed in the review queue.')
       reload()
     } catch (e2) {
-      setMsg(e2 instanceof ApiError ? e2.message : 'خطا در ثبت درخواست')
+      setMsg(e2 instanceof ApiError ? e2.message : 'Error recording the request')
     } finally {
       setBusy(false)
     }
   }
 
   const cols: Column<FundingRequest>[] = [
-    { key: 'fund', header: 'صندوق', sortValue: (r) => r.fund },
+    { key: 'fund', header: 'Fund', sortValue: (r) => r.fund },
     {
       key: 'amountRequestedRial',
-      header: 'مبلغ درخواستی',
+      header: 'Requested amount',
       align: 'end',
       sortValue: (r) => r.amountRequestedRial,
       render: (r) => <span className="fa-nums">{rial(r.amountRequestedRial)}</span>,
     },
-    { key: 'stage', header: 'مرحله', align: 'center', render: (r) => <Badge tone="blue">{r.stage}</Badge> },
+    { key: 'stage', header: 'Stage', align: 'center', render: (r) => <Badge tone="blue">{r.stage}</Badge> },
     {
       key: 'successProbability',
-      header: 'احتمال موفقیت',
+      header: 'Success probability',
       align: 'center',
       render: (r) => <span className="fa-nums">{pct(r.successProbability, 0)}</span>,
     },
     {
       key: 'submittedDate',
-      header: 'تاریخ ثبت',
+      header: 'Registration date',
       align: 'center',
       render: (r) => <span className="fa-nums">{jDateShort(r.submittedDate)}</span>,
     },
@@ -384,10 +384,10 @@ function FundingPanel({
 
   return (
     <div className="grid gap-4 lg:grid-cols-3">
-      <Card title="درخواست تأمین مالی جدید">
+      <Card title="New financing request">
         <form onSubmit={apply} className="space-y-3">
           <label className="block text-sm">
-            <span className="mb-1 block text-[rgb(var(--muted))]">صندوق هدف</span>
+            <span className="mb-1 block text-[rgb(var(--muted))]">Target fund</span>
             <select className="inp" value={form.fund} onChange={(e) => setForm({ ...form, fund: e.target.value })}>
               {FUNDS.map((f) => (
                 <option key={f}>{f}</option>
@@ -395,15 +395,15 @@ function FundingPanel({
             </select>
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-[rgb(var(--muted))]">مبلغ (ریال)</span>
+            <span className="mb-1 block text-[rgb(var(--muted))]">Amount (rials)</span>
             <input type="number" min={100_000_000} step={100_000_000} className="inp fa-nums" value={form.amount} onChange={(e) => setForm({ ...form, amount: +e.target.value })} />
           </label>
           <button className="btn btn-primary w-full justify-center" disabled={busy}>
-            <Plus className="h-4 w-4" /> ثبت درخواست
+            <Plus className="h-4 w-4" /> Record request
           </button>
         </form>
       </Card>
-      <Card title="درخواست‌های تأمین مالی شرکت" className="lg:col-span-2">
+      <Card title="Company financing requests" className="lg:col-span-2">
         <DataTable columns={cols} rows={rows} pageSize={10} initialSort={{ key: 'submittedDate', dir: 'desc' }} />
       </Card>
     </div>

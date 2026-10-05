@@ -36,7 +36,7 @@ export function contractEvents(contractId: string): ContractEvent[] {
     })
 }
 
-/** افزودن یک رویداد به زنجیره تغییرناپذیر قرارداد (هش‌چین) */
+/** Add an event to the contract's immutable chain (hash chain) */
 export function appendContractEvent(
   contractId: string,
   type: ContractEvent['type'],
@@ -60,7 +60,7 @@ export function appendContractEvent(
   return { id, contractId, seq, type, payload, actor, createdAt, prevHash, hash }
 }
 
-/** بررسی سلامت زنجیره هش قرارداد */
+/** Check the integrity of the contract hash chain */
 export function verifyContractChain(contractId: string): { valid: boolean; brokenAtSeq?: number } {
   const events = contractEvents(contractId)
   let prevHash = 'GENESIS'
@@ -92,10 +92,10 @@ export function saveContract(c: Contract): void {
 }
 
 /**
- * اجرای خودکار شرط‌های قرارداد در تاریخ مشخص.
- * - سررسید گذشته + تمدید خودکار → تمدید ۱۲ ماهه
- * - سررسید گذشته + بدون تمدید → انقضا
- * - بدهی معوق ≥ ۲ ماه → اعمال جریمه و تغییر دسترسی گیت
+ * Automatic execution of contract conditions on a given date.
+ * - past maturity + auto-renew → 12-month renewal
+ * - past maturity + no renewal → expiry
+ * - overdue debt ≥ 2 months → apply penalty and change gate access
  */
 export function runContractConditions(
   contract: Contract,
@@ -120,7 +120,7 @@ export function runContractConditions(
       appendContractEvent(
         contract.id,
         'gate_access_changed',
-        { gateAccess: 'revoked', reason: 'بدهی معوق ۲ ماه یا بیشتر' },
+        { gateAccess: 'revoked', reason: 'Overdue debt of 2 months or more' },
         ctx.actor,
       ),
     )

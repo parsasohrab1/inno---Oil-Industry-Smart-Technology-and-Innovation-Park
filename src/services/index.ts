@@ -3,9 +3,9 @@ import { api } from '@/lib/api'
 import type { Dataset } from '@/lib/types'
 
 /**
- * لایه دسترسی داده.
- * - VITE_DATA_SOURCE=api  → از بک‌اند واقعی می‌خواند (نیازمند ورود)
- * - VITE_DATA_SOURCE=mock → دیتاست سنتتیک محلی (بدون بک‌اند)
+ * Data access layer.
+ * - VITE_DATA_SOURCE=api  → reads from the real backend (requires login)
+ * - VITE_DATA_SOURCE=mock → local synthetic dataset (no backend)
  */
 const SOURCE = import.meta.env.VITE_DATA_SOURCE ?? 'api'
 
@@ -17,7 +17,7 @@ export async function fetchDataset(): Promise<Dataset> {
   return getDataset()
 }
 
-/** برش دیتاست مخصوص شرکتِ کاربر جاری (نقش company/startup) */
+/** Dataset slice specific to the current user's company (company/startup role) */
 export interface CompanyDataset extends Partial<Dataset> {
   company: Dataset['companies'][number] | null
 }

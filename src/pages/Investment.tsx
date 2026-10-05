@@ -10,12 +10,12 @@ import { rial, nf, pct, jDateShort } from '@/lib/format'
 import type { FundingRequest } from '@/lib/types'
 
 const STAGE_TONE: Record<FundingRequest['stage'], 'gray' | 'blue' | 'amber' | 'green' | 'red'> = {
-  'ثبت درخواست': 'gray',
-  'بررسی اولیه': 'blue',
-  'ارزیابی فنی': 'blue',
-  مذاکره: 'amber',
-  مصوب: 'green',
-  'رد شده': 'red',
+  'Request submitted': 'gray',
+  'Initial review': 'blue',
+  'Technical evaluation': 'blue',
+  Negotiation: 'amber',
+  Approved: 'green',
+  'Rejected': 'red',
 }
 
 export default function Investment() {
@@ -25,9 +25,9 @@ export default function Investment() {
     if (!data) return null
     const fr = data.fundingRequests
     const requested = fr.reduce((s, f) => s + f.amountRequestedRial, 0)
-    const approved = fr.filter((f) => f.stage === 'مصوب')
+    const approved = fr.filter((f) => f.stage === 'Approved')
     const approvedAmt = approved.reduce((s, f) => s + f.amountRequestedRial, 0)
-    const inPipeline = fr.filter((f) => !['مصوب', 'رد شده'].includes(f.stage)).length
+    const inPipeline = fr.filter((f) => !['Approved', 'Rejected'].includes(f.stage)).length
     return {
       requested,
       approvedAmt,
@@ -43,8 +43,8 @@ export default function Investment() {
 
   const funnel = fundingFunnel(data).map((f) => ({
     stage: f.stage,
-    'تعداد درخواست': f.count,
-    'مبلغ (میلیارد ریال)': +(f.amount / 1e9).toFixed(1),
+    'Number of requests': f.count,
+    'Amount (billion rials)': +(f.amount / 1e9).toFixed(1),
   }))
 
   const byFund = Object.entries(
@@ -59,18 +59,18 @@ export default function Investment() {
     .sort((a, b) => b.amount - a.amount)
 
   const cols: Column<FundingRequest>[] = [
-    { key: 'companyName', header: 'شرکت', sortValue: (r) => r.companyName },
-    { key: 'fund', header: 'صندوق', sortValue: (r) => r.fund },
+    { key: 'companyName', header: 'Company', sortValue: (r) => r.companyName },
+    { key: 'fund', header: 'Fund', sortValue: (r) => r.fund },
     {
       key: 'amountRequestedRial',
-      header: 'مبلغ درخواستی',
+      header: 'Requested amount',
       align: 'end',
       sortValue: (r) => r.amountRequestedRial,
       render: (r) => <span className="fa-nums">{rial(r.amountRequestedRial)}</span>,
     },
     {
       key: 'successProbability',
-      header: 'احتمال موفقیت',
+      header: 'Success probability',
       align: 'center',
       sortValue: (r) => r.successProbability,
       render: (r) => (
@@ -82,14 +82,14 @@ export default function Investment() {
     },
     {
       key: 'submittedDate',
-      header: 'تاریخ ثبت',
+      header: 'Registration date',
       align: 'center',
       sortValue: (r) => r.submittedDate,
       render: (r) => <span className="fa-nums">{jDateShort(r.submittedDate)}</span>,
     },
     {
       key: 'stage',
-      header: 'مرحله',
+      header: 'Stage',
       align: 'center',
       sortValue: (r) => r.stage,
       render: (r) => <Badge tone={STAGE_TONE[r.stage]}>{r.stage}</Badge>,
@@ -99,22 +99,22 @@ export default function Investment() {
   return (
     <div>
       <PageHeader
-        title="جذب سرمایه"
-        subtitle="تطبیق شرکت‌ها با صندوق‌ها، پیگیری درخواست‌ها و بهبود شانس جذب سرمایه"
+        title="Fundraising"
+        subtitle="Matching companies with funds, tracking requests and improving the chance of fundraising"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل مبلغ درخواستی" value={rial(kpis.requested)} icon={Coins} />
-        <Kpi label="تأمین مالی مصوب" value={rial(kpis.approvedAmt)} icon={PiggyBank} tone="gold" />
-        <Kpi label="نرخ تصویب" value={pct(kpis.approvalRate)} icon={Target} />
-        <Kpi label="در جریان بررسی" value={kpis.inPipeline} unit="درخواست" icon={Handshake} />
+        <Kpi label="Total requested amount" value={rial(kpis.requested)} icon={Coins} />
+        <Kpi label="Approved financing" value={rial(kpis.approvedAmt)} icon={PiggyBank} tone="gold" />
+        <Kpi label="Approval rate" value={pct(kpis.approvalRate)} icon={Target} />
+        <Kpi label="Under review" value={kpis.inPipeline} unit="requests" icon={Handshake} />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <ChartFrame title="قیف جذب سرمایه" subtitle="تعداد درخواست در هر مرحله">
-          <Bars data={funnel} xKey="stage" series={[{ key: 'تعداد درخواست', name: 'تعداد' }]} />
+        <ChartFrame title="Fundraising funnel" subtitle="Number of requests at each stage">
+          <Bars data={funnel} xKey="stage" series={[{ key: 'Number of requests', name: 'Count' }]} />
         </ChartFrame>
-        <Card title="صندوق‌های هدف — حجم درخواست">
+        <Card title="Target funds — request volume">
           <ul className="space-y-3">
             {byFund.map((f) => (
               <li key={f.fund}>
@@ -132,7 +132,7 @@ export default function Investment() {
       </div>
 
       <div className="mt-4">
-        <Card title="درخواست‌های تأمین مالی">
+        <Card title="Financing requests">
           <DataTable columns={cols} rows={data.fundingRequests} pageSize={12} initialSort={{ key: 'amountRequestedRial', dir: 'desc' }} />
         </Card>
       </div>

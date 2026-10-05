@@ -1,4 +1,4 @@
-// ===== مدل داده دامنه سرور — سامانه پارک هوشمند نفت (OIPMS) =====
+// ===== Server domain data model — Oil Smart Park System (OIPMS) =====
 
 export type Id = string
 
@@ -8,18 +8,18 @@ export const ROLES: Role[] = ['admin', 'operator', 'company', 'startup', 'invest
 export type PaymentStatus = 'Paid' | 'Overdue' | 'Pending'
 export type BookingStatus = 'Confirmed' | 'Cancelled' | 'Completed'
 export type VehicleStatus = 'Inbound' | 'Outbound' | 'Pending'
-export type MentoringStatus = 'در حال انجام' | 'تکمیل‌شده' | 'برنامه‌ریزی‌شده' | 'متوقف'
-export type EventStatus = 'برگزارشده' | 'در حال برگزاری' | 'برنامه‌ریزی‌شده' | 'لغوشده'
-export type PatentStatus = 'ثبت‌شده' | 'در حال ثبت' | 'ندارد' | 'در دست بررسی'
+export type MentoringStatus = 'In progress' | 'Completed' | 'Planned' | 'Suspended'
+export type EventStatus = 'Held' | 'In progress' | 'Planned' | 'Cancelled'
+export type PatentStatus = 'Registered' | 'Pending registration' | 'None' | 'Under review'
 
 export const MENTORING_AREAS = [
-  'کسب‌وکار', 'دانش‌بنیان', 'دریافت ایزو', 'راه‌اندازی خط تولید', 'دریافت تسهیلات', 'ثبت اختراع',
+  'Business', 'Knowledge-based', 'Obtaining ISO', 'Production line setup', 'Obtaining facilities', 'Patent registration',
 ] as const
 export type MentoringArea = (typeof MENTORING_AREAS)[number]
 
 export const COMPANY_FIELDS = [
-  'نفت و گاز', 'پالایش', 'پتروشیمی', 'انرژی‌های تجدیدپذیر',
-  'فناوری اطلاعات', 'ماشین‌آلات صنعتی', 'مشاوره مدیریت', 'آزمایشگاهی',
+  'Oil & Gas', 'Refining', 'Petrochemical', 'Renewable Energy',
+  'Information Technology', 'Industrial Machinery', 'Management Consulting', 'Laboratory',
 ] as const
 export type CompanyField = (typeof COMPANY_FIELDS)[number]
 
@@ -111,12 +111,12 @@ export interface StartupEvaluation {
   suggestedInvestmentRial: number
   trlLevel: number
   patentStatus: PatentStatus
-  stage: 'ایده' | 'نمونه اولیه' | 'MVP' | 'رشد' | 'مقیاس‌پذیری'
+  stage: 'Idea' | 'Prototype' | 'MVP' | 'Growth' | 'Scale-up'
 }
 
 export interface MarketRow {
   country: string
-  region: 'داخلی' | 'همسایه' | 'آسیای میانه' | 'خاورمیانه' | 'آفریقا' | 'آمریکای لاتین' | 'شرق آسیا'
+  region: 'Domestic' | 'Neighboring' | 'Central Asia' | 'Middle East' | 'Africa' | 'Latin America' | 'East Asia'
   marketSizeUsd: number
   growthRate: number
   competitorCount: number
@@ -131,11 +131,11 @@ export interface DomesticOpportunity {
   id: Id
   title: string
   buyer: string
-  sector: 'پالایش' | 'پتروشیمی' | 'اکتشاف و تولید' | 'خطوط لوله' | 'حفاری'
+  sector: 'Refining' | 'Petrochemical' | 'Exploration & Production' | 'Pipelines' | 'Drilling'
   estimatedValueRial: number
   deadline: string
   matchedCompanyIds: Id[]
-  status: 'باز' | 'در حال ارزیابی' | 'برنده' | 'بسته'
+  status: 'Open' | 'Under evaluation' | 'Won' | 'Closed'
 }
 
 export interface MentoringEngagement {
@@ -153,7 +153,7 @@ export interface MentoringEngagement {
 export interface ParkEvent {
   id: Id
   title: string
-  type: 'دمو دی' | 'ریورس پیچ' | 'پیچ' | 'کارگاه آموزشی' | 'همایش' | 'مسابقه نوآوری' | 'شبکه‌سازی'
+  type: 'Demo Day' | 'Reverse Pitch' | 'Pitch' | 'Training workshop' | 'Conference' | 'Innovation competition' | 'Networking'
   startDate: string
   endDate: string
   location: string
@@ -180,7 +180,7 @@ export interface FundingRequest {
   companyName: string
   fund: string
   amountRequestedRial: number
-  stage: 'ثبت درخواست' | 'بررسی اولیه' | 'ارزیابی فنی' | 'مذاکره' | 'مصوب' | 'رد شده'
+  stage: 'Request submitted' | 'Initial review' | 'Technical evaluation' | 'Negotiation' | 'Approved' | 'Rejected'
   submittedDate: string
   successProbability: number
 }
@@ -188,12 +188,12 @@ export interface FundingRequest {
 export interface Notification {
   id: Id
   severity: 'info' | 'warning' | 'critical' | 'success'
-  category: 'مالی' | 'امنیتی' | 'رویداد' | 'سرمایه‌گذاری' | 'منتورینگ' | 'سیستمی'
+  category: 'Financial' | 'Security' | 'Event' | 'Investment' | 'Mentoring' | 'System'
   title: string
   body: string
   createdAt: string
   read: boolean
-  audience: 'اپراتور' | 'شرکت‌ها' | 'همه'
+  audience: 'Operator' | 'Companies' | 'All'
 }
 
 export type ContractState =

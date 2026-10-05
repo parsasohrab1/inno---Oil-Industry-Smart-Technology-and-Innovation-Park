@@ -93,7 +93,7 @@ export function Kpi({
         >
           {delta >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
           <span className="fa-nums">{pct(Math.abs(delta))}</span>
-          <span className="text-[rgb(var(--muted))]">نسبت به دوره قبل</span>
+          <span className="text-[rgb(var(--muted))]">vs. previous period</span>
         </div>
       )}
     </div>

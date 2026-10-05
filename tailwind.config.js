@@ -8,7 +8,7 @@ export default {
         display: ['"Aref Ruqaa"', 'Vazirmatn', 'serif'],
       },
       colors: {
-        // پالت صنعتی نفت — سبز نفتی / طلایی / کربنی
+        // Oil industrial palette — oil green / gold / carbon
         petro: {
           50: '#eefbf3',
           100: '#d6f5e2',

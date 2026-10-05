@@ -13,22 +13,22 @@ export function nf1(n: number | null | undefined): string {
 
 export function pct(n: number | null | undefined, digits = 1): string {
   if (n === null || n === undefined || Number.isNaN(n)) return '—'
-  return `${new Intl.NumberFormat('fa-IR', { maximumFractionDigits: digits }).format(n)}٪`
+  return `${new Intl.NumberFormat('fa-IR', { maximumFractionDigits: digits }).format(n)}%`
 }
 
-/** ریال را به شکل خوانا (میلیون/میلیارد) نمایش می‌دهد */
+/** Display rials in a readable form (million/billion) */
 export function rial(n: number | null | undefined): string {
   if (n === null || n === undefined || Number.isNaN(n)) return '—'
   const abs = Math.abs(n)
-  if (abs >= 1e12) return `${faNum1.format(n / 1e12)} هزار میلیارد ریال`
-  if (abs >= 1e9) return `${faNum1.format(n / 1e9)} میلیارد ریال`
-  if (abs >= 1e6) return `${faNum1.format(n / 1e6)} میلیون ریال`
-  return `${faNum.format(n)} ریال`
+  if (abs >= 1e12) return `${faNum1.format(n / 1e12)} thousand billion rials`
+  if (abs >= 1e9) return `${faNum1.format(n / 1e9)} billion rials`
+  if (abs >= 1e6) return `${faNum1.format(n / 1e6)} million rials`
+  return `${faNum.format(n)} rials`
 }
 
 export function toman(n: number | null | undefined): string {
   if (n === null || n === undefined || Number.isNaN(n)) return '—'
-  return rial(n / 10).replace('ریال', 'تومان')
+  return rial(n / 10).replace('rials', 'tomans')
 }
 
 export function usd(n: number | null | undefined): string {

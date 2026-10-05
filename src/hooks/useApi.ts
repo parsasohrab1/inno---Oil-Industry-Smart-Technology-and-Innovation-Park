@@ -8,7 +8,7 @@ export interface ApiState<T> {
   reload: () => void
 }
 
-/** GET یک مسیر API با قابلیت بارگذاری مجدد. */
+/** GET an API path with the ability to reload. */
 export function useApi<T>(path: string | null): ApiState<T> {
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(!!path)

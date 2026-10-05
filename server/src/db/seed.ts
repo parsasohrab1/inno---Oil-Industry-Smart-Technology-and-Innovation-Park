@@ -28,12 +28,12 @@ export async function seed(): Promise<void> {
   if (RESET) {
     for (const t of ['entities', 'contract_events', 'audit_log', 'meta']) db.exec(`DELETE FROM ${t}`)
     db.exec("DELETE FROM users WHERE email LIKE '%@naftpark.ir'")
-    console.log('🗑️  داده‌های قبلی پاک شد')
+    console.log('🗑️  Previous data was cleared')
   }
 
   const already = getMeta('generatedAt')
   if (already && !RESET) {
-    console.log('ℹ️  دیتاست از قبل وجود دارد. برای بازتولید از --reset استفاده کنید.')
+    console.log('ℹ️  The dataset already exists. Use --reset to regenerate.')
     return
   }
 
@@ -51,8 +51,8 @@ export async function seed(): Promise<void> {
     'bookings',
     d.bookings.map((b) => ({ id: b.id, companyId: b.companyId, data: b })),
   )
-  // چند مسیر منتورینگ را به منتور نمونه اختصاص می‌دهیم تا داشبورد منتور داده داشته باشد
-  const DEMO_MENTOR = 'منتور نمونه'
+  // we assign a few mentoring paths to the demo mentor so the mentor dashboard has data
+  const DEMO_MENTOR = 'Demo mentor'
   d.mentoring.forEach((m, i) => {
     if (i % 17 === 0) m.mentorName = DEMO_MENTOR
   })
@@ -97,7 +97,7 @@ export async function seed(): Promise<void> {
     d.vehicles.map((v, i) => ({ id: `${v.equipmentId}-${i}`, companyId: v.companyOrigin, data: v })),
   )
 
-  // ===== قراردادهای اجاره برای هر شرکت =====
+  // ===== Lease contracts for each company =====
   const contractRows: Contract[] = []
   for (const c of d.companies) {
     const start = new Date(d.generatedAt)
@@ -111,7 +111,7 @@ export async function seed(): Promise<void> {
       id: `CT-${c.id}`,
       companyId: c.id,
       companyName: c.name,
-      title: `قرارداد اجاره فضای پارک فناوری نفت — ${c.name}`,
+      title: `Oil Technology Park space lease contract — ${c.name}`,
       areaM2: c.areaM2,
       ratePerM2: c.rentalRatePerM2,
       monthlyRent,
@@ -123,11 +123,11 @@ export async function seed(): Promise<void> {
       signatures:
         state === 'active'
           ? [
-              { party: 'park', signerName: 'مدیر پارک', signedAt: start.toISOString(), hash: '' },
+              { party: 'park', signerName: 'Park manager', signedAt: start.toISOString(), hash: '' },
               { party: 'tenant', signerName: c.name, signedAt: start.toISOString(), hash: '' },
             ]
           : state === 'pending_signatures'
-            ? [{ party: 'park', signerName: 'مدیر پارک', signedAt: start.toISOString(), hash: '' }]
+            ? [{ party: 'park', signerName: 'Park manager', signedAt: start.toISOString(), hash: '' }]
             : [],
       createdAt: start.toISOString(),
       updatedAt: start.toISOString(),
@@ -138,30 +138,30 @@ export async function seed(): Promise<void> {
       contract.id,
       'created',
       { areaM2: contract.areaM2, monthlyRent, startDate: contract.startDate, endDate: contract.endDate },
-      'سیستم (بارگذاری اولیه)',
+      'System (initial load)',
     )
     for (const sig of contract.signatures) {
       appendContractEvent(contract.id, 'signed', { party: sig.party, signerName: sig.signerName }, sig.signerName)
     }
     if (state === 'active') {
-      appendContractEvent(contract.id, 'activated', { note: 'هر دو طرف امضا کردند' }, 'سیستم')
+      appendContractEvent(contract.id, 'activated', { note: 'Both parties signed' }, 'System')
     }
   }
 
   setMeta('generatedAt', d.generatedAt)
   setMeta('seededAt', new Date().toISOString())
 
-  // ===== کاربران نمونه =====
+  // ===== Sample users =====
   const c0 = d.companies[0]!
   const c1 = d.companies[1]!
-  await ensureUser('admin@naftpark.ir', 'admin1234', 'مدیر پارک', 'admin', null)
-  await ensureUser('operator@naftpark.ir', 'operator1234', 'اپراتور پارک', 'operator', null)
-  await ensureUser('company@naftpark.ir', 'company1234', `مدیر ${c0.name}`, 'company', c0.id)
-  await ensureUser('startup@naftpark.ir', 'startup1234', `بنیان‌گذار ${c1.name}`, 'startup', c1.id)
-  await ensureUser('investor@naftpark.ir', 'investor1234', 'سرمایه‌گذار نمونه', 'investor', null)
-  await ensureUser('mentor@naftpark.ir', 'mentor1234', 'منتور نمونه', 'mentor', null)
+  await ensureUser('admin@naftpark.ir', 'admin1234', 'Park manager', 'admin', null)
+  await ensureUser('operator@naftpark.ir', 'operator1234', 'Park operator', 'operator', null)
+  await ensureUser('company@naftpark.ir', 'company1234', `Manager of ${c0.name}`, 'company', c0.id)
+  await ensureUser('startup@naftpark.ir', 'startup1234', `Founder of ${c1.name}`, 'startup', c1.id)
+  await ensureUser('investor@naftpark.ir', 'investor1234', 'Demo investor', 'investor', null)
+  await ensureUser('mentor@naftpark.ir', 'mentor1234', 'Demo mentor', 'mentor', null)
 
-  console.log(`✅ ${d.companies.length} شرکت، ${contractRows.length} قرارداد، ${d.rentalInvoices.length} صورتحساب و ۶ کاربر نمونه ثبت شد`)
+  console.log(`✅ ${d.companies.length} companies, ${contractRows.length} contracts, ${d.rentalInvoices.length} invoices and 6 sample users were recorded`)
 }
 
 if (import.meta.url === `file://${process.argv[1]}` || import.meta.filename === process.argv[1]) {

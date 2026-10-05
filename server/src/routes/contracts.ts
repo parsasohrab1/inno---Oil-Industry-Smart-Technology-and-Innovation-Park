@@ -24,7 +24,7 @@ contractsRouter.get('/', requirePermission('contracts:read:all'), (_req, res) =>
 contractsRouter.get('/:id', requirePermission('contracts:read:all'), (req, res) => {
   const contract = getContract(req.params.id)
   if (!contract) {
-    res.status(404).json({ error: 'قرارداد یافت نشد' })
+    res.status(404).json({ error: 'Contract not found' })
     return
   }
   res.json({
@@ -47,12 +47,12 @@ const createSchema = z.object({
 contractsRouter.post('/', requirePermission('contracts:create'), (req, res) => {
   const parsed = createSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات قرارداد نامعتبر است', details: parsed.error.flatten() })
+    res.status(400).json({ error: 'Contract data is invalid', details: parsed.error.flatten() })
     return
   }
   const company = getEntity<Company>('companies', parsed.data.companyId)
   if (!company) {
-    res.status(400).json({ error: 'شرکت یافت نشد' })
+    res.status(400).json({ error: 'Company not found' })
     return
   }
   const now = new Date().toISOString()
@@ -61,7 +61,7 @@ contractsRouter.post('/', requirePermission('contracts:create'), (req, res) => {
     id: `CT-${parsed.data.companyId}-${Date.now()}`,
     companyId: company.id,
     companyName: company.name,
-    title: `قرارداد اجاره فضای پارک فناوری نفت — ${company.name}`,
+    title: `Oil Technology Park space lease contract — ${company.name}`,
     areaM2: parsed.data.areaM2,
     ratePerM2: parsed.data.ratePerM2,
     monthlyRent,
@@ -85,20 +85,20 @@ contractsRouter.post('/', requirePermission('contracts:create'), (req, res) => {
   res.status(201).json(contract)
 })
 
-const signSchema = z.object({ signerName: z.string().min(2).default('مدیر پارک') })
+const signSchema = z.object({ signerName: z.string().min(2).default('Park manager') })
 
 contractsRouter.post('/:id/sign', requirePermission('contracts:sign:park'), (req, res) => {
   const parsed = signSchema.safeParse(req.body ?? {})
   const contract = getContract(req.params.id)
   if (!contract) {
-    res.status(404).json({ error: 'قرارداد یافت نشد' })
+    res.status(404).json({ error: 'Contract not found' })
     return
   }
   if (contract.signatures.some((s) => s.party === 'park')) {
-    res.status(409).json({ error: 'این قرارداد قبلاً توسط پارک امضا شده است' })
+    res.status(409).json({ error: 'This contract has already been signed by the park' })
     return
   }
-  const signerName = parsed.success ? parsed.data.signerName : 'مدیر پارک'
+  const signerName = parsed.success ? parsed.data.signerName : 'Park manager'
   const signedAt = new Date().toISOString()
   contract.signatures.push({
     party: 'park',
@@ -109,7 +109,7 @@ contractsRouter.post('/:id/sign', requirePermission('contracts:sign:park'), (req
   appendContractEvent(contract.id, 'signed', { party: 'park', signerName }, signerName)
   if (contract.signatures.some((s) => s.party === 'tenant') && contract.state === 'pending_signatures') {
     contract.state = 'active'
-    appendContractEvent(contract.id, 'activated', { note: 'هر دو طرف امضا کردند' }, 'سیستم')
+    appendContractEvent(contract.id, 'activated', { note: 'Both parties signed' }, 'System')
   }
   saveContract(contract)
   audit({ userId: req.auth!.userId, role: req.auth!.role, action: 'contract.sign.park', target: contract.id })
@@ -121,11 +121,11 @@ function monthsOverdueFor(companyId: string): number {
   return invoices.filter((i) => i.status === 'Overdue').reduce((m, i) => Math.max(m, i.monthsOverdue), 0)
 }
 
-// اجرای خودکار شرط‌های یک قرارداد
+// automatic execution of a contract's conditions
 contractsRouter.post('/:id/run-conditions', requirePermission('contracts:run-conditions'), (req, res) => {
   const contract = getContract(req.params.id)
   if (!contract) {
-    res.status(404).json({ error: 'قرارداد یافت نشد' })
+    res.status(404).json({ error: 'Contract not found' })
     return
   }
   const result = runContractConditions(contract, {
@@ -143,7 +143,7 @@ contractsRouter.post('/:id/run-conditions', requirePermission('contracts:run-con
   res.json({ contract: result.contract, appliedEvents: result.events })
 })
 
-// اجرای خودکار شرط‌های همه قراردادهای فعال
+// automatic execution of the conditions of all active contracts
 contractsRouter.post('/run-conditions/all', requirePermission('contracts:run-conditions'), (req, res) => {
   const contracts = listEntities<Contract>('contracts').filter((c) => c.state === 'active')
   let totalEvents = 0
@@ -173,12 +173,12 @@ const terminateSchema = z.object({ reason: z.string().min(3) })
 contractsRouter.post('/:id/terminate', requirePermission('contracts:terminate'), (req, res) => {
   const parsed = terminateSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'دلیل فسخ الزامی است' })
+    res.status(400).json({ error: 'Termination reason is required' })
     return
   }
   const contract = getContract(req.params.id)
   if (!contract) {
-    res.status(404).json({ error: 'قرارداد یافت نشد' })
+    res.status(404).json({ error: 'Contract not found' })
     return
   }
   contract.state = 'terminated'

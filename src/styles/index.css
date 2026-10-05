@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* فونت فارسی Vazirmatn — لود محلی، بدون وابستگی به CDN */
+/* Persian font Vazirmatn — loaded locally, with no CDN dependency */
 @font-face {
   font-family: 'Vazirmatn';
   src: local('Vazirmatn'), local('Vazirmatn RD');
@@ -47,7 +47,7 @@ body {
   font-feature-settings: 'ss01';
 }
 
-/* اعداد فارسی برای کل رابط */
+/* Persian digits for the whole interface */
 .fa-nums {
   font-variant-numeric: tabular-nums;
 }

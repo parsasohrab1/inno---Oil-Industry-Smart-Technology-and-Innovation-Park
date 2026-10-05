@@ -1,88 +1,88 @@
-# بک‌اند سامانه پارک هوشمند نفت (OIPMS)
+# Backend of the Oil Smart Park System (OIPMS)
 
-Express + `node:sqlite` (بدون وابستگی نیتیو) + JWT. اجرای مستقیم TypeScript روی Node ۲۲٫۵+ (بدون مرحله build در توسعه).
+Express + `node:sqlite` (no native dependencies) + JWT. Runs TypeScript directly on Node 22.5+ (no build step in development).
 
-## راه‌اندازی
+## Setup
 
 ```bash
 cd server
 npm install
 cp .env.example .env
-npm run dev        # http://localhost:8787  (بار اول دیتاست سنتتیک را seed می‌کند)
+npm run dev        # http://localhost:8787  (seeds the synthetic dataset the first time)
 ```
 
-| دستور | کاربرد |
+| Command | Purpose |
 | :--- | :--- |
-| `npm run dev` | اجرا با watch |
-| `npm start` | اجرای نسخه build‌شده (`dist/`) |
-| `npm run build` | کامپایل TypeScript |
-| `npm run seed` | بازتولید کامل دیتاست (`--reset`) |
-| `npm run typecheck` | بررسی نوع |
+| `npm run dev` | Run with watch |
+| `npm start` | Run the built version (`dist/`) |
+| `npm run build` | Compile TypeScript |
+| `npm run seed` | Fully regenerate the dataset (`--reset`) |
+| `npm run typecheck` | Type checking |
 
-## کاربران نمونه (پس از seed)
+## Sample users (after seed)
 
-| نقش | ایمیل | رمز |
+| Role | Email | Password |
 | :--- | :--- | :--- |
-| مدیر پارک | `admin@naftpark.ir` | `admin1234` |
-| اپراتور | `operator@naftpark.ir` | `operator1234` |
-| مدیر شرکت | `company@naftpark.ir` | `company1234` |
-| استارتاپ | `startup@naftpark.ir` | `startup1234` |
-| سرمایه‌گذار | `investor@naftpark.ir` | `investor1234` |
-| منتور | `mentor@naftpark.ir` | `mentor1234` |
+| Park manager | `admin@naftpark.ir` | `admin1234` |
+| Operator | `operator@naftpark.ir` | `operator1234` |
+| Company manager | `company@naftpark.ir` | `company1234` |
+| Startup | `startup@naftpark.ir` | `startup1234` |
+| Investor | `investor@naftpark.ir` | `investor1234` |
+| Mentor | `mentor@naftpark.ir` | `mentor1234` |
 
-## مسیرهای اصلی API
+## Main API routes
 
 ```
-POST  /api/auth/login | /api/auth/register        احراز هویت (JWT در پاسخ)
-GET   /api/auth/me                                 کاربر جاری + مجوزها
-GET   /api/health                                  سلامت سرویس
-GET   /api/public/companies                        فهرست شرکت‌ها (برای ثبت‌نام)
+POST  /api/auth/login | /api/auth/register        Authentication (JWT in the response)
+GET   /api/auth/me                                 Current user + permissions
+GET   /api/health                                  Service health
+GET   /api/public/companies                        List of companies (for registration)
 
-GET   /api/dataset            [dataset:read:all]   دیتاست کامل (اپراتور/مدیر)
-GET   /api/dataset/mine                            برش دیتاست شرکتِ کاربر
+GET   /api/dataset            [dataset:read:all]   Full dataset (operator/manager)
+GET   /api/dataset/mine                            Slice of the dataset for the user's company
 
-# شرکت / استارتاپ (نقش company/startup)
+# Company / startup (company/startup role)
 GET   /api/company/me | /invoices | /contracts | /funding | /bookings | /mentoring
-POST  /api/company/invoices/:id/pay                پرداخت صورتحساب (رفع مسدودی گیت)
-POST  /api/company/contracts/:id/sign              امضای دیجیتال طرف مستأجر
-POST  /api/company/funding                         ثبت درخواست تأمین مالی
-POST  /api/company/bookings | /bookings/:id/cancel رزرو/لغو اتاق جلسه
+POST  /api/company/invoices/:id/pay                Pay an invoice (lifts the gate block)
+POST  /api/company/contracts/:id/sign              Digital signature of the tenant party
+POST  /api/company/funding                         Submit a financing request
+POST  /api/company/bookings | /bookings/:id/cancel Book/cancel a meeting room
 
-# قرارداد هوشمند (اپراتور/مدیر)
-GET   /api/contracts | /contracts/:id             فهرست + جزئیات + رویدادها + صحت زنجیره هش
-POST  /api/contracts                              ایجاد قرارداد
-POST  /api/contracts/:id/sign                     امضای طرف پارک
-POST  /api/contracts/:id/run-conditions           اجرای خودکار شرط‌ها
-POST  /api/contracts/run-conditions/all           اجرای خودکار برای همه قراردادهای فعال
-POST  /api/contracts/:id/terminate                فسخ (مدیر)
+# Smart contract (operator/manager)
+GET   /api/contracts | /contracts/:id             List + details + events + hash chain integrity
+POST  /api/contracts                              Create a contract
+POST  /api/contracts/:id/sign                     Signature of the park party
+POST  /api/contracts/:id/run-conditions           Automatic execution of conditions
+POST  /api/contracts/run-conditions/all           Automatic execution for all active contracts
+POST  /api/contracts/:id/terminate                Termination (manager)
 
-# منتور
+# Mentor
 GET   /api/mentor/mentees | /sessions
-PATCH /api/mentor/mentees/:id                     به‌روزرسانی پیشرفت
-POST  /api/mentor/sessions                        ثبت جلسه منتورینگ
+PATCH /api/mentor/mentees/:id                     Update progress
+POST  /api/mentor/sessions                        Log a mentoring session
 
-# سرمایه‌گذار
+# Investor
 GET   /api/investor/startups | /startups/:id | /funding | /interests
 POST  /api/investor/interests | /interests/:id/withdraw
 
-# گزارش‌گیری
-GET   /api/reports                                فهرست گزارش‌های مجاز نقش
-GET   /api/reports/:id.(html|csv|xlsx)            خروجی گزارش (HTML قابل چاپ → PDF)
+# Reporting
+GET   /api/reports                                List of reports allowed for the role
+GET   /api/reports/:id.(html|csv|xlsx)            Report output (printable HTML → PDF)
 
-# مدیر
+# Manager
 GET   /api/admin/users | /audit
 POST  /api/admin/users        DELETE /api/admin/users/:id
 ```
 
-## قرارداد هوشمند — دفتر تغییرناپذیر
+## Smart contract — immutable ledger
 
-هر تغییر قرارداد در جدول `contract_events` با **زنجیره هش SHA-256** ثبت می‌شود
-(`hash = sha256(event + prevHash)`). مسیر `GET /api/contracts/:id` صحت کل زنجیره را
-بازبینی می‌کند (`chain.valid`). شرط‌های خودکار: جریمه دیرکرد ≥ ۲ ماه، مسدودسازی گیت،
-تمدید خودکار در سررسید، و انقضا.
+Every contract change is recorded in the `contract_events` table with an **SHA-256 hash chain**
+(`hash = sha256(event + prevHash)`). The `GET /api/contracts/:id` route re-verifies the integrity of the whole chain
+(`chain.valid`). Automatic conditions: late-payment penalty ≥ 2 months, gate blocking,
+automatic renewal at maturity, and expiry.
 
-## معماری ذخیره‌سازی
+## Storage architecture
 
-`users` (جدول اختصاصی) + `entities(collection, id, company_id, data JSON)` به‌عنوان انبار
-عمومی موجودیت‌ها + `contract_events` + `audit_log`. جای‌گذاری API واقعی صرفاً با
-پیاده‌سازی مجدد `lib/dataset.ts` و روت‌ها روی منبع داده جدید ممکن است.
+`users` (dedicated table) + `entities(collection, id, company_id, data JSON)` as the generic
+entity store + `contract_events` + `audit_log`. Replacing with a real API is possible simply by
+re-implementing `lib/dataset.ts` and the routes on the new data source.

@@ -1,80 +1,80 @@
-# معماری سامانه پارک هوشمند نفت (OIPMS)
+# Oil Smart Park (OIPMS) System Architecture
 
-## نمای کلی
+## Overview
 
-سامانه بر پایه مدل **Physical–Cyber–Social (PCS)** طراحی شده است:
+The system is designed based on the **Physical–Cyber–Social (PCS)** model:
 
-| لایه | مؤلفه‌ها | وضعیت در این مخزن |
+| Layer | Components | Status in this repository |
 | :--- | :--- | :--- |
-| فیزیکی (Physical) | سنسورهای IoT، دوربین تشخیص چهره، پلاک‌خوان (LPR)، گیت‌های اتوماتیک | شبیه‌سازی‌شده با دیتاست سنتتیک |
-| مجازی (Cyber) | پردازش داده، تحلیل، دوقلوی دیجیتال، داشبورد مدیریتی | **پیاده‌سازی‌شده** (این مخزن) |
-| اجتماعی (Social) | پنل شرکت‌ها، استارت‌آپ‌ها، سرمایه‌گذاران، اپراتورها | داشبورد اپراتور پیاده‌سازی‌شده؛ پنل‌های سایر نقش‌ها در نقشه راه |
+| Physical | IoT sensors, face recognition camera, plate reader (LPR), automatic gates | Simulated with a synthetic dataset |
+| Cyber | Data processing, analytics, digital twin, management dashboard | **Implemented** (this repository) |
+| Social | Panels for companies, startups, investors, operators | Operator dashboard implemented; panels of other roles are on the roadmap |
 
-## لایه‌بندی فنی (Frontend)
+## Technical layering (Frontend)
 
 ```
 src/
-├── app/            پیکربندی مسیرها و ناوبری
-├── layout/         پوسته اپلیکیشن: سایدبار (راست‌چین)، هدر، فوتر
-├── pages/          صفحات داشبورد (هر ماژول SRS = یک صفحه)
-├── components/     اجزای مشترک UI و نمودارها (Recharts)
-├── services/       لایه دسترسی داده + توابع تحلیلی (analytics.ts)
-├── data/           مولد دیتاست سنتتیک بازتولیدپذیر (seeded RNG)
-├── lib/            انواع دامنه، قالب‌بندی فارسی/ریال/جلالی، RNG، Faker
-├── hooks/          useDataset — بارگذاری و کش دیتاست
-└── store/          وضعیت سراسری (پوسته، سایدبار) با Zustand
+├── app/            Route configuration and navigation
+├── layout/         Application shell: sidebar (right-aligned), header, footer
+├── pages/          Dashboard pages (each SRS module = one page)
+├── components/     Shared UI components and charts (Recharts)
+├── services/       Data access layer + analytical functions (analytics.ts)
+├── data/           Reproducible synthetic dataset generator (seeded RNG)
+├── lib/            Domain types, Persian/rial/Jalali formatting, RNG, Faker
+├── hooks/          useDataset — dataset loading and caching
+└── store/          Global state (shell, sidebar) with Zustand
 ```
 
-## جریان داده
+## Data flow
 
-1. `services/index.ts` → بسته به `VITE_DATA_SOURCE`:
-   - `mock` (پیش‌فرض): از `data/dataset.ts` می‌خواند که `data/generate.ts` را با seed ثابت اجرا می‌کند.
-   - `api`: از `GET {VITE_API_BASE_URL}/api/dataset` می‌خواند.
-2. `hooks/useDataset.ts` نتیجه را یک‌بار می‌گیرد و در حافظه ماژول کش می‌کند.
-3. صفحات، دیتاست خام را به `services/analytics.ts` می‌دهند تا KPIها و سری‌های نمودار محاسبه شود.
+1. `services/index.ts` → depending on `VITE_DATA_SOURCE`:
+   - `mock` (default): reads from `data/dataset.ts` which runs `data/generate.ts` with a fixed seed.
+   - `api`: reads from `GET {VITE_API_BASE_URL}/api/dataset`.
+2. `hooks/useDataset.ts` fetches the result once and caches it in module memory.
+3. Pages give the raw dataset to `services/analytics.ts` to compute KPIs and chart series.
 
-## بک‌اند واقعی (`server/`)
+## Real backend (`server/`)
 
-پیاده‌سازی شد. Express + `node:sqlite` (بدون وابستگی نیتیو، اجرای مستقیم TypeScript روی Node ۲۲٫۵+).
+Implemented. Express + `node:sqlite` (no native dependencies, running TypeScript directly on Node 22.5+).
 
 ```
 server/src/
-├── index.ts          bootstrap + mount روت‌ها + seed خودکار
+├── index.ts          bootstrap + route mounting + automatic seed
 ├── db/
 │   ├── schema.sql     DDL (users, entities, contract_events, audit_log, meta)
-│   ├── index.ts       اتصال SQLite + helper‌های entities + audit()
-│   └── seed.ts        بارگذاری دیتاست سنتتیک + قراردادها + ۶ کاربر نمونه
+│   ├── index.ts       SQLite connection + entities helpers + audit()
+│   └── seed.ts        loading the synthetic dataset + contracts + 6 sample users
 ├── lib/
-│   ├── synth.ts       مولد دیتاست (پورت TS از src/data/generate.ts فرانت)
+│   ├── synth.ts       dataset generator (TS port of the frontend's src/data/generate.ts)
 │   ├── auth.ts        bcrypt + JWT
-│   ├── rbac.ts        نگاشت نقش → مجوز (Permission)
-│   ├── dataset.ts     assembleDataset() از جداول
-│   ├── contracts.ts   زنجیره هش، اجرای خودکار شرط‌ها
-│   └── reports.ts     تعریف گزارش‌ها + خروجی xlsx/csv/html
+│   ├── rbac.ts        role → permission (Permission) mapping
+│   ├── dataset.ts     assembleDataset() from the tables
+│   ├── contracts.ts   hash chain, automatic execution of conditions
+│   └── reports.ts     report definitions + xlsx/csv/html output
 ├── middleware/auth.ts requireAuth / requireRole / requirePermission
 └── routes/           auth, dataset, company, contracts, mentor, investor, reports, admin, misc
 ```
 
-**احراز هویت:** JWT در پاسخ `login`/`register`، کلاینت آن را در `localStorage` نگه می‌دارد و در
-هدر `Authorization: Bearer` می‌فرستد. میدلور `requireAuth` توکن را تأیید و `req.auth` را پر می‌کند.
+**Authentication:** JWT in the `login`/`register` response; the client keeps it in `localStorage` and sends it in the
+`Authorization: Bearer` header. The `requireAuth` middleware verifies the token and fills `req.auth`.
 
-**کنترل دسترسی:** شش نقش (`admin`, `operator`, `company`, `startup`, `investor`, `mentor`).
-هر روت با `requirePermission('...')` محافظت می‌شود و داده به‌صورت ردیفی محدود می‌گردد
-(کاربر شرکت فقط `company_id` خودش).
+**Access control:** Six roles (`admin`, `operator`, `company`, `startup`, `investor`, `mentor`).
+Each route is protected with `requirePermission('...')` and data is row-limited
+(a company user sees only their own `company_id`).
 
-**قرارداد هوشمند:** جدول `contract_events` یک دفتر فقط‌افزودنی با زنجیره هش است:
-`hash = sha256({event, prevHash})`. `verifyContractChain()` صحت کل زنجیره را بررسی می‌کند.
-`runContractConditions()` شرط‌ها را اجرا می‌کند: جریمه دیرکرد ≥۲ ماه، مسدودسازی گیت،
-تمدید خودکار یا انقضا در سررسید.
+**Smart contract:** The `contract_events` table is an append-only ledger with a hash chain:
+`hash = sha256({event, prevHash})`. `verifyContractChain()` checks the integrity of the whole chain.
+`runContractConditions()` executes the conditions: late-payment penalty ≥2 months, gate blocking,
+automatic renewal or expiry at maturity.
 
-**گزارش‌گیری:** `GET /api/reports/:id.(xlsx|csv|html)` — xlsx با ExcelJS، html نسخه قابل چاپ
-(کاربر از مرورگر PDF می‌گیرد).
+**Reporting:** `GET /api/reports/:id.(xlsx|csv|html)` — xlsx with ExcelJS, html is a printable version
+(the user makes a PDF from the browser).
 
-**جای‌گذاری منبع داده:** انبار `entities` عمومی است؛ برای مهاجرت به Postgres کافی است
-helper‌های `db/index.ts` بازنویسی شوند.
+**Replacing the data source:** The `entities` store is generic; to migrate to Postgres it is enough to rewrite
+the `db/index.ts` helpers.
 
-## یکپارچگی‌های کلیدی پیاده‌سازی‌شده در منطق سنتتیک
+## Key integrations implemented in the synthetic logic
 
-- **مالی ↔ کنترل تردد:** شرکتِ دارای بدهی معوق ≥ ۲ ماه → `gateAccessRevoked=true` و ترددهای خودروی مبدأ آن `authorized=false`.
-- **نوتیفیکیشن‌های مشتق:** هشدارهای بحرانی/هشدار از روی بدهی‌ها، تردد غیرمجاز، رویدادهای پیش‌رو و تأمین مالی مصوب ساخته می‌شوند.
-- **داوری استارت‌آپ:** فرمول SRS: `۰٫۳×تیم + ۰٫۳۵×محصول + ۰٫۳۵×بازار` × ضریب صنعت × ضریب مرحله رشد.
+- **Finance ↔ traffic control:** A company with arrears ≥ 2 months → `gateAccessRevoked=true` and the vehicle traffic originating from it `authorized=false`.
+- **Derived notifications:** Critical/warning alerts are built from debts, unauthorized traffic, upcoming events and approved financing.
+- **Startup judging:** SRS formula: `0.3×team + 0.35×product + 0.35×market` × industry coefficient × growth stage coefficient.

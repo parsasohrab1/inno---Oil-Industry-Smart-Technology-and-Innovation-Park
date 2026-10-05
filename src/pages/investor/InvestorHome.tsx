@@ -35,7 +35,7 @@ export default function InvestorHome() {
   const [msg, setMsg] = useState<string | null>(null)
 
   const committed = new Set(
-    (portfolio.data?.interests ?? []).filter((i) => i.status !== 'انصراف').map((i) => i.startupId),
+    (portfolio.data?.interests ?? []).filter((i) => i.status !== 'Withdrawn').map((i) => i.startupId),
   )
 
   async function express(e: React.FormEvent) {
@@ -44,12 +44,12 @@ export default function InvestorHome() {
     setMsg(null)
     try {
       await api.post('/api/investor/interests', { startupId: sel.id, amountRial: Number(amount), note })
-      setMsg(`علاقه‌مندی شما به «${sel.teamName}» ثبت شد.`)
+      setMsg(`Your interest in "${sel.teamName}" was recorded.`)
       setSel(null)
       setNote('')
       portfolio.reload()
     } catch (e2) {
-      setMsg(e2 instanceof ApiError ? e2.message : 'خطا در ثبت')
+      setMsg(e2 instanceof ApiError ? e2.message : 'Error recording')
     }
   }
 
@@ -58,23 +58,23 @@ export default function InvestorHome() {
       await api.post(`/api/investor/interests/${id}/withdraw`)
       portfolio.reload()
     } catch {
-      setMsg('خطا در انصراف')
+      setMsg('Error withdrawing')
     }
   }
 
   const cols: Column<StartupEvaluation>[] = [
-    { key: 'teamName', header: 'تیم', sortValue: (r) => r.teamName },
-      { key: 'ideaTitle', header: 'ایده', sortValue: (r) => r.ideaTitle },
+    { key: 'teamName', header: 'Team', sortValue: (r) => r.teamName },
+      { key: 'ideaTitle', header: 'Idea', sortValue: (r) => r.ideaTitle },
       {
         key: 'aiFinalScore',
-        header: 'امتیاز AI',
+        header: 'AI score',
         align: 'center',
         sortValue: (r) => r.aiFinalScore,
         render: (r) => <span className={clsx('fa-nums font-bold', r.aiFinalScore > 68 && 'text-petro-600')}>{nf1(r.aiFinalScore)}</span>,
       },
       {
         key: 'valuationRial',
-        header: 'ارزش‌گذاری',
+        header: 'Valuation',
         align: 'end',
         sortValue: (r) => r.valuationRial,
         render: (r) => (
@@ -90,10 +90,10 @@ export default function InvestorHome() {
         align: 'center',
         render: (r) =>
           committed.has(r.id) ? (
-            <Badge tone="green">علاقه‌مند شدید</Badge>
+            <Badge tone="green">You expressed interest</Badge>
           ) : (
             <button className="btn btn-primary !py-1 !text-xs" onClick={() => setSel(r)}>
-              اعلام علاقه
+              Express interest
             </button>
           ),
       },
@@ -103,14 +103,14 @@ export default function InvestorHome() {
 
   return (
     <div>
-      <PageHeader title="میز سرمایه‌گذاری" subtitle="بررسی استارت‌آپ‌های ارزیابی‌شده، اعلام علاقه و پیگیری پرتفوی" />
+      <PageHeader title="Investment desk" subtitle="Review evaluated startups, express interest and track the portfolio" />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="استارت‌آپ‌های قابل بررسی" value={startups.data?.length ?? 0} icon={Rocket} />
-        <Kpi label="اعلام علاقه‌های من" value={portfolio.data?.interests.filter((i) => i.status !== 'انصراف').length ?? 0} icon={HandCoins} tone="gold" />
-        <Kpi label="تعهد سرمایه‌گذاری" value={rial(portfolio.data?.totalCommittedRial ?? 0)} icon={Wallet} tone="brand" />
+        <Kpi label="Startups available for review" value={startups.data?.length ?? 0} icon={Rocket} />
+        <Kpi label="My expressions of interest" value={portfolio.data?.interests.filter((i) => i.status !== 'Withdrawn').length ?? 0} icon={HandCoins} tone="gold" />
+        <Kpi label="Investment commitment" value={rial(portfolio.data?.totalCommittedRial ?? 0)} icon={Wallet} tone="brand" />
         <Kpi
-          label="میانگین امتیاز پرتفوی"
+          label="Average portfolio score"
           value={
             portfolio.data && portfolio.data.portfolio.length
               ? nf1(
@@ -127,14 +127,14 @@ export default function InvestorHome() {
 
       <div className="my-4 flex flex-wrap items-center gap-2">
         <button className={clsx('rounded-xl border px-3 py-1.5 text-sm', tab === 'browse' && 'border-transparent bg-petro-600 text-white')} onClick={() => setTab('browse')}>
-          بررسی استارت‌آپ‌ها
+          Review startups
         </button>
         <button className={clsx('rounded-xl border px-3 py-1.5 text-sm', tab === 'portfolio' && 'border-transparent bg-petro-600 text-white')} onClick={() => setTab('portfolio')}>
-          پرتفوی من ({portfolio.data?.portfolio.length ?? 0})
+          My portfolio ({portfolio.data?.portfolio.length ?? 0})
         </button>
         {tab === 'browse' && (
           <label className="ms-auto flex items-center gap-2 text-xs text-[rgb(var(--muted))]">
-            حداقل امتیاز AI:
+            Minimum AI score:
             <input type="range" min={0} max={90} step={5} value={minScore} onChange={(e) => setMinScore(+e.target.value)} />
             <span className="fa-nums w-6">{minScore.toLocaleString('fa-IR')}</span>
           </label>
@@ -142,7 +142,7 @@ export default function InvestorHome() {
       </div>
 
       {tab === 'browse' && (
-        <Card title="استارت‌آپ‌های ارزیابی‌شده">
+        <Card title="Evaluated startups">
           {startups.loading ? (
             <LoadingState />
           ) : (
@@ -152,11 +152,11 @@ export default function InvestorHome() {
       )}
 
       {tab === 'portfolio' && (
-        <Card title="پرتفوی سرمایه‌گذاری من">
+        <Card title="My investment portfolio">
           {portfolio.loading ? (
             <LoadingState />
           ) : (portfolio.data?.portfolio ?? []).length === 0 ? (
-            <p className="text-sm text-[rgb(var(--muted))]">هنوز برای هیچ استارت‌آپی اعلام علاقه نکرده‌اید.</p>
+            <p className="text-sm text-[rgb(var(--muted))]">You have not yet expressed interest in any startup.</p>
           ) : (
             <ul className="space-y-3">
               {portfolio.data!.portfolio.map((p) => (
@@ -164,15 +164,15 @@ export default function InvestorHome() {
                   <div className="min-w-0">
                     <p className="font-medium">{p.startupName}</p>
                     <p className="fa-nums text-xs text-[rgb(var(--muted))]">
-                      تعهد: {rial(p.amountRial)} · امتیاز AI: {p.startup ? nf1(p.startup.aiFinalScore) : '—'}
+                      Commitment: {rial(p.amountRial)} · AI score: {p.startup ? nf1(p.startup.aiFinalScore) : '—'}
                     </p>
-                    {p.note && <p className="text-xs text-[rgb(var(--muted))]">یادداشت: {p.note}</p>}
+                    {p.note && <p className="text-xs text-[rgb(var(--muted))]">Note: {p.note}</p>}
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    <Badge tone={p.status === 'انصراف' ? 'gray' : 'blue'}>{p.status}</Badge>
-                    {p.status !== 'انصراف' && (
+                    <Badge tone={p.status === 'Withdrawn' ? 'gray' : 'blue'}>{p.status}</Badge>
+                    {p.status !== 'Withdrawn' && (
                       <button className="btn !py-1 !text-xs" onClick={() => withdraw(p.id)}>
-                        انصراف
+                        Withdraw
                       </button>
                     )}
                   </div>
@@ -190,19 +190,19 @@ export default function InvestorHome() {
             onClick={(e) => e.stopPropagation()}
             onSubmit={express}
           >
-            <h3 className="text-lg font-bold">اعلام علاقه به {sel.teamName}</h3>
+            <h3 className="text-lg font-bold">Express interest in {sel.teamName}</h3>
             <p className="text-sm text-[rgb(var(--muted))]">{sel.ideaTitle}</p>
             <label className="block text-sm">
-              <span className="mb-1 block text-[rgb(var(--muted))]">مبلغ پیشنهادی (ریال)</span>
+              <span className="mb-1 block text-[rgb(var(--muted))]">Proposed amount (rials)</span>
               <input type="number" min={100_000_000} step={100_000_000} className="inp fa-nums" value={amount} onChange={(e) => setAmount(+e.target.value)} />
             </label>
             <label className="block text-sm">
-              <span className="mb-1 block text-[rgb(var(--muted))]">یادداشت (اختیاری)</span>
+              <span className="mb-1 block text-[rgb(var(--muted))]">Note (optional)</span>
               <textarea className="inp" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
             </label>
             <div className="flex gap-2">
-              <button type="submit" className="btn btn-primary flex-1 justify-center">ثبت علاقه‌مندی</button>
-              <button type="button" className="btn" onClick={() => setSel(null)}>انصراف</button>
+              <button type="submit" className="btn btn-primary flex-1 justify-center">Record interest</button>
+              <button type="button" className="btn" onClick={() => setSel(null)}>Cancel</button>
             </div>
           </form>
         </div>

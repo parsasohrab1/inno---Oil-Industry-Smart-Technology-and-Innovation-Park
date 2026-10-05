@@ -21,24 +21,24 @@ const faDate = (s: string | null) =>
   s ? new Intl.DateTimeFormat('fa-IR-u-ca-persian').format(new Date(s)) : '—'
 
 const STATUS_FA: Record<string, string> = {
-  Paid: 'پرداخت‌شده',
-  Overdue: 'معوق',
-  Pending: 'در انتظار',
+  Paid: 'Paid',
+  Overdue: 'Overdue',
+  Pending: 'Pending',
 }
 
 export const REPORTS: Record<string, ReportDef> = {
   'rent-collection': {
     id: 'rent-collection',
-    title: 'گزارش وصول اجاره‌بها',
+    title: 'Rent Collection Report',
     scope: 'own',
     columns: [
-      { header: 'شرکت', key: 'company', width: 34 },
-      { header: 'دوره', key: 'period', width: 12 },
-      { header: 'مبلغ اجاره (ریال)', key: 'rent', width: 20 },
-      { header: 'جریمه (ریال)', key: 'penalty', width: 16 },
-      { header: 'سررسید', key: 'due', width: 16 },
-      { header: 'تاریخ پرداخت', key: 'paid', width: 16 },
-      { header: 'وضعیت', key: 'status', width: 14 },
+      { header: 'Company', key: 'company', width: 34 },
+      { header: 'Period', key: 'period', width: 12 },
+      { header: 'Rent amount (rials)', key: 'rent', width: 20 },
+      { header: 'Penalty (rials)', key: 'penalty', width: 16 },
+      { header: 'Due date', key: 'due', width: 16 },
+      { header: 'Payment date', key: 'paid', width: 16 },
+      { header: 'Status', key: 'status', width: 14 },
     ],
     rows: ({ companyId }) =>
       listEntities<RentalInvoice>('rentalInvoices', companyId).map((r) => ({
@@ -53,13 +53,13 @@ export const REPORTS: Record<string, ReportDef> = {
   },
   debtors: {
     id: 'debtors',
-    title: 'گزارش شرکت‌های بدهکار',
+    title: 'Companies in Arrears Report',
     scope: 'all',
     columns: [
-      { header: 'شرکت', key: 'company', width: 34 },
-      { header: 'ماه معوقه', key: 'months', width: 12 },
-      { header: 'مجموع بدهی (ریال)', key: 'amount', width: 22 },
-      { header: 'دسترسی گیت', key: 'gate', width: 18 },
+      { header: 'Company', key: 'company', width: 34 },
+      { header: 'Overdue months', key: 'months', width: 12 },
+      { header: 'Total debt (rials)', key: 'amount', width: 22 },
+      { header: 'Gate access', key: 'gate', width: 18 },
     ],
     rows: () => {
       const map = new Map<string, { company: string; months: number; amount: number; gate: boolean }>()
@@ -73,23 +73,23 @@ export const REPORTS: Record<string, ReportDef> = {
       }
       return [...map.values()]
         .sort((a, b) => b.amount - a.amount)
-        .map((r) => ({ ...r, gate: r.gate ? 'مسدود' : 'فعال' }))
+        .map((r) => ({ ...r, gate: r.gate ? 'Blocked' : 'Active' }))
     },
   },
   'startup-valuations': {
     id: 'startup-valuations',
-    title: 'گزارش ارزش‌گذاری استارت‌آپ‌ها',
+    title: 'Startup Valuation Report',
     scope: 'all',
     columns: [
-      { header: 'تیم', key: 'team', width: 28 },
-      { header: 'ایده', key: 'idea', width: 40 },
-      { header: 'امتیاز تیم', key: 'team_s', width: 12 },
-      { header: 'امتیاز محصول', key: 'prod_s', width: 12 },
-      { header: 'امتیاز بازار', key: 'mkt_s', width: 12 },
-      { header: 'امتیاز نهایی', key: 'final', width: 12 },
-      { header: 'ارزش‌گذاری (ریال)', key: 'val', width: 22 },
-      { header: 'سرمایه پیشنهادی (ریال)', key: 'sug', width: 22 },
-      { header: 'توصیه سرمایه‌گذاری', key: 'rec', width: 16 },
+      { header: 'Team', key: 'team', width: 28 },
+      { header: 'Idea', key: 'idea', width: 40 },
+      { header: 'Team score', key: 'team_s', width: 12 },
+      { header: 'Product score', key: 'prod_s', width: 12 },
+      { header: 'Market score', key: 'mkt_s', width: 12 },
+      { header: 'Final score', key: 'final', width: 12 },
+      { header: 'Valuation (rials)', key: 'val', width: 22 },
+      { header: 'Suggested investment (rials)', key: 'sug', width: 22 },
+      { header: 'Investment recommendation', key: 'rec', width: 16 },
     ],
     rows: () =>
       listEntities<StartupEvaluation>('startups')
@@ -103,20 +103,20 @@ export const REPORTS: Record<string, ReportDef> = {
           final: s.aiFinalScore,
           val: s.valuationRial,
           sug: s.suggestedInvestmentRial,
-          rec: s.investmentRecommendation ? 'بله' : 'خیر',
+          rec: s.investmentRecommendation ? 'Yes' : 'No',
         })),
   },
   funding: {
     id: 'funding',
-    title: 'گزارش درخواست‌های تأمین مالی',
+    title: 'Financing Requests Report',
     scope: 'own',
     columns: [
-      { header: 'شرکت', key: 'company', width: 34 },
-      { header: 'صندوق', key: 'fund', width: 34 },
-      { header: 'مبلغ درخواستی (ریال)', key: 'amount', width: 22 },
-      { header: 'مرحله', key: 'stage', width: 16 },
-      { header: 'احتمال موفقیت', key: 'prob', width: 14 },
-      { header: 'تاریخ ثبت', key: 'date', width: 16 },
+      { header: 'Company', key: 'company', width: 34 },
+      { header: 'Fund', key: 'fund', width: 34 },
+      { header: 'Requested amount (rials)', key: 'amount', width: 22 },
+      { header: 'Stage', key: 'stage', width: 16 },
+      { header: 'Success probability', key: 'prob', width: 14 },
+      { header: 'Registration date', key: 'date', width: 16 },
     ],
     rows: ({ companyId }) =>
       listEntities<FundingRequest>('fundingRequests', companyId).map((f) => ({
@@ -124,23 +124,23 @@ export const REPORTS: Record<string, ReportDef> = {
         fund: f.fund,
         amount: f.amountRequestedRial,
         stage: f.stage,
-        prob: `${f.successProbability}٪`,
+        prob: `${f.successProbability}%`,
         date: faDate(f.submittedDate),
       })),
   },
   contracts: {
     id: 'contracts',
-    title: 'گزارش قراردادها',
+    title: 'Contracts Report',
     scope: 'all',
     columns: [
-      { header: 'شناسه', key: 'id', width: 22 },
-      { header: 'شرکت', key: 'company', width: 34 },
-      { header: 'متراژ', key: 'area', width: 10 },
-      { header: 'اجاره ماهانه (ریال)', key: 'rent', width: 20 },
-      { header: 'شروع', key: 'start', width: 16 },
-      { header: 'پایان', key: 'end', width: 16 },
-      { header: 'تمدید خودکار', key: 'renew', width: 12 },
-      { header: 'وضعیت', key: 'state', width: 16 },
+      { header: 'ID', key: 'id', width: 22 },
+      { header: 'Company', key: 'company', width: 34 },
+      { header: 'Area', key: 'area', width: 10 },
+      { header: 'Monthly rent (rials)', key: 'rent', width: 20 },
+      { header: 'Start', key: 'start', width: 16 },
+      { header: 'End', key: 'end', width: 16 },
+      { header: 'Auto-renew', key: 'renew', width: 12 },
+      { header: 'Status', key: 'state', width: 16 },
     ],
     rows: () =>
       listEntities<Contract>('contracts').map((c) => ({
@@ -150,17 +150,17 @@ export const REPORTS: Record<string, ReportDef> = {
         rent: c.monthlyRent,
         start: faDate(c.startDate),
         end: faDate(c.endDate),
-        renew: c.autoRenew ? 'بله' : 'خیر',
+        renew: c.autoRenew ? 'Yes' : 'No',
         state: c.state,
       })),
   },
   'park-summary': {
     id: 'park-summary',
-    title: 'خلاصه وضعیت پارک',
+    title: 'Park Status Summary',
     scope: 'all',
     columns: [
-      { header: 'شاخص', key: 'metric', width: 40 },
-      { header: 'مقدار', key: 'value', width: 30 },
+      { header: 'Metric', key: 'metric', width: 40 },
+      { header: 'Value', key: 'value', width: 30 },
     ],
     rows: () => {
       const d = assembleDataset()
@@ -169,23 +169,23 @@ export const REPORTS: Record<string, ReportDef> = {
         .filter((r) => r.status === 'Paid')
         .reduce((s, r) => s + r.totalRent, 0)
       return [
-        { metric: 'تعداد شرکت‌های مستقر', value: d.companies.length },
+        { metric: 'Number of resident companies', value: d.companies.length },
         {
-          metric: 'شرکت‌های دانش‌بنیان',
+          metric: 'Knowledge-based companies',
           value: d.companies.filter((c) => c.isKnowledgeBased).length,
         },
-        { metric: 'مجموع نیروی انسانی', value: d.companies.reduce((s, c) => s + c.employeeCount, 0) },
-        { metric: 'کل صورتحساب اجاره (ریال)', value: billed },
-        { metric: 'وصول‌شده (ریال)', value: collected },
-        { metric: 'نرخ وصول', value: `${((collected / billed) * 100).toFixed(1)}٪` },
+        { metric: 'Total workforce', value: d.companies.reduce((s, c) => s + c.employeeCount, 0) },
+        { metric: 'Total rent invoiced (rials)', value: billed },
+        { metric: 'Collected (rials)', value: collected },
+        { metric: 'Collection rate', value: `${((collected / billed) * 100).toFixed(1)}%` },
         {
-          metric: 'استارت‌آپ‌های توصیه‌شده به سرمایه‌گذاری',
+          metric: 'Startups recommended for investment',
           value: d.startups.filter((s) => s.investmentRecommendation).length,
         },
         {
-          metric: 'تأمین مالی مصوب (ریال)',
+          metric: 'Approved financing (rials)',
           value: d.fundingRequests
-            .filter((f) => f.stage === 'مصوب')
+            .filter((f) => f.stage === 'Approved')
             .reduce((s, f) => s + f.amountRequestedRial, 0),
         },
       ]
@@ -206,7 +206,7 @@ export function toCsv(def: ReportDef, rows: Array<Record<string, unknown>>): str
 
 export async function toXlsx(def: ReportDef, rows: Array<Record<string, unknown>>): Promise<Buffer> {
   const wb = new ExcelJS.Workbook()
-  wb.creator = 'سامانه پارک هوشمند نفت (OIPMS)'
+  wb.creator = 'Oil Smart Park System (OIPMS)'
   wb.created = new Date()
   const ws = wb.addWorksheet(def.title, { views: [{ rightToLeft: true }] })
   ws.columns = def.columns.map((c) => ({ header: c.header, key: c.key, width: c.width ?? 18 }))
@@ -251,9 +251,9 @@ export function toPrintableHtml(def: ReportDef, rows: Array<Record<string, unkno
   button{padding:8px 16px;border:0;border-radius:8px;background:#1f9e66;color:#fff;cursor:pointer;font-family:inherit}
   @media print{.toolbar{display:none}}
 </style></head><body>
-<div class="toolbar"><button onclick="window.print()">چاپ / ذخیره PDF</button></div>
+<div class="toolbar"><button onclick="window.print()">Print / Save PDF</button></div>
 <h1>${def.title}</h1>
-<div class="sub">سامانه مدیریت یکپارچه پارک هوشمند نفت (OIPMS) — تولید: ${now} — ${rows.length} ردیف</div>
+<div class="sub">Oil Smart Park Integrated Management System (OIPMS) — generated: ${now} — ${rows.length} rows</div>
 <table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>
 </body></html>`
 }

@@ -34,8 +34,8 @@ export default function Overview() {
 
   const rentSeries = rentByPeriod(data).map((r) => ({
     period: r.period,
-    'صورتحساب (میلیارد ریال)': +(r.billed / 1e9).toFixed(1),
-    'وصول‌شده (میلیارد ریال)': +(r.collected / 1e9).toFixed(1),
+    'Invoiced (billion rials)': +(r.billed / 1e9).toFixed(1),
+    'Collected (billion rials)': +(r.collected / 1e9).toFixed(1),
   }))
   const fields = companiesByField(data).map((f) => ({ name: f.field, value: f.count }))
   const topDebtors = debtors(data).slice(0, 6)
@@ -46,57 +46,57 @@ export default function Overview() {
   return (
     <div>
       <PageHeader
-        title="نمای کلی پارک"
-        subtitle="وضعیت لحظه‌ای عملیات، مالی، سرمایه‌گذاری و توسعه شرکت‌های مستقر"
+        title="Park overview"
+        subtitle="Real-time status of operations, finance, investment and development of resident companies"
       />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-        <Kpi label="شرکت‌های مستقر" value={k.companies} icon={Building2} />
-        <Kpi label="سهم دانش‌بنیان" value={pct(k.knowledgeBasedShare)} icon={BadgeCheck} tone="gold" />
-        <Kpi label="نیروی انسانی شرکت‌ها" value={k.totalWorkforce} unit="نفر" icon={Users} />
-        <Kpi label="اپراتور پارک" value={k.operators} unit="نفر" icon={Users} tone="neutral" />
+        <Kpi label="Resident companies" value={k.companies} icon={Building2} />
+        <Kpi label="Knowledge-based share" value={pct(k.knowledgeBasedShare)} icon={BadgeCheck} tone="gold" />
+        <Kpi label="Companies' workforce" value={k.totalWorkforce} unit="people" icon={Users} />
+        <Kpi label="Park operators" value={k.operators} unit="people" icon={Users} tone="neutral" />
         <Kpi
-          label="اجاره‌بهای ماهانه"
-          value={`${nf(k.monthlyRentBillun)} میلیارد ریال`}
+          label="Monthly rent"
+          value={`${nf(k.monthlyRentBillun)} billion rials`}
           icon={Coins}
           tone="gold"
         />
-        <Kpi label="نرخ وصول مطالبات" value={pct(k.collectionRate)} icon={Coins} />
-        <Kpi label="شرکت‌های بدهکار" value={k.overdueCompanies} icon={ShieldAlert} tone="rust" />
-        <Kpi label="هشدارهای بحرانی" value={k.criticalAlerts} icon={ShieldAlert} tone="rust" />
-        <Kpi label="منتورینگ فعال" value={k.activeMentoring} icon={GraduationCap} />
-        <Kpi label="رویدادهای پیش‌رو" value={k.upcomingEvents} icon={CalendarDays} />
-        <Kpi label="استارت‌آپ توصیه‌شده" value={k.startupsRecommended} icon={Rocket} tone="gold" />
-        <Kpi label="تأمین مالی مصوب" value={rial(k.approvedFundingRial)} icon={Coins} />
+        <Kpi label="Receivables collection rate" value={pct(k.collectionRate)} icon={Coins} />
+        <Kpi label="Companies in arrears" value={k.overdueCompanies} icon={ShieldAlert} tone="rust" />
+        <Kpi label="Critical alerts" value={k.criticalAlerts} icon={ShieldAlert} tone="rust" />
+        <Kpi label="Active mentoring" value={k.activeMentoring} icon={GraduationCap} />
+        <Kpi label="Upcoming events" value={k.upcomingEvents} icon={CalendarDays} />
+        <Kpi label="Recommended startups" value={k.startupsRecommended} icon={Rocket} tone="gold" />
+        <Kpi label="Approved financing" value={rial(k.approvedFundingRial)} icon={Coins} />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <ChartFrame
-            title="روند صورتحساب و وصول اجاره‌بها"
-            subtitle="میلیارد ریال — به تفکیک دوره"
+            title="Invoice and rent collection trend"
+            subtitle="Billion rials — by period"
           >
             <Bars
               data={rentSeries}
               xKey="period"
               series={[
-                { key: 'صورتحساب (میلیارد ریال)', name: 'صورتحساب' },
-                { key: 'وصول‌شده (میلیارد ریال)', name: 'وصول‌شده', color: '#d4a24e' },
+                { key: 'Invoiced (billion rials)', name: 'Invoiced' },
+                { key: 'Collected (billion rials)', name: 'Collected', color: '#d4a24e' },
               ]}
             />
           </ChartFrame>
         </div>
-        <ChartFrame title="ترکیب شرکت‌ها بر اساس حوزه فعالیت" height={300}>
+        <ChartFrame title="Company mix by field of activity" height={300}>
           <Donut data={fields} nameKey="name" valueKey="value" />
         </ChartFrame>
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Card
-          title="بزرگ‌ترین بدهکاران اجاره‌بها"
+          title="Largest rent debtors"
           action={
             <Link to="/finance" className="text-xs text-petro-600 hover:underline">
-              مشاهده همه
+              View all
             </Link>
           }
         >
@@ -106,13 +106,13 @@ export default function Overview() {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{d.companyName}</p>
                   <p className="fa-nums text-xs text-[rgb(var(--muted))]">
-                    {nf(d.months)} ماه معوقه · {rial(d.amount)}
+                    {nf(d.months)} months overdue · {rial(d.amount)}
                   </p>
                 </div>
                 {d.gateRevoked ? (
-                  <Badge tone="red">گیت مسدود</Badge>
+                  <Badge tone="red">Gate blocked</Badge>
                 ) : (
-                  <Badge tone="amber">تذکر</Badge>
+                  <Badge tone="amber">Reminder</Badge>
                 )}
               </li>
             ))}
@@ -120,10 +120,10 @@ export default function Overview() {
         </Card>
 
         <Card
-          title="قیف جذب سرمایه"
+          title="Fundraising funnel"
           action={
             <Link to="/investment" className="text-xs text-petro-600 hover:underline">
-              جزئیات
+              Details
             </Link>
           }
         >
@@ -132,11 +132,11 @@ export default function Overview() {
               <li key={f.stage}>
                 <div className="mb-1 flex items-center justify-between text-sm">
                   <span>{f.stage}</span>
-                  <span className="fa-nums text-[rgb(var(--muted))]">{nf(f.count)} درخواست</span>
+                  <span className="fa-nums text-[rgb(var(--muted))]">{nf(f.count)} requests</span>
                 </div>
                 <ProgressBar
                   value={(f.count / Math.max(...funnel.map((x) => x.count))) * 100}
-                  tone={f.stage === 'رد شده' ? 'rust' : f.stage === 'مصوب' ? 'brand' : 'gold'}
+                  tone={f.stage === 'Rejected' ? 'rust' : f.stage === 'Approved' ? 'brand' : 'gold'}
                 />
               </li>
             ))}
@@ -144,10 +144,10 @@ export default function Overview() {
         </Card>
 
         <Card
-          title="آخرین نوتیفیکیشن‌ها"
+          title="Latest notifications"
           action={
             <Link to="/notifications" className="text-xs text-petro-600 hover:underline">
-              همه
+              All
             </Link>
           }
         >
@@ -178,7 +178,7 @@ export default function Overview() {
       </div>
 
       <div className="mt-4">
-        <Card title="پیشرفت منتورینگ بر اساس حوزه">
+        <Card title="Mentoring progress by area">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {mentoring.map((m) => (
               <div key={m.area}>
@@ -190,7 +190,7 @@ export default function Overview() {
                 </div>
                 <ProgressBar value={m.avgProgress} />
                 <p className="fa-nums mt-1 text-xs text-[rgb(var(--muted))]">
-                  {nf(m.active)} فعال · {nf(m.completed)} تکمیل‌شده از {nf(m.total)}
+                  {nf(m.active)} active · {nf(m.completed)} completed of {nf(m.total)}
                 </p>
               </div>
             ))}

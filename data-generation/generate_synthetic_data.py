@@ -1,12 +1,12 @@
 """
-تولید دیتاست سنتتیک برای سامانه پارک هوشمند نفت (OIPMS).
+Generate a synthetic dataset for the Oil Smart Park system (OIPMS).
 
-اجرا:
+Run:
     pip install -r requirements.txt
     python generate_synthetic_data.py --out ./output
 
-خروجی: مجموعه‌ای از فایل‌های CSV در پوشه output برای بارگذاری در بک‌اند/داشبورد.
-این اسکریپت معادل پایتونی مولد TypeScript موجود در src/data/generate.ts است.
+Output: a set of CSV files in the output folder for loading into the backend/dashboard.
+This script is the Python equivalent of the existing TypeScript generator in src/data/generate.ts.
 """
 from __future__ import annotations
 
@@ -31,13 +31,13 @@ if fake:
     Faker.seed(SEED)
 
 FIELDS = [
-    "نفت و گاز", "پالایش", "پتروشیمی", "انرژی‌های تجدیدپذیر",
-    "فناوری اطلاعات", "ماشین‌آلات صنعتی", "مشاوره مدیریت", "آزمایشگاهی",
+    "Oil & Gas", "Refining", "Petrochemical", "Renewable Energy",
+    "Information Technology", "Industrial Machinery", "Management Consulting", "Laboratory",
 ]
 
 
 def _company_name(i: int) -> str:
-    return fake.company() if fake else f"شرکت فناوری شماره {i + 1}"
+    return fake.company() if fake else f"Technology Company No. {i + 1}"
 
 
 def generate_companies(n: int = 52) -> pd.DataFrame:
@@ -117,7 +117,7 @@ def main() -> None:
     args = parser.parse_args()
     os.makedirs(args.out, exist_ok=True)
 
-    print("🔄 تولید داده‌های سنتتیک برای پارک هوشمند نفت…")
+    print("🔄 Generating synthetic data for the oil smart park…")
     companies = generate_companies()
     rental = generate_rental_payments(companies)
     startups = generate_startup_evaluations()
@@ -126,8 +126,8 @@ def main() -> None:
     rental.to_csv(os.path.join(args.out, "rental_payments.csv"), index=False)
     startups.to_csv(os.path.join(args.out, "startup_evaluations.csv"), index=False)
 
-    print(f"✅ شرکت‌ها: {len(companies)} | صورتحساب اجاره: {len(rental)} | استارت‌آپ‌ها: {len(startups)}")
-    print(f"📁 خروجی در: {os.path.abspath(args.out)}")
+    print(f"✅ Companies: {len(companies)} | Rental invoices: {len(rental)} | Startups: {len(startups)}")
+    print(f"📁 Output in: {os.path.abspath(args.out)}")
 
 
 if __name__ == "__main__":

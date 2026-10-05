@@ -16,7 +16,7 @@ export function DataTable<T>({
   columns,
   rows,
   pageSize = 12,
-  emptyMessage = 'رکوردی برای نمایش وجود ندارد',
+  emptyMessage = 'There are no records to display',
   initialSort,
 }: {
   columns: Column<T>[]
@@ -115,7 +115,7 @@ export function DataTable<T>({
         <div className="mt-3 flex items-center justify-between text-xs text-[rgb(var(--muted))]">
           <span className="fa-nums">
             {(page * pageSize + 1).toLocaleString('fa-IR')}–
-            {Math.min((page + 1) * pageSize, sorted.length).toLocaleString('fa-IR')} از{' '}
+            {Math.min((page + 1) * pageSize, sorted.length).toLocaleString('fa-IR')} of{' '}
             {sorted.length.toLocaleString('fa-IR')}
           </span>
           <div className="flex gap-1">
@@ -124,14 +124,14 @@ export function DataTable<T>({
               disabled={page === 0}
               onClick={() => setPage((p) => p - 1)}
             >
-              قبلی
+              Previous
             </button>
             <button
               className="btn !px-2 !py-1 disabled:opacity-40"
               disabled={page >= pageCount - 1}
               onClick={() => setPage((p) => p + 1)}
             >
-              بعدی
+              Next
             </button>
           </div>
         </div>

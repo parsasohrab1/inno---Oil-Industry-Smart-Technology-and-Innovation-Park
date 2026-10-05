@@ -9,10 +9,10 @@ import { rial, nf, jDateShort } from '@/lib/format'
 import type { DomesticOpportunity } from '@/lib/types'
 
 const TONE: Record<DomesticOpportunity['status'], 'blue' | 'amber' | 'green' | 'gray'> = {
-  باز: 'blue',
-  'در حال ارزیابی': 'amber',
-  برنده: 'green',
-  بسته: 'gray',
+  Open: 'blue',
+  'Under evaluation': 'amber',
+  Won: 'green',
+  Closed: 'gray',
 }
 
 export default function DomesticMarket() {
@@ -36,38 +36,38 @@ export default function DomesticMarket() {
 
   const opps = data.domesticOpportunities
   const totalValue = opps.reduce((s, o) => s + o.estimatedValueRial, 0)
-  const open = opps.filter((o) => o.status === 'باز').length
-  const won = opps.filter((o) => o.status === 'برنده').length
+  const open = opps.filter((o) => o.status === 'Open').length
+  const won = opps.filter((o) => o.status === 'Won').length
 
-  const chart = bySector.map((s) => ({ sector: s.sector, 'ارزش (میلیارد ریال)': +(s.value / 1e9).toFixed(0) }))
+  const chart = bySector.map((s) => ({ sector: s.sector, 'Value (billion rials)': +(s.value / 1e9).toFixed(0) }))
 
   const cols: Column<DomesticOpportunity>[] = [
-    { key: 'title', header: 'عنوان فرصت', sortValue: (r) => r.title },
-    { key: 'buyer', header: 'کارفرما', sortValue: (r) => r.buyer },
-    { key: 'sector', header: 'بخش', align: 'center', sortValue: (r) => r.sector },
+    { key: 'title', header: 'Opportunity title', sortValue: (r) => r.title },
+    { key: 'buyer', header: 'Client', sortValue: (r) => r.buyer },
+    { key: 'sector', header: 'Sector', align: 'center', sortValue: (r) => r.sector },
     {
       key: 'estimatedValueRial',
-      header: 'ارزش برآوردی',
+      header: 'Estimated value',
       align: 'end',
       sortValue: (r) => r.estimatedValueRial,
       render: (r) => <span className="fa-nums">{rial(r.estimatedValueRial)}</span>,
     },
     {
       key: 'deadline',
-      header: 'مهلت',
+      header: 'Deadline',
       align: 'center',
       sortValue: (r) => r.deadline,
       render: (r) => <span className="fa-nums">{jDateShort(r.deadline)}</span>,
     },
     {
       key: 'matched',
-      header: 'شرکت‌های منطبق',
+      header: 'Matching companies',
       align: 'center',
       render: (r) => <span className="fa-nums">{nf(r.matchedCompanyIds.length)}</span>,
     },
     {
       key: 'status',
-      header: 'وضعیت',
+      header: 'Status',
       align: 'center',
       sortValue: (r) => r.status,
       render: (r) => <Badge tone={TONE[r.status]}>{r.status}</Badge>,
@@ -77,24 +77,24 @@ export default function DomesticMarket() {
   return (
     <div>
       <PageHeader
-        title="توسعه بازار داخلی"
-        subtitle="ردیابی مناقصات و فرصت‌های تجاری صنعت نفت و تطبیق با شرکت‌های مستقر"
+        title="Domestic market development"
+        subtitle="Tracking oil industry tenders and commercial opportunities and matching them with resident companies"
       />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل فرصت‌ها" value={opps.length} icon={Briefcase} />
-        <Kpi label="ارزش کل بازار قابل‌دسترس" value={rial(totalValue)} icon={TrendingUp} tone="gold" />
-        <Kpi label="فرصت‌های باز" value={open} icon={Timer} />
-        <Kpi label="قراردادهای برنده‌شده" value={won} icon={Trophy} tone="brand" />
+        <Kpi label="Total opportunities" value={opps.length} icon={Briefcase} />
+        <Kpi label="Total accessible market value" value={rial(totalValue)} icon={TrendingUp} tone="gold" />
+        <Kpi label="Open opportunities" value={open} icon={Timer} />
+        <Kpi label="Won contracts" value={won} icon={Trophy} tone="brand" />
       </div>
 
       <div className="mt-4">
-        <ChartFrame title="ارزش فرصت‌ها به تفکیک بخش صنعت" subtitle="میلیارد ریال">
-          <Bars data={chart} xKey="sector" series={[{ key: 'ارزش (میلیارد ریال)', name: 'ارزش' }]} />
+        <ChartFrame title="Opportunity value by industry sector" subtitle="Billion rials">
+          <Bars data={chart} xKey="sector" series={[{ key: 'Value (billion rials)', name: 'Value' }]} />
         </ChartFrame>
       </div>
 
       <div className="mt-4">
-        <Card title="فرصت‌های بازار داخلی">
+        <Card title="Domestic market opportunities">
           <DataTable columns={cols} rows={opps} pageSize={12} initialSort={{ key: 'estimatedValueRial', dir: 'desc' }} />
         </Card>
       </div>

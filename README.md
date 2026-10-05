@@ -1,363 +1,363 @@
 # inno---Oil-Industry-Smart-Technology-and-Innovation-Park
 
-> **داشبورد صنعتی هوشمند پارک فناوری نفت (OIPMS)** — پیاده‌سازی کامل معماری PCS: فرانت‌اند داشبورد + بک‌اند واقعی + احراز هویت نقش‌محور + قرارداد هوشمند.
+> **Oil Technology Park Smart Industrial Dashboard (OIPMS)** — a complete implementation of the PCS architecture: dashboard frontend + real backend + role-based authentication + smart contract.
 
-## راه‌اندازی سریع (فول‌استک)
+## Quick start (full stack)
 
-دو ترمینال:
+Two terminals:
 
 ```bash
-# ترمینال ۱ — بک‌اند (http://localhost:8787)  ← بار اول دیتاست را seed می‌کند
+# Terminal 1 — backend (http://localhost:8787)  ← seeds the dataset on first run
 cd server && npm install && cp .env.example .env && npm run dev
 
-# ترمینال ۲ — فرانت‌اند (http://localhost:5173)  ← از طریق پروکسی Vite به بک‌اند وصل می‌شود
+# Terminal 2 — frontend (http://localhost:5173)  ← connects to the backend through the Vite proxy
 npm install && npm run dev
 ```
 
-سپس با یکی از حساب‌های نمونه وارد شوید (دکمه‌های «ورود سریع» در صفحه ورود):
+Then sign in with one of the sample accounts (the "Quick login" buttons on the login page):
 
-| نقش | ایمیل | رمز | دسترسی |
+| Role | Email | Password | Access |
 | :--- | :--- | :--- | :--- |
-| مدیر پارک | `admin@naftpark.ir` | `admin1234` | همه‌چیز + مدیریت کاربران + امضای پارک |
-| اپراتور | `operator@naftpark.ir` | `operator1234` | داشبورد کامل، قراردادها، گزارش‌ها |
-| مدیر شرکت | `company@naftpark.ir` | `company1234` | صورتحساب/پرداخت، رزرو، تأمین مالی، امضای قرارداد |
-| استارتاپ | `startup@naftpark.ir` | `startup1234` | مشابه شرکت + میز سرمایه‌گذاری |
-| سرمایه‌گذار | `investor@naftpark.ir` | `investor1234` | بررسی استارت‌آپ‌ها، اعلام علاقه، پرتفوی |
-| منتور | `mentor@naftpark.ir` | `mentor1234` | منتی‌ها، ثبت جلسه، به‌روزرسانی پیشرفت |
+| Park manager | `admin@naftpark.ir` | `admin1234` | Everything + user management + park signature |
+| Operator | `operator@naftpark.ir` | `operator1234` | Full dashboard, contracts, reports |
+| Company manager | `company@naftpark.ir` | `company1234` | Billing/payment, booking, financing, contract signing |
+| Startup | `startup@naftpark.ir` | `startup1234` | Similar to company + investment desk |
+| Investor | `investor@naftpark.ir` | `investor1234` | Startup review, expressing interest, portfolio |
+| Mentor | `mentor@naftpark.ir` | `mentor1234` | Mentees, session logging, progress updates |
 
-### پشته فنی
+### Tech stack
 
-| لایه | فناوری |
+| Layer | Technology |
 | :--- | :--- |
-| فرانت‌اند | React 18 · TypeScript · Vite · Tailwind · Recharts · React Router · Zustand — فارسی/RTL |
-| بک‌اند | Node ≥ ۲۲٫۵ · Express · **`node:sqlite`** (بدون وابستگی نیتیو) · JWT · bcrypt · Zod |
-| گزارش‌گیری | ExcelJS (xlsx) · CSV · HTML قابل چاپ (PDF از طریق مرورگر) |
+| Frontend | React 18 · TypeScript · Vite · Tailwind · Recharts · React Router · Zustand — Persian/RTL |
+| Backend | Node ≥ 22.5 · Express · **`node:sqlite`** (no native dependencies) · JWT · bcrypt · Zod |
+| Reporting | ExcelJS (xlsx) · CSV · printable HTML (PDF through the browser) |
 
-جزئیات API و نقش‌ها: [`server/README.md`](server/README.md) — معماری: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+API and roles details: [`server/README.md`](server/README.md) — architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-### ماژول‌ها
+### Modules
 
-**داشبورد اپراتور/مدیر:** نمای کلی · دوقلوی دیجیتال · شرکت‌ها · جذب سرمایه · بازار داخلی/بین‌المللی ·
-منتورینگ · داوری و ارزش‌گذاری · مالی · تردد و امنیت · رزرو جلسات · رویدادها · نوتیفیکیشن · قراردادهای هوشمند · گزارش‌گیری · مدیریت کاربران
+**Operator/manager dashboard:** Overview · Digital twin · Companies · Fundraising · Domestic/international market ·
+Mentoring · Judging and valuation · Finance · Traffic and security · Meeting booking · Events · Notifications · Smart contracts · Reporting · User management
 
-**پنل‌های نقش‌محور:** میز کار شرکت (پرداخت صورتحساب، امضای قرارداد، رزرو، تأمین مالی) · میز سرمایه‌گذاری · میز منتورینگ
+**Role-based panels:** Company desk (bill payment, contract signing, booking, financing) · Investment desk · Mentoring desk
 
-**قرارداد هوشمند:** امضای دیجیتال دوطرفه، دفتر رویداد تغییرناپذیر با زنجیره هش SHA-256 و بازبینی صحت،
-اجرای خودکار شرط‌ها (جریمه دیرکرد، مسدودسازی گیت، تمدید/انقضا).
+**Smart contract:** Two-party digital signature, an immutable event ledger with an SHA-256 hash chain and integrity verification,
+automatic execution of conditions (late-payment penalty, gate blocking, renewal/expiry).
 
-### حالت بدون بک‌اند
+### No-backend mode
 
-برای اجرای فرانت‌اند به‌تنهایی با دیتاست سنتتیک محلی: `VITE_DATA_SOURCE=mock` (صفحات پنل نقش‌محور نیاز به بک‌اند دارند).
-نسخه Python مولد داده در [`data-generation/`](data-generation/).
+To run the frontend alone with a local synthetic dataset: `VITE_DATA_SOURCE=mock` (the role-based panel pages need the backend).
+The Python version of the data generator is in [`data-generation/`](data-generation/).
 
 ---
 
-# مستندات SRS جامع سامانه هوشمندسازی پارک فناوری نفت
+# Comprehensive SRS Documentation of the Oil Smart Technology Park System
 
 
-## ۱. معرفی محصول
+## 1. Product introduction
 
-**نام محصول:** سامانه مدیریت یکپارچه پارک هوشمند نفت (OIPMS - Oil Industry Park Management System)
+**Product name:** Oil Industry Park Management System (OIPMS - Oil Industry Park Management System)
 
-**نام تجاری:** پارک هوشمند نفت (Naft Smart Park)
+**Brand name:** Naft Smart Park
 
-**هدف کلی:** تحول دیجیتال پارک فناوری و نوآوری صنعت نفت و تبدیل آن به اولین پارک هوشمند تخصصی نفت در ایران، با بهره‌گیری از استانداردهای بین‌المللی هوشمندسازی نظیر WiredScore و SmartScore. این سامانه با هدف افزایش بهره‌وری، کاهش نیروی انسانی به حداکثر ۳ نفر، و ایجاد بستری برای توسعه کسب‌وکارهای دانش‌بنیان مستقر در پارک طراحی شده است.
+**Overall goal:** Digital transformation of the Oil Industry Technology and Innovation Park and turning it into Iran's first specialized smart oil park, using international smartization standards such as WiredScore and SmartScore. This system is designed to increase productivity, reduce the workforce to a maximum of 3 people, and create a platform for developing the knowledge-based businesses located in the park.
 
 
-## ۲. بنچمارک بین‌المللی و استانداردهای مرجع
+## 2. International benchmark and reference standards
 
-### ۲-۱. استانداردهای جهانی هوشمندسازی
+### 2-1. Global smartization standards
 
-| **استاندارد/گواهینامه** | **حوزه ارزیابی** | **مرجع** |
+| **Standard/Certificate** | **Assessment area** | **Reference** |
 | :--- | :--- | :--- |
-| **WiredScore Platinum** | کیفیت اتصال دیجیتال، ظرفیت شبکه، افزونگی سیستم، امنیت سایبری و قابلیت اطمینان عملیاتی |  |
-| **SmartScore Platinum** | بلوغ یکپارچه‌سازی سیستم‌های هوشمند، تجربه کاربری، شفافیت حاکمیت داده و عملکرد پایدار عملیاتی |  |
-| **ISO 37122** | شاخص‌های شهرهای هوشمند و جوامع پایدار - فناوری و خدمات هوشمند |  |
-| **ISO 19650** | مدیریت اطلاعات ساختمان (BIM) در کل چرخه عمر دارایی‌ها |  |
-| **APIGBA Award** | ساختمان‌های سبز هوشمند در منطقه آسیا-پاسیفیک |  |
+| **WiredScore Platinum** | Digital connectivity quality, network capacity, system redundancy, cybersecurity and operational reliability |  |
+| **SmartScore Platinum** | Integration maturity of smart systems, user experience, data governance transparency and sustained operational performance |  |
+| **ISO 37122** | Smart city indicators and sustainable communities - smart technology and services |  |
+| **ISO 19650** | Building Information Management (BIM) across the whole asset lifecycle |  |
+| **APIGBA Award** | Smart green buildings in the Asia-Pacific region |  |
 
-### ۲-۲. بنچمارک از پارک‌های هوشمند موفق جهان
+### 2-2. Benchmark from successful smart parks of the world
 
-| **پارک هوشمند** | **موقعیت** | **ویژگی‌های شاخص** | **دستاوردها** |
+| **Smart park** | **Location** | **Notable features** | **Achievements** |
 | :--- | :--- | :--- | :--- |
-| **Tpark (Taipei Far Eastern Telecom Park)** | تایوان | LOD 500 BIM، سیستم مدیریت دارایی دیجیتال (DPMS)، پلتفرم مدیریت کربن (T-Carbon)، اتصال فیبر نوری چندمسیره با افزونگی بالا و معماری کم‌تأخیر | اولین پارک هوشمند آسیا با گواهینامه دوگانه پلاتینیوم WiredScore و SmartScore |
-| **Nankang Software Park** | تایوان | تشخیص چهره در ورودی اصلی، تشخیص پلاک خودرو (LPR)، تشخیص نفوذ، دیوار ویدئویی در مرکز کنترل | افزایش امنیت و کارایی عملیاتی |
-| **Smart Tianfu Software Park** | چین | دوقلوی دیجیتال (Digital Twin) و مدل‌سازی سه‌بعدی، مرکز عملیات هوشمند، یکپارچه‌سازی داده‌ها | اتصال دنیای واقعی و مجازی |
-| **Fujisawa SST** | ژاپن | زیرساخت‌های پایدار، مدیریت انرژی هوشمند، حمل‌ونقل پاک | الگوی شهرک‌های پایدار |
-| **Smart Kalasatama** | فنلاند | تحرک هوشمند، انرژی پاک، مشارکت ذی‌نفعان | کاهش زمان سفر روزانه ساکنین به میزان ۱۰ دقیقه |
+| **Tpark (Taipei Far Eastern Telecom Park)** | Taiwan | LOD 500 BIM, digital asset management system (DPMS), carbon management platform (T-Carbon), multi-path fiber optic connection with high redundancy and low-latency architecture | Asia's first smart park with the dual Platinum certificate of WiredScore and SmartScore |
+| **Nankang Software Park** | Taiwan | Face recognition at the main entrance, license plate recognition (LPR), intrusion detection, video wall in the control center | Increased security and operational efficiency |
+| **Smart Tianfu Software Park** | China | Digital twin and 3D modeling, smart operations center, data integration | Connecting the real and virtual worlds |
+| **Fujisawa SST** | Japan | Sustainable infrastructure, smart energy management, clean transport | A model of sustainable towns |
+| **Smart Kalasatama** | Finland | Smart mobility, clean energy, stakeholder participation | Reducing residents' daily travel time by 10 minutes |
 
-**نکته کلیدی:** ۹۶٪ از کاربران پارک‌های شهری، وجود فناوری‌های هوشمند را عامل اصلی افزایش تمایل خود برای استفاده و سرمایه‌گذاری عنوان کرده‌اند.
+**Key point:** 96% of urban park users cited the presence of smart technologies as the main factor increasing their willingness to use and invest.
 
-### ۲-۳. جایگاه هدف برای پارک فناوری نفت
+### 2-3. Target position for the Oil Technology Park
 
-پارک فناوری نفت با سه مأموریت راهبردی در حوزه زنجیره ارزش صنعت نفت، هوشمندسازی و تحولات دیجیتال و مدیریت مصرف， می‌تواند با پیاده‌سازی این سامانه، به عنوان **اولین پارک هوشمند تخصصی نفت در خاورمیانه** شناخته شده و مسیر دریافت گواهینامه‌های بین‌المللی را هموار سازد.
+With three strategic missions in the oil industry value chain, smartization and digital transformation, and consumption management, the Oil Technology Park can, by implementing this system, become known as the **first specialized smart oil park in the Middle East** and pave the way for obtaining international certificates.
 
 
-## ۳. الزامات سطح بالا (High-Level Requirements)
+## 3. High-Level Requirements
 
-### ۳-۱. اهداف استراتژیک
+### 3-1. Strategic goals
 
-| **هدف** | **شاخص کلیدی عملکرد (KPI)** |
+| **Goal** | **Key performance indicator (KPI)** |
 | :--- | :--- |
-| کاهش نیروی انسانی عملیاتی | حداکثر ۳ نفر اپراتور برای کل پارک |
-| افزایش بهره‌وری عملیاتی | کاهش ۴۰٪ زمان انجام فرآیندهای اداری |
-| شفافیت مالی | نمایش لحظه‌ای وضعیت پرداخت اجاره‌بهای تمام شرکت‌ها |
-| جذب سرمایه برای شرکت‌ها | افزایش ۳۰٪成功率 جذب سرمایه از طریق صندوق‌ها |
-| دانش‌بنیان شدن شرکت‌ها | ارائه مسیر خودکار برای اخذ دانش‌بنیانی به ۱۰۰٪ شرکت‌ها |
-| توسعه بازار | پوشش حداقل ۵ بازار هدف داخلی و ۳ بازار بین‌المللی برای هر شرکت |
+| Reduce operational workforce | At most 3 operators for the whole park |
+| Increase operational productivity | 40% reduction in the time to carry out administrative processes |
+| Financial transparency | Real-time display of the rent payment status of all companies |
+| Attract capital for companies | 30% increase in the fundraising success rate through funds |
+| Becoming knowledge-based companies | Providing an automatic path for 100% of companies to obtain knowledge-based status |
+| Market development | Coverage of at least 5 domestic and 3 international target markets for each company |
 
-### ۳-۲. معماری سه‌لایه سیستم (PCS Architecture)
+### 3-2. Three-layer system architecture (PCS Architecture)
 
-بر اساس بنچمارک پارک‌های هوشمند پیشرو، معماری سیستم بر اساس مدل **Physical-Cyber-Social (PCS)** طراحی می‌شود:
+Based on the benchmark of leading smart parks, the system architecture is designed on the **Physical-Cyber-Social (PCS)** model:
 
-1. **لایه فیزیکی (Physical Layer):** سنسورها، دوربین‌های هوشمند، درب‌های اتوماتیک، پلاک‌خوان‌ها، ترمینال‌های تشخیص چهره، و زیرساخت‌های IoT
-2. **لایه مجازی (Cyber Layer):** پردازش ابری داده‌ها، الگوریتم‌های هوش مصنوعی، دوقلوی دیجیتال (Digital Twin)، و داشبوردهای مدیریتی
-3. **لایه اجتماعی (Social Layer):** پنل‌های کاربری برای شرکت‌ها، استارت‌آپ‌ها، سرمایه‌گذاران و اپراتورهای پارک
+1. **Physical Layer:** Sensors, smart cameras, automatic doors, plate readers, face recognition terminals, and IoT infrastructure
+2. **Cyber Layer:** Cloud data processing, AI algorithms, digital twin, and management dashboards
+3. **Social Layer:** User panels for companies, startups, investors and park operators
 
 
-## ۴. الزامات عملکردی (Functional Requirements)
+## 4. Functional Requirements
 
-### ۴-۱. ماژول مدیریت دسترسی و امنیت فیزیکی
+### 4-1. Access management and physical security module
 
-#### ۴-۱-۱. حضور و غیاب هوشمند با تشخیص چهره
+#### 4-1-1. Smart attendance with face recognition
 
-**شرح:** سامانه حضور و غیاب مبتنی بر فناوری تشخیص چهره (Facial Recognition) در ورودی اصلی پارک.
+**Description:** An attendance system based on facial recognition technology at the park's main entrance.
 
-**ویژگی‌ها:**
-- تشخیص چهره کارکنان و مراجعین در ورودی اصلی
-- ثبت خودکار زمان ورود و خروج
-- شناسایی چندعاملی (MFA) با ترکیب تشخیص چهره و کارت هوشمند
-- اتصال به سیستم اعلان برای حضور غیرمجاز
-- استخراج خودکار گزارش‌های حضور و غیاب برای هر شرکت
+**Features:**
+- Face recognition of employees and visitors at the main entrance
+- Automatic recording of entry and exit time
+- Multi-factor identification (MFA) combining face recognition and smart card
+- Connection to the notification system for unauthorized presence
+- Automatic extraction of attendance reports for each company
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۵۰۰۰ رکورد حضور و غیاب برای ۵۰ شرکت با میانگین ۲۰ کارمند
+**Required synthetic data:** At least 5,000 attendance records for 50 companies with an average of 20 employees
 
-#### ۴-۱-۲. کنترل تردد خودرو با پلاک‌خوان (LPR)
+#### 4-1-2. Vehicle traffic control with a plate reader (LPR)
 
-**شرح:** سامانه تشخیص خودکار پلاک خودرو (License Plate Recognition) برای مدیریت ورود و خروج وسایل نقلیه.
+**Description:** An automatic license plate recognition system (License Plate Recognition) for managing vehicle entry and exit.
 
-**ویژگی‌ها:**
-- تشخیص پلاک خودروهای مجاز و ثبت خودکار زمان ورود/خروج
-- یکپارچگی با سیستم پرداخت اجاره‌بها - **عدم باز شدن گیت در صورت بدهی شرکت**
-- تشخیص همزمان پلاک و چهره راننده برای احراز هویت دوگانه
-- ثبت خودروهای بازدیدکننده و صدور مجوز موقت
-- اعلان خودکار به اپراتور در صورت ورود خودروی غیرمجاز
+**Features:**
+- Recognition of authorized vehicle plates and automatic recording of entry/exit time
+- Integration with the rent payment system - **the gate does not open if the company is in arrears**
+- Simultaneous recognition of plate and driver's face for dual identification
+- Recording visitor vehicles and issuing a temporary permit
+- Automatic notification to the operator upon entry of an unauthorized vehicle
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۳۰۰۰ رکورد تردد خودرو برای ۱۰۰ خودروی ثبت‌شده
+**Required synthetic data:** At least 3,000 vehicle traffic records for 100 registered vehicles
 
-### ۴-۲. ماژول مدیریت فضاها و امکانات
+### 4-2. Space and facilities management module
 
-#### ۴-۲-۱. رزرو هوشمند اتاق جلسات
+#### 4-2-1. Smart meeting room booking
 
-**شرح:** سامانه رزرو آنلاین اتاق‌های جلسات با قابلیت مدیریت هوشمند منابع.
+**Description:** An online meeting room booking system with smart resource management.
 
-**ویژگی‌ها:**
-- رزرو اتاق جلسات توسط شرکت‌های مستقر از طریق پنل کاربری
-- نمایش وضعیت لحظه‌ای اتاق‌ها (آزاد/مشغول)
-- ارسال یادآوری خودکار به رزروکننده
-- یکپارچگی با سنسورهای IoT برای تشخیص حضور/عدم حضور در اتاق و آزادسازی خودکار
-- امکان لغو و تغییر رزرو
-- اولویت‌دهی هوشمند بر اساس سطح شرکت و نوع درخواست
+**Features:**
+- Booking of meeting rooms by resident companies through the user panel
+- Real-time display of room status (free/busy)
+- Automatic reminder sent to the booker
+- Integration with IoT sensors to detect presence/absence in the room and release it automatically
+- Ability to cancel and change bookings
+- Smart prioritization based on company level and request type
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۲۰۰۰ رکورد رزرو برای ۲۰ اتاق جلسه در بازه ۶ ماهه
+**Required synthetic data:** At least 2,000 booking records for 20 meeting rooms over a 6-month period
 
-#### ۴-۲-۲. مدیریت فضاهای اشتراکی و رویدادها
+#### 4-2-2. Shared spaces and events management
 
-**شرح:** تقویم رویدادهای پارک با قابلیت ثبت‌نام و مدیریت هوشمند.
+**Description:** The park's events calendar with registration and smart management.
 
-**ویژگی‌ها:**
-- **تقویم رویداد:** نمایش تمام رویدادهای پارک شامل دمو دی (Demo Day)، ریورس پیچ (Reverse Pitch)، پیچ (Pitch)، کارگاه‌ها و همایش‌ها
-- **ثبت‌نام آنلاین** برای شرکت‌کنندگان
-- **ریورس پیچ:** امکان مطرح‌سازی چالش‌های صنعت نفت توسط شرکت‌های بزرگ و ارائه راه‌حل توسط استارت‌آپ‌ها
-- **دمو دی:** رویداد ارائه محصولات و دستاوردهای استارت‌آپ‌ها به سرمایه‌گذاران
-- ارسال نوتیفیکیشن خودکار به شرکت‌ها درباره رویدادهای مرتبط
+**Features:**
+- **Events calendar:** Display of all park events including Demo Day, Reverse Pitch, Pitch, workshops and conferences
+- **Online registration** for participants
+- **Reverse Pitch:** Ability for large companies to present oil industry challenges and for startups to provide solutions
+- **Demo Day:** An event presenting the products and achievements of startups to investors
+- Automatic notification to companies about related events
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۱۰۰ رویداد در سال با میانگین ۵۰ شرکت‌کننده در هر رویداد
+**Required synthetic data:** At least 100 events per year with an average of 50 participants per event
 
-### ۴-۳. ماژول مدیریت مالی و قراردادها
+### 4-3. Financial and contract management module
 
-#### ۴-۳-۱. کنترل هوشمند پرداخت اجاره‌بها
+#### 4-3-1. Smart rent payment control
 
-**شرح:** سامانه یکپارچه مدیریت مالی با قابلیت اتصال به سخت‌افزارهای کنترل تردد.
+**Description:** An integrated financial management system with the ability to connect to traffic control hardware.
 
-**ویژگی‌ها:**
-- محاسبه خودکار اجاره‌بها بر اساس متراژ، نرخ و دوره
-- ارسال صورتحساب الکترونیکی به شرکت‌ها
-- **اتصال به گیت‌های ورودی:** در صورت عدم پرداخت به‌موقع، گیت ورودی خودرو و تشخیص چهره کارکنان غیرفعال می‌شود
-- **قرارداد هوشمند (Smart Contract):** انعقاد خودکار قرارداد اجاره بر اساس بلاک‌چین با قابلیت اجرای خودکار شرط‌ها
-- نمایش وضعیت پرداخت تمام شرکت‌ها در داشبورد مدیریتی
-- ارسال اعلان‌های تذکر پرداخت به شرکت‌ها و اپراتور
+**Features:**
+- Automatic rent calculation based on area, rate and period
+- Sending electronic invoices to companies
+- **Connection to entrance gates:** If payment is not made on time, the vehicle entrance gate and employee face recognition are disabled
+- **Smart Contract:** Automatic conclusion of a lease contract based on blockchain with automatic execution of conditions
+- Displaying the payment status of all companies on the management dashboard
+- Sending payment reminder notifications to companies and the operator
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۱۰۰۰ فاکتور برای ۵۰ شرکت در بازه ۱۲ ماهه با سناریوهای مختلف پرداخت، تأخیر و جریمه
+**Required synthetic data:** At least 1,000 invoices for 50 companies over a 12-month period with different payment, delay and penalty scenarios
 
-#### ۴-۳-۲. قرارداد هوشمند (Smart Contract)
+#### 4-3-2. Smart Contract
 
-**شرح:** پیاده‌سازی قراردادهای هوشمند مبتنی بر بلاک‌چین برای شفافیت و امنیت روابط قراردادی.
+**Description:** Implementation of blockchain-based smart contracts for transparency and security of contractual relations.
 
-**ویژگی‌ها:**
-- ثبت خودکار مفاد قرارداد در بلاک‌چین (غیرقابل تغییر)
-- اجرای خودکار شرط‌ها (تمدید، فسخ، جریمه)
-- امضای دیجیتال قرارداد توسط طرفین
-- نمایش تاریخچه کامل قراردادها
-- یکپارچگی با سیستم پرداخت و کنترل دسترسی
+**Features:**
+- Automatic recording of contract terms on the blockchain (immutable)
+- Automatic execution of conditions (renewal, termination, penalty)
+- Digital signature of the contract by the parties
+- Display of the full contract history
+- Integration with the payment and access control system
 
-### ۴-۴. ماژول پشتیبانی از استارت‌آپ‌ها و شرکت‌ها
+### 4-4. Startup and company support module
 
-#### ۴-۴-۱. بارگذاری و داوری هوشمند طرح‌ها
+#### 4-4-1. Smart upload and judging of projects
 
-**شرح:** سامانه پذیرش و ارزیابی هوشمند ایده‌ها، طرح‌ها و محصولات استارت‌آپ‌ها.
+**Description:** A system for intake and smart evaluation of ideas, projects and products of startups.
 
-**ویژگی‌ها:**
-- بارگذاری طرح/ایده/محصول توسط استارت‌آپ‌های متقاضی
-- **داوری هوشمند** بر اساس سه محور اصلی:
-  - **بازار:** اندازه بازار، نرخ رشد، رقبا، پتانسیل صادرات
-  - **ایده نوآورانه:** میزان نوآوری، سطح فناوری، ثبت اختراع
-  - **تیم:** سابقه اعضا، مهارت‌ها، تجربه قبلی
-- امتیازدهی خودکار با الگوریتم‌های هوش مصنوعی
-- ارائه گزارش داوری به سرمایه‌گذاران
-- اولویت‌بندی طرح‌ها برای جذب سرمایه
+**Features:**
+- Upload of a project/idea/product by applicant startups
+- **Smart judging** based on three main axes:
+  - **Market:** Market size, growth rate, competitors, export potential
+  - **Innovative idea:** Degree of innovation, technology level, patent
+  - **Team:** Members' background, skills, previous experience
+- Automatic scoring with AI algorithms
+- Providing the judging report to investors
+- Prioritizing projects for fundraising
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۲۰۰ طرح با توزیع متنوع در سطوح مختلف بلوغ فناوری
+**Required synthetic data:** At least 200 projects with a varied distribution across different technology maturity levels
 
-#### ۴-۴-۲. ارزش‌گذاری هوشمند استارت‌آپ‌ها
+#### 4-4-2. Smart startup valuation
 
-**شرح:** سامانه ارزش‌گذاری خودکار تیم‌های استارت‌آپی بر اساس معیارهای چندگانه.
+**Description:** An automatic valuation system for startup teams based on multiple criteria.
 
-**معیارهای ارزش‌گذاری (به ریال):**
+**Valuation criteria (in rials):**
 
-| **معیار** | **وزن** | **شاخص‌ها** |
+| **Criterion** | **Weight** | **Indicators** |
 | :--- | :--- | :--- |
-| **تیم** | ۳۰٪ | تعداد و سابقه اعضا، مهارت‌های فنی و مدیریتی، تجربه قبلی در صنعت نفت |
-| **محصول** | ۳۵٪ | سطح آمادگی فناوری (TRL)، میزان نوآوری، مزیت رقابتی، مالکیت معنوی |
-| **بازار** | ۳۵٪ | اندازه بازار هدف (TAM/SAM/SOM)، نرخ رشد، پتانسیل صادرات، میزان پذیرش مشتری |
+| **Team** | 30% | Number and background of members, technical and managerial skills, previous experience in the oil industry |
+| **Product** | 35% | Technology readiness level (TRL), degree of innovation, competitive advantage, intellectual property |
+| **Market** | 35% | Target market size (TAM/SAM/SOM), growth rate, export potential, customer adoption |
 
-**فرمول ارزش‌گذاری:**
+**Valuation formula:**
 ```
-ارزش شرکت (ریال) = (امتیاز تیم × ۳۰٪ + امتیاز محصول × ۳۵٪ + امتیاز بازار × ۳۵٪) × ضریب صنعت نفت × ضریب مرحله رشد
+Company value (rials) = (Team score × 30% + Product score × 35% + Market score × 35%) × Oil industry coefficient × Growth stage coefficient
 ```
 
-**خروجی:** ارزش پیشنهادی شرکت به ریال، پیشنهاد سرمایه‌گذاری، و نقشه راه رشد
+**Output:** Proposed company value in rials, investment proposal, and growth roadmap
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۱۰۰ تیم استارت‌آپی با داده‌های کامل تیم، محصول و بازار
+**Required synthetic data:** At least 100 startup teams with complete team, product and market data
 
-#### ۴-۴-۳. منتورینگ هوشمند شرکت‌ها
+#### 4-4-3. Smart company mentoring
 
-**شرح:** سامانه ارائه مسیرهای رشد و منتورینگ شخصی‌سازی‌شده برای هر شرکت.
+**Description:** A system providing personalized growth paths and mentoring for each company.
 
-**حوزه‌های منتورینگ:**
+**Mentoring areas:**
 
-| **حوزه** | **خدمات** |
+| **Area** | **Services** |
 | :--- | :--- |
-| **کسب‌وکار** | تدوین مدل کسب‌وکار، تحلیل بازار، قیمت‌گذاری، بازاریابی |
-| **دانش‌بنیان شدن** | ارزیابی خودکار برای اخذ دانش‌بنیانی، تدوین پرونده، پیگیری مراحل |
-| **دریافت ایزو** | شناسایی استانداردهای مناسب، برنامه‌ریزی پیاده‌سازی، مشاوره اخذ گواهینامه |
-| **راه‌اندازی خط تولید** | مطالعات امکان‌سنجی، تأمین تجهیزات، برنامه‌ریزی تولید |
-| **دریافت تسهیلات** | شناسایی منابع تأمین مالی، تدوین طرح توجیهی، معرفی به صندوق‌ها |
-| **ثبت اختراع** | ارزیابی قابلیت ثبت، جستجوی اختراعات مشابه، تدوین اظهارنامه |
+| **Business** | Business model development, market analysis, pricing, marketing |
+| **Becoming knowledge-based** | Automatic assessment for obtaining knowledge-based status, preparing the file, tracking the steps |
+| **Obtaining ISO** | Identifying suitable standards, implementation planning, certification consulting |
+| **Production line setup** | Feasibility studies, equipment procurement, production planning |
+| **Obtaining facilities** | Identifying financing sources, preparing the feasibility plan, introduction to funds |
+| **Patent registration** | Patentability assessment, searching for similar patents, preparing the application |
 
-**ویژگی‌ها:**
-- ارزیابی خودکار نیازهای هر شرکت بر اساس داده‌های موجود
-- ارائه مسیر رشد شخصی‌سازی‌شده با زمان‌بندی مشخص
-- اتصال به شبکه منتورهای صنعت نفت
-- پیگیری پیشرفت شرکت در هر حوزه
-- ارائه محتوای آموزشی مرتبط
+**Features:**
+- Automatic assessment of each company's needs based on existing data
+- Providing a personalized growth path with a defined timeline
+- Connection to the network of oil industry mentors
+- Tracking the company's progress in each area
+- Providing related educational content
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۵۰ شرکت با پروفایل کامل و نیازسنجی در هر ۶ حوزه
+**Required synthetic data:** At least 50 companies with a complete profile and needs assessment in all 6 areas
 
-#### ۴-۴-۴. جذب سرمایه و اتصال به صندوق‌ها
+#### 4-4-4. Fundraising and connection to funds
 
-**شرح:** سامانه یکپارچه معرفی شرکت‌ها به صندوق‌های سرمایه‌گذاری.
+**Description:** An integrated system for introducing companies to investment funds.
 
-**صندوق‌های هدف:**
-- صندوق پژوهش و فناوری وزارت نفت
-- صندوق‌های خطرپذیر (Venture Capital) داخلی و خارجی
-- **صندوق نوآوری و شکوفایی** ریاست جمهوری
-- صندوق توسعه ملی - بخش نفت
-- سرمایه‌گذاران فرشته (Angel Investors) صنعت نفت
+**Target funds:**
+- Ministry of Petroleum Research and Technology Fund
+- Domestic and foreign venture capital funds (Venture Capital)
+- The **Innovation and Prosperity Fund** of the Presidency
+- National Development Fund - oil sector
+- Oil industry angel investors (Angel Investors)
 
-**ویژگی‌ها:**
-- تطبیق خودکار شرکت‌ها با صندوق‌های مناسب بر اساس حوزه فعالیت، مرحله رشد و نیاز مالی
-- تهیه خودکار پکیج سرمایه‌گذاری (Investment Package)
-- برگزاری جلسات مجازی با سرمایه‌گذاران
-- پیگیری وضعیت درخواست‌های تأمین مالی
-- ارائه مشاوره برای بهبود شانس جذب سرمایه
+**Features:**
+- Automatic matching of companies with suitable funds based on field of activity, growth stage and financial need
+- Automatic preparation of an Investment Package
+- Holding virtual meetings with investors
+- Tracking the status of financing requests
+- Providing consulting to improve the chance of fundraising
 
-**داده‌های سنتتیک مورد نیاز:** حداقل ۵۰ درخواست تأمین مالی با مشخصات کامل
+**Required synthetic data:** At least 50 financing requests with complete specifications
 
-### ۴-۵. ماژول توسعه بازار
+### 4-5. Market development module
 
-#### ۴-۵-۱. توسعه بازار داخلی
+#### 4-5-1. Domestic market development
 
-**شرح:** داشبورد هوشمند تحلیل و توسعه بازار داخلی برای هر شرکت.
+**Description:** A smart dashboard for analysis and development of the domestic market for each company.
 
-**ویژگی‌ها:**
-- شناسایی خودکار مشتریان بالقوه داخلی در صنعت نفت
-- تحلیل رقبا و سهم بازار
-- پیش‌بینی تقاضا در بخش‌های مختلف (پالایش، پتروشیمی، اکتشاف و تولید)
-- ارائه پیشنهادهای ورود به بازار
-- ردیابی مناقصات و فرصت‌های تجاری
+**Features:**
+- Automatic identification of potential domestic customers in the oil industry
+- Competitor analysis and market share
+- Demand forecasting in different sectors (refining, petrochemical, exploration and production)
+- Providing market entry proposals
+- Tracking tenders and commercial opportunities
 
-#### ۴-۵-۲. توسعه بازار بین‌المللی
+#### 4-5-2. International market development
 
-**شرح:** داشبورد هوشمند تحلیل و توسعه بازارهای بین‌المللی.
+**Description:** A smart dashboard for analysis and development of international markets.
 
-**ویژگی‌ها:**
-- تحلیل بازارهای هدف (کشورهای همسایه، آسیای میانه، آفریقا، آمریکای لاتین)
-- شناسایی نیازهای فناورانه هر بازار
-- تحلیل تعرفه‌ها و مقررات صادراتی
-- معرفی شرکت‌ها به رویدادهای بین‌المللی
-- اتصال به رایزن‌های فناوری در خارج از کشور
+**Features:**
+- Analysis of target markets (neighboring countries, Central Asia, Africa, Latin America)
+- Identifying the technological needs of each market
+- Analysis of tariffs and export regulations
+- Introducing companies to international events
+- Connection to technology attachés abroad
 
-**داده‌های سنتتیک مورد نیاز:** داده‌های بازار حداقل ۱۵ کشور هدف با شاخص‌های بازار، رشد، رقابت و تعرفه
+**Required synthetic data:** Market data of at least 15 target countries with market, growth, competition and tariff indicators
 
-### ۴-۶. ماژول داشبورد مدیریتی
+### 4-6. Management dashboard module
 
-#### ۴-۶-۱. مشخصات کلی داشبورد
+#### 4-6-1. General dashboard specifications
 
-**شرح:** داشبورد مدیریتی یکپارچه برای اپراتورهای پارک (حداکثر ۳ نفر).
+**Description:** An integrated management dashboard for park operators (at most 3 people).
 
-**مشخصات ظاهری:**
-- **زبان:** کاملاً فارسی
-- **فونت تیتر:** «به اولین پارک هوشمند کشور خوش آمدید» با فونت **تعهلیق** در بالای صفحه
-- **سایدبار:** در سمت راست صفحه
-- **تب‌های اصلی:**
-  1. جذب سرمایه
-  2. توسعه بازار داخلی
-  3. توسعه بازار بین‌المللی
-  4. منتورینگ (با زیرتب‌های: کسب‌وکار، دانش‌بنیان، دریافت ایزو، راه‌اندازی خط تولید، دریافت تسهیلات، ثبت اختراع)
+**Appearance specifications:**
+- **Language:** Entirely Persian
+- **Title font:** "Welcome to the country's first smart park" in the **Taaliq** font at the top of the page
+- **Sidebar:** On the right side of the page
+- **Main tabs:**
+  1. Fundraising
+  2. Domestic market development
+  3. International market development
+  4. Mentoring (with sub-tabs: business, knowledge-based, obtaining ISO, production line setup, obtaining facilities, patent registration)
 
-#### ۴-۶-۲. قابلیت‌های تحلیلی داشبورد
+#### 4-6-2. Dashboard analytical capabilities
 
-**ویژگی‌ها:**
-- **دوقلوی دیجیتال (Digital Twin):** نمایش سه‌بعدی پارک با داده‌های لحظه‌ای
-- **استخراج خودکار بیلان** مالی و عملیاتی شرکت‌های مستقر
-- **پیش‌بینی‌های هوشمند** بر اساس داده‌های تاریخی
-- **هشدارهای خودکار** برای رویدادهای بحرانی (عدم پرداخت، تخلف امنیتی، کاهش عملکرد)
-- **گزارش‌گیری پیشرفته** با فرمت‌های مختلف (PDF، Excel، JSON)
-- **نمایش KPIهای کلیدی** در قالب نمودارهای تعاملی
-- **مقایسه تطبیقی** عملکرد شرکت‌ها
+**Features:**
+- **Digital Twin:** 3D display of the park with real-time data
+- **Automatic extraction of the financial and operational balance** of resident companies
+- **Smart forecasts** based on historical data
+- **Automatic alerts** for critical events (non-payment, security violation, performance decline)
+- **Advanced reporting** in various formats (PDF, Excel, JSON)
+- **Display of key KPIs** in interactive charts
+- **Comparative comparison** of company performance
 
-#### ۴-۶-۳. نوتیفیکیشن‌های هوشمند
+#### 4-6-3. Smart notifications
 
-**شرح:** سیستم اعلان هوشمند برای تمام ذی‌نفعان.
+**Description:** A smart notification system for all stakeholders.
 
-**گیرندگان نوتیفیکیشن:**
-- شرکت‌ها و استارت‌آپ‌های مستقر
-- اپراتورهای پارک (حداکثر ۳ نفر)
+**Notification recipients:**
+- Resident companies and startups
+- Park operators (at most 3 people)
 
-**انواع نوتیفیکیشن:**
-- یادآوری پرداخت اجاره‌بها
-- اعلان رویدادهای پارک (دمو دی، ریورس پیچ، پیچ)
-- هشدارهای امنیتی (ورود غیرمجاز، تردد مشکوک)
-- اطلاع‌رسانی فرصت‌های سرمایه‌گذاری
-- یادآوری جلسات منتورینگ
-- اعلان تغییرات در قوانین و مقررات
-- گزارش‌های دوره‌ای عملکرد
+**Notification types:**
+- Rent payment reminder
+- Announcement of park events (Demo Day, Reverse Pitch, Pitch)
+- Security alerts (unauthorized entry, suspicious traffic)
+- Notification of investment opportunities
+- Mentoring session reminder
+- Announcement of changes to laws and regulations
+- Periodic performance reports
 
 
-## ۵. مدل داده‌ها و دیتاست سنتتیک
+## 5. Data model and synthetic dataset
 
-برای اطمینان از کیفیت خروجی داشبورد، به دیتاست‌های سنتتیک با حجم و تنوع کافی نیاز است. در زیر کد تولید داده‌های سنتتیک به زبان Python ارائه می‌شود:
+To ensure the quality of the dashboard output, synthetic datasets of sufficient volume and diversity are needed. Below is the synthetic data generation code in Python:
 
 ```python
 import pandas as pd
@@ -366,17 +366,17 @@ from datetime import datetime, timedelta
 import random
 from faker import Faker
 
-fake = Faker('fa_IR')  # تولید داده‌های فارسی
+fake = Faker('fa_IR')  # generate Persian data
 np.random.seed(42)
 random.seed(42)
 
 # ============================================
-# 1. داده‌های شرکت‌ها (Companies)
+# 1. Companies data (Companies)
 # ============================================
 def generate_companies(n=50):
     companies = []
-    fields = ['نفت و گاز', 'پالایش', 'پتروشیمی', 'انرژی‌های تجدیدپذیر', 
-              'فناوری اطلاعات', 'ماشین‌آلات صنعتی', 'مشاوره مدیریت', 'آزمایشگاهی']
+    fields = ['Oil & Gas', 'Refining', 'Petrochemical', 'Renewable Energy',
+              'Information Technology', 'Industrial Machinery', 'Management Consulting', 'Laboratory']
     for i in range(n):
         companies.append({
             'Company_ID': f'C{1000+i}',
@@ -393,17 +393,17 @@ def generate_companies(n=50):
     return pd.DataFrame(companies)
 
 # ============================================
-# 2. داده‌های حضور و غیاب (Attendance)
+# 2. Attendance data (Attendance)
 # ============================================
 def generate_attendance(companies_df, n_days=180):
     records = []
     start_date = datetime.now() - timedelta(days=n_days)
     for _, company in companies_df.iterrows():
         emp_count = company['Employee_Count']
-        for emp in range(min(emp_count, 30)):  # حداکثر 30 کارمند برای نمونه
+        for emp in range(min(emp_count, 30)):  # at most 30 employees for the sample
             for day in range(n_days):
                 date = start_date + timedelta(days=day)
-                if random.random() < 0.85:  # 85% حضور
+                if random.random() < 0.85:  # 85% attendance
                     check_in = f"{np.random.randint(7, 10):02d}:{np.random.randint(0, 60):02d}"
                     check_out = f"{np.random.randint(16, 19):02d}:{np.random.randint(0, 60):02d}"
                     records.append({
@@ -417,11 +417,11 @@ def generate_attendance(companies_df, n_days=180):
     return pd.DataFrame(records)
 
 # ============================================
-# 3. داده‌های تردد خودرو (Vehicle Logistics)
+# 3. Vehicle traffic data (Vehicle Logistics)
 # ============================================
 def generate_vehicle_logistics(companies_df, n_records=3000):
     records = []
-    plates = [f'{random.randint(10,99)}{random.choice(["الف","ب","پ","ت","ث"])}{random.randint(100,999)}' 
+    plates = [f'{random.randint(10,99)}{random.choice(["A","B","P","T","S"])}{random.randint(100,999)}'
               for _ in range(100)]
     for _ in range(n_records):
         company = companies_df.sample(1).iloc[0]
@@ -430,7 +430,7 @@ def generate_vehicle_logistics(companies_df, n_records=3000):
             'Company_Origin': company['Company_ID'],
             'Company_Dest': random.choice(companies_df['Company_ID'].tolist()),
             'Entry_Time': fake.date_time_between(start_date='-6M', end_date='now').strftime('%Y-%m-%d %H:%M:%S'),
-            'Exit_Time': None,  # در زمان خروج پر می‌شود
+            'Exit_Time': None,  # filled in at exit time
             'License_Plate': random.choice(plates),
             'RFID_Tag': f'RF{random.randint(10000,99999)}',
             'Status': random.choice(['Inbound', 'Outbound', 'Pending'])
@@ -438,7 +438,7 @@ def generate_vehicle_logistics(companies_df, n_records=3000):
     return pd.DataFrame(records)
 
 # ============================================
-# 4. داده‌های پرداخت اجاره (Rental Payments)
+# 4. Rent payment data (Rental Payments)
 # ============================================
 def generate_rental_payments(companies_df, n_months=12):
     records = []
@@ -447,7 +447,7 @@ def generate_rental_payments(companies_df, n_months=12):
         for month in range(n_months):
             date = start_date + timedelta(days=month*30)
             total_rent = company['Area_m2'] * company['Rental_Rate_per_m2']
-            is_paid = random.random() < 0.75  # 75% پرداخت به‌موقع
+            is_paid = random.random() < 0.75  # 75% on-time payment
             records.append({
                 'Tenant_ID': company['Company_ID'],
                 'Company_Name': company['Company_Name'],
@@ -462,11 +462,11 @@ def generate_rental_payments(companies_df, n_months=12):
     return pd.DataFrame(records)
 
 # ============================================
-# 5. داده‌های رزرو اتاق جلسات (Meeting Room Booking)
+# 5. Meeting room booking data (Meeting Room Booking)
 # ============================================
 def generate_meeting_bookings(companies_df, n=2000):
-    rooms = ['آرامگاه', 'فردوسی', 'سعدی', 'حافظ', 'مولوی', 'خیام', 'باباطاهر', 'اوحدی',
-             'نظامی', 'عطار', 'سنایی', 'جامی', 'شبستری', 'صائب', 'وحشی', 'ناصرخسرو']
+    rooms = ['Aramgah', 'Ferdowsi', 'Saadi', 'Hafez', 'Molavi', 'Khayyam', 'Baba Taher', 'Ouhadi',
+             'Nezami', 'Attar', 'Sanai', 'Jami', 'Shabestari', 'Saeb', 'Vahshi', 'Naser Khosrow']
     records = []
     for _ in range(n):
         company = companies_df.sample(1).iloc[0]
@@ -486,7 +486,7 @@ def generate_meeting_bookings(companies_df, n=2000):
     return pd.DataFrame(records)
 
 # ============================================
-# 6. داده‌های استارت‌آپ‌ها و داوری (Startup Evaluations)
+# 6. Startup and judging data (Startup Evaluations)
 # ============================================
 def generate_startup_evaluations(n=200):
     records = []
@@ -496,37 +496,37 @@ def generate_startup_evaluations(n=200):
         product_score = np.random.uniform(35, 92)
         ai_final_score = (team_score * 0.3 + market_score * 0.35 + product_score * 0.35)
         
-        # ارزش‌گذاری به ریال
-        base_valuation = ai_final_score * 100_000_000  # پایه
-        industry_multiplier = np.random.uniform(0.8, 2.5)  # ضریب صنعت نفت
-        stage_multiplier = np.random.uniform(0.5, 3.0)  # ضریب مرحله رشد
+        # valuation in rials
+        base_valuation = ai_final_score * 100_000_000  # base
+        industry_multiplier = np.random.uniform(0.8, 2.5)  # oil industry coefficient
+        stage_multiplier = np.random.uniform(0.5, 3.0)  # growth stage coefficient
         
         valuation_rial = int(base_valuation * industry_multiplier * stage_multiplier)
         
         records.append({
             'Team_ID': f'T{1000+i}',
-            'Team_Name': f'تیم {fake.company_suffix()}',
+            'Team_Name': f'Team {fake.company_suffix()}',
             'Idea_Title': fake.catch_phrase(),
             'Team_Score': round(team_score, 2),
             'Market_Score': round(market_score, 2),
             'Product_Score': round(product_score, 2),
             'AI_Final_Score': round(ai_final_score, 2),
             'Valuation_Rial': valuation_rial,
-            'Valuation_USD': int(valuation_rial / 50000),  # تقریباً
+            'Valuation_USD': int(valuation_rial / 50000),  # approximately
             'Investment_Recommendation': ai_final_score > 70,
             'Suggested_Investment_Rial': int(valuation_rial * np.random.uniform(0.1, 0.4)),
             'TRL_Level': np.random.randint(3, 9),
-            'Patent_Status': random.choice(['ثبت‌شده', 'در حال ثبت', 'ندارد', 'در دست بررسی'])
+            'Patent_Status': random.choice(['Registered', 'Pending registration', 'None', 'Under review'])
         })
     return pd.DataFrame(records)
 
 # ============================================
-# 7. داده‌های بازار بین‌المللی (Market Intelligence)
+# 7. International market data (Market Intelligence)
 # ============================================
 def generate_market_intelligence():
-    countries = ['ترکیه', 'امارات', 'عربستان', 'قطر', 'عمان', 'عراق', 'افغانستان', 
-                 'پاکستان', 'هند', 'چین', 'روسیه', 'قزاقستان', 'ترکمنستان', 'آذربایجان',
-                 'ونزوئلا', 'نیجریه', 'آنگولا', 'مالزی', 'اندونزی']
+    countries = ['Turkey', 'UAE', 'Saudi Arabia', 'Qatar', 'Oman', 'Iraq', 'Afghanistan',
+                 'Pakistan', 'India', 'China', 'Russia', 'Kazakhstan', 'Turkmenistan', 'Azerbaijan',
+                 'Venezuela', 'Nigeria', 'Angola', 'Malaysia', 'Indonesia']
     records = []
     for country in countries:
         records.append({
@@ -543,10 +543,10 @@ def generate_market_intelligence():
     return pd.DataFrame(records)
 
 # ============================================
-# 8. داده‌های منتورینگ (Mentoring)
+# 8. Mentoring data (Mentoring)
 # ============================================
 def generate_mentoring_data(companies_df):
-    areas = ['کسب‌وکار', 'دانش‌بنیان', 'دریافت ایزو', 'راه‌اندازی خط تولید', 'دریافت تسهیلات', 'ثبت اختراع']
+    areas = ['Business', 'Knowledge-based', 'Obtaining ISO', 'Production line setup', 'Obtaining facilities', 'Patent registration']
     records = []
     for _, company in companies_df.iterrows():
         for area in random.sample(areas, np.random.randint(2, 5)):
@@ -555,7 +555,7 @@ def generate_mentoring_data(companies_df):
                 'Company_Name': company['Company_Name'],
                 'Mentoring_Area': area,
                 'Start_Date': fake.date_between(start_date='-1y', end_date='now').strftime('%Y-%m-%d'),
-                'Status': random.choices(['در حال انجام', 'تکمیل‌شده', 'برنامه‌ریزی‌شده', 'متوقف'], weights=[0.4, 0.3, 0.2, 0.1])[0],
+                'Status': random.choices(['In progress', 'Completed', 'Planned', 'Suspended'], weights=[0.4, 0.3, 0.2, 0.1])[0],
                 'Progress_Percent': np.random.randint(0, 100),
                 'Mentor_Name': fake.name(),
                 'Next_Session': fake.date_between(start_date='now', end_date='+3M').strftime('%Y-%m-%d')
@@ -563,10 +563,10 @@ def generate_mentoring_data(companies_df):
     return pd.DataFrame(records)
 
 # ============================================
-# 9. داده‌های رویدادها (Events)
+# 9. Events data (Events)
 # ============================================
 def generate_events(n=100):
-    event_types = ['دمو دی', 'ریورس پیچ', 'پیچ', 'کارگاه آموزشی', 'همایش', 'مسابقه نوآوری', 'شبکه‌سازی']
+    event_types = ['Demo Day', 'Reverse Pitch', 'Pitch', 'Training workshop', 'Conference', 'Innovation competition', 'Networking']
     records = []
     for _ in range(n):
         start = fake.date_time_between(start_date='-6M', end_date='+6M')
@@ -576,15 +576,15 @@ def generate_events(n=100):
             'Event_Type': random.choice(event_types),
             'Start_Date': start.strftime('%Y-%m-%d %H:%M:%S'),
             'End_Date': (start + timedelta(hours=random.randint(2, 8))).strftime('%Y-%m-%d %H:%M:%S'),
-            'Location': random.choice(['سالن همایش', 'اتاق جلسات اصلی', 'فضای باز', 'سالن شماره ۲', 'پاویون']),
+            'Location': random.choice(['Conference hall', 'Main meeting room', 'Open space', 'Hall No. 2', 'Pavilion']),
             'Max_Participants': np.random.randint(20, 500),
             'Registered_Count': np.random.randint(0, 400),
-            'Status': random.choices(['برگزارشده', 'در حال برگزاری', 'برنامه‌ریزی‌شده', 'لغوشده'], weights=[0.3, 0.1, 0.5, 0.1])[0]
+            'Status': random.choices(['Held', 'In progress', 'Planned', 'Cancelled'], weights=[0.3, 0.1, 0.5, 0.1])[0]
         })
     return pd.DataFrame(records)
 
 # ============================================
-# 10. داده‌های بیلان مالی (Balance Sheet)
+# 10. Balance sheet data (Balance Sheet)
 # ============================================
 def generate_balance_sheets(companies_df, n_periods=4):
     records = []
@@ -606,42 +606,42 @@ def generate_balance_sheets(companies_df, n_periods=4):
     return pd.DataFrame(records)
 
 # ============================================
-# اجرا و ذخیره‌سازی
+# Run and save
 # ============================================
 if __name__ == "__main__":
-    print("🔄 تولید داده‌های سنتتیک برای پارک هوشمند نفت...")
+    print("🔄 Generating synthetic data for the oil smart park...")
     
     companies_df = generate_companies(50)
-    print(f"✅ شرکت‌ها: {len(companies_df)} رکورد")
+    print(f"✅ Companies: {len(companies_df)} records")
     
     attendance_df = generate_attendance(companies_df, 180)
-    print(f"✅ حضور و غیاب: {len(attendance_df)} رکورد")
+    print(f"✅ Attendance: {len(attendance_df)} records")
     
     vehicle_df = generate_vehicle_logistics(companies_df, 3000)
-    print(f"✅ تردد خودرو: {len(vehicle_df)} رکورد")
+    print(f"✅ Vehicle traffic: {len(vehicle_df)} records")
     
     rental_df = generate_rental_payments(companies_df, 12)
-    print(f"✅ پرداخت اجاره: {len(rental_df)} رکورد")
+    print(f"✅ Rent payments: {len(rental_df)} records")
     
     booking_df = generate_meeting_bookings(companies_df, 2000)
-    print(f"✅ رزرو جلسات: {len(booking_df)} رکورد")
+    print(f"✅ Meeting bookings: {len(booking_df)} records")
     
     startup_df = generate_startup_evaluations(200)
-    print(f"✅ ارزیابی استارت‌آپ‌ها: {len(startup_df)} رکورد")
+    print(f"✅ Startup evaluations: {len(startup_df)} records")
     
     market_df = generate_market_intelligence()
-    print(f"✅ داده‌های بازار: {len(market_df)} رکورد")
+    print(f"✅ Market data: {len(market_df)} records")
     
     mentoring_df = generate_mentoring_data(companies_df)
-    print(f"✅ منتورینگ: {len(mentoring_df)} رکورد")
+    print(f"✅ Mentoring: {len(mentoring_df)} records")
     
     events_df = generate_events(100)
-    print(f"✅ رویدادها: {len(events_df)} رکورد")
+    print(f"✅ Events: {len(events_df)} records")
     
     balance_df = generate_balance_sheets(companies_df, 4)
-    print(f"✅ بیلان مالی: {len(balance_df)} رکورد")
+    print(f"✅ Balance sheet: {len(balance_df)} records")
     
-    # ذخیره در فایل‌های CSV
+    # Save to CSV files
     companies_df.to_csv('companies.csv', index=False)
     attendance_df.to_csv('attendance.csv', index=False)
     vehicle_df.to_csv('vehicle_logistics.csv', index=False)
@@ -653,59 +653,59 @@ if __name__ == "__main__":
     events_df.to_csv('events.csv', index=False)
     balance_df.to_csv('balance_sheets.csv', index=False)
     
-    print("\n✅ تمام داده‌ها با موفقیت تولید و ذخیره شدند!")
-    print(f"📊 مجموع رکوردها: {sum([len(df) for df in [companies_df, attendance_df, vehicle_df, rental_df, booking_df, startup_df, market_df, mentoring_df, events_df, balance_df]])}")
+    print("\n✅ All data was successfully generated and saved!")
+    print(f"📊 Total records: {sum([len(df) for df in [companies_df, attendance_df, vehicle_df, rental_df, booking_df, startup_df, market_df, mentoring_df, events_df, balance_df]])}")
 ```
 
 
-## ۶. الزامات غیرعملکردی (Non-Functional Requirements)
+## 6. Non-Functional Requirements
 
-| **الزام** | **مشخصات** |
+| **Requirement** | **Specifications** |
 | :--- | :--- |
-| **دسترس‌پذیری** | ۹۹/۹٪ در ساعات کاری |
-| **زمان پاسخ‌دهی** | حداکثر ۲ ثانیه برای نمایش داشبورد |
-| **امنیت** | رمزنگاری داده‌ها، احراز هویت دو عاملی، ثبت تمام تراکنش‌ها |
-| **مقیاس‌پذیری** | قابلیت پشتیبانی از حداقل ۲۰۰ شرکت و ۵۰۰۰ کاربر |
-| **قابلیت اطمینان** | پشتیبان‌گیری روزانه، بازیابی در کمتر از ۱ ساعت |
-| **قابلیت نگهداری** | مستندات کامل، معماری ماژولار، آزمون‌پذیری بالا |
-| **یکپارچگی** | قابلیت اتصال به سامانه‌های موجود وزارت نفت |
-| **مطابقت با استانداردها** | همسویی با شاخص‌های ISO 37122 برای شهرهای هوشمند |
+| **Availability** | 99.9% during working hours |
+| **Response time** | At most 2 seconds for displaying the dashboard |
+| **Security** | Data encryption, two-factor authentication, recording all transactions |
+| **Scalability** | Ability to support at least 200 companies and 5,000 users |
+| **Reliability** | Daily backup, recovery in less than 1 hour |
+| **Maintainability** | Complete documentation, modular architecture, high testability |
+| **Integration** | Ability to connect to the Ministry of Petroleum's existing systems |
+| **Standards compliance** | Alignment with ISO 37122 smart city indicators |
 
 
-## ۷. محدودیت‌ها (Constraints)
+## 7. Constraints
 
-1. **نیروی انسانی:** حداکثر ۳ نفر اپراتور برای کل سامانه
-2. **هزینه‌ها:** هزینه خرید تجهیزات و سنسورها بر عهده پارک، پیاده‌سازی نرم‌افزار رایگان
-3. **زبان:** تمامی رابط‌های کاربری به زبان فارسی
-4. **زیرساخت:** نیاز به اتصال فیبر نوری با پهنای باند حداقل ۱ گیگابیت بر ثانیه
-5. **امنیت:** رعایت کامل الزامات امنیتی وزارت نفت و حفاظت از داده‌های صنعتی
+1. **Workforce:** At most 3 operators for the whole system
+2. **Costs:** The cost of purchasing equipment and sensors is borne by the park; software implementation is free
+3. **Language:** All user interfaces in Persian
+4. **Infrastructure:** Requires a fiber optic connection with a bandwidth of at least 1 gigabit per second
+5. **Security:** Full compliance with the Ministry of Petroleum's security requirements and protection of industrial data
 
 
-## ۸. نقش‌های کاربری (User Roles)
+## 8. User Roles
 
-| **نقش** | **دسترسی‌ها** |
+| **Role** | **Access** |
 | :--- | :--- |
-| **مدیر پارک** | دسترسی کامل به تمام بخش‌های داشبورد، تأیید نهایی قراردادها، مدیریت کاربران |
-| **اپراتور پارک (۳ نفر)** | دسترسی به داشبورد مدیریتی، مدیریت نوتیفیکیشن‌ها، گزارش‌گیری، مدیریت استثناها |
-| **مدیر شرکت** | دسترسی به پنل شرکت، مشاهده صورتحساب‌ها، رزرو جلسات، بارگذاری طرح‌ها، پیگیری منتورینگ |
-| **استارت‌آپ** | دسترسی به بارگذاری طرح، مشاهده نتایج داوری، درخواست منتورینگ، جستجوی سرمایه‌گذار |
-| **سرمایه‌گذار** | دسترسی به پروفایل شرکت‌ها و استارت‌آپ‌ها، مشاهده ارزیابی‌ها، اعلام علاقه‌مندی |
-| **مشاور/منتور** | دسترسی به پنل منتورینگ، مشاهده شرکت‌های تحت پوشش، ثبت جلسات و پیشرفت |
+| **Park manager** | Full access to all dashboard sections, final approval of contracts, user management |
+| **Park operator (3 people)** | Access to the management dashboard, notification management, reporting, exception handling |
+| **Company manager** | Access to the company panel, viewing invoices, booking meetings, uploading projects, tracking mentoring |
+| **Startup** | Access to project upload, viewing judging results, requesting mentoring, searching for investors |
+| **Investor** | Access to company and startup profiles, viewing evaluations, expressing interest |
+| **Consultant/Mentor** | Access to the mentoring panel, viewing covered companies, recording sessions and progress |
 
 
-## ۹. نقشه راه پیاده‌سازی (Implementation Roadmap)
+## 9. Implementation Roadmap
 
-| **فاز** | **مدت** | **فعالیت‌ها** |
+| **Phase** | **Duration** | **Activities** |
 | :--- | :--- | :--- |
-| **فاز ۱: مطالعات و طراحی** | ۲ ماه | تدوین معماری، تأیید سناریوها، انتخاب تجهیزات، طراحی UI/UX |
-| **فاز ۲: زیرساخت فیزیکی** | ۳ ماه | نصب سنسورها، دوربین‌ها، پلاک‌خوان‌ها، درب‌های اتوماتیک، شبکه فیبر نوری |
-| **فاز ۳: پیاده‌سازی نرم‌افزار** | ۴ ماه | توسعه ماژول‌ها، پیاده‌سازی الگوریتم‌های هوش مصنوعی، یکپارچه‌سازی |
-| **فاز ۴: آزمون و اعتبارسنجی** | ۱ ماه | تست عملکرد، تست امنیت، اعتبارسنجی با داده‌های سنتتیک |
-| **فاز ۵: استقرار و راه‌اندازی** | ۱ ماه | نصب در محیط تولید، آموزش اپراتورها، راه‌اندازی رسمی |
+| **Phase 1: Studies and design** | 2 months | Developing the architecture, approving scenarios, selecting equipment, UI/UX design |
+| **Phase 2: Physical infrastructure** | 3 months | Installing sensors, cameras, plate readers, automatic doors, fiber optic network |
+| **Phase 3: Software implementation** | 4 months | Developing modules, implementing AI algorithms, integration |
+| **Phase 4: Testing and validation** | 1 month | Performance test, security test, validation with synthetic data |
+| **Phase 5: Deployment and commissioning** | 1 month | Installation in the production environment, operator training, official launch |
 
-**مجموع زمان پیاده‌سازی:** ۱۱ ماه
+**Total implementation time:** 11 months
 
 
-## ۱۰. نتیجه‌گیری
+## 10. Conclusion
 
-سامانه مدیریت یکپارچه پارک هوشمند نفت (OIPMS) با بهره‌گیری از استانداردهای بین‌المللی نظیر WiredScore، SmartScore و ISO 37122، و الگوبرداری از پارک‌های موفق جهانی نظیر Tpark (تایوان) و Nankang Software Park， بستری جامع برای هوشمندسازی پارک فناوری نفت فراهم می‌آورد. این سامانه با پوشش تمامی ابعاد عملیاتی، مالی، امنیتی، پشتیبانی از کسب‌وکارها و توسعه بازار، ضمن کاهش نیروی انسانی به حداکثر ۳ نفر، زمینه‌ساز تحقق اهداف راهبردی پارک در حوزه هوشمندسازی و تحول دیجیتال صنعت نفت خواهد بود.
+The Oil Industry Park Management System (OIPMS), leveraging international standards such as WiredScore, SmartScore and ISO 37122, and modeling successful parks of the world such as Tpark (Taiwan) and Nankang Software Park, provides a comprehensive platform for the smartization of the Oil Technology Park. By covering all operational, financial, security, business support and market development dimensions, while reducing the workforce to at most 3 people, this system will lay the groundwork for achieving the park's strategic goals in smartization and the digital transformation of the oil industry.

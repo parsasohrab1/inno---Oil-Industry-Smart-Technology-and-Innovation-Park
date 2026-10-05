@@ -9,10 +9,10 @@ import { nf, pct, jDateTime } from '@/lib/format'
 import type { EventStatus, ParkEvent } from '@/lib/types'
 
 const TONE: Record<EventStatus, 'green' | 'blue' | 'amber' | 'red'> = {
-  برگزارشده: 'green',
-  'در حال برگزاری': 'blue',
-  'برنامه‌ریزی‌شده': 'amber',
-  لغوشده: 'red',
+  Held: 'green',
+  'In progress': 'blue',
+  'Planned': 'amber',
+  Cancelled: 'red',
 }
 
 export default function Events() {
@@ -36,28 +36,28 @@ export default function Events() {
 
   const now = Date.now()
   const e = data
-  const upcoming = e.filter((x) => x.status === 'برنامه‌ریزی‌شده' && Date.parse(x.startDate) > now)
-  const held = e.filter((x) => x.status === 'برگزارشده').length
+  const upcoming = e.filter((x) => x.status === 'Planned' && Date.parse(x.startDate) > now)
+  const held = e.filter((x) => x.status === 'Held').length
   const totalRegistered = e.reduce((s, x) => s + x.registeredCount, 0)
   const fillRate =
     (e.reduce((s, x) => s + x.registeredCount, 0) / e.reduce((s, x) => s + x.maxParticipants, 0)) * 100
 
-  const chart = byType.map((t) => ({ type: t.type, تعداد: t.count, 'ثبت‌نام': t.registered }))
+  const chart = byType.map((t) => ({ type: t.type, Count: t.count, Registrations: t.registered }))
 
   const cols: Column<ParkEvent>[] = [
-    { key: 'title', header: 'عنوان', sortValue: (r) => r.title },
-    { key: 'type', header: 'نوع', align: 'center', sortValue: (r) => r.type },
-    { key: 'location', header: 'محل', align: 'center', sortValue: (r) => r.location },
+    { key: 'title', header: 'Title', sortValue: (r) => r.title },
+    { key: 'type', header: 'Type', align: 'center', sortValue: (r) => r.type },
+    { key: 'location', header: 'Location', align: 'center', sortValue: (r) => r.location },
     {
       key: 'startDate',
-      header: 'زمان',
+      header: 'Time',
       align: 'center',
       sortValue: (r) => r.startDate,
       render: (r) => <span className="fa-nums">{jDateTime(r.startDate)}</span>,
     },
     {
       key: 'fill',
-      header: 'ظرفیت',
+      header: 'Capacity',
       align: 'center',
       sortValue: (r) => r.registeredCount / r.maxParticipants,
       render: (r) => (
@@ -71,7 +71,7 @@ export default function Events() {
     },
     {
       key: 'status',
-      header: 'وضعیت',
+      header: 'Status',
       align: 'center',
       sortValue: (r) => r.status,
       render: (r) => <Badge tone={TONE[r.status]}>{r.status}</Badge>,
@@ -81,25 +81,25 @@ export default function Events() {
   return (
     <div>
       <PageHeader
-        title="تقویم رویدادهای پارک"
-        subtitle="دمو دی، ریورس پیچ، پیچ، کارگاه‌ها و همایش‌ها با ثبت‌نام آنلاین"
+        title="Park events calendar"
+        subtitle="Demo Day, Reverse Pitch, Pitch, workshops and conferences with online registration"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل رویدادها" value={e.length} icon={CalendarDays} />
-        <Kpi label="رویدادهای پیش‌رو" value={upcoming.length} icon={Megaphone} tone="gold" />
-        <Kpi label="برگزارشده" value={held} icon={CheckCircle2} tone="brand" />
-        <Kpi label="کل ثبت‌نام" value={totalRegistered} unit={`(${pct(fillRate, 0)} ظرفیت)`} icon={Users} />
+        <Kpi label="Total events" value={e.length} icon={CalendarDays} />
+        <Kpi label="Upcoming events" value={upcoming.length} icon={Megaphone} tone="gold" />
+        <Kpi label="Held" value={held} icon={CheckCircle2} tone="brand" />
+        <Kpi label="Total registrations" value={totalRegistered} unit={`(${pct(fillRate, 0)} of capacity)`} icon={Users} />
       </div>
 
       <div className="mt-4">
-        <ChartFrame title="رویدادها و ثبت‌نام به تفکیک نوع">
+        <ChartFrame title="Events and registrations by type">
           <Bars
             data={chart}
             xKey="type"
             series={[
-              { key: 'تعداد', name: 'تعداد رویداد' },
-              { key: 'ثبت‌نام', name: 'ثبت‌نام', color: '#d4a24e' },
+              { key: 'Count', name: 'Number of events' },
+              { key: 'Registrations', name: 'Registrations', color: '#d4a24e' },
             ]}
           />
         </ChartFrame>
@@ -115,7 +115,7 @@ export default function Events() {
             <div className="mt-3">
               <ProgressBar value={(ev.registeredCount / ev.maxParticipants) * 100} tone="gold" />
               <p className="fa-nums mt-1 text-xs text-[rgb(var(--muted))]">
-                {nf(ev.registeredCount)} از {nf(ev.maxParticipants)} نفر ثبت‌نام
+                {nf(ev.registeredCount)} of {nf(ev.maxParticipants)} registered
               </p>
             </div>
           </Card>
@@ -123,7 +123,7 @@ export default function Events() {
       </div>
 
       <div className="mt-4">
-        <Card title="همه رویدادها">
+        <Card title="All events">
           <DataTable columns={cols} rows={e} pageSize={12} initialSort={{ key: 'startDate', dir: 'desc' }} />
         </Card>
       </div>

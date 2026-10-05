@@ -1,4 +1,4 @@
-// پیش‌فرض: هم‌ریشه (از طریق پروکسی Vite در توسعه). برای اتصال مستقیم، VITE_API_BASE_URL را تنظیم کنید.
+// Default: same-origin (through the Vite proxy in development). For a direct connection, set VITE_API_BASE_URL.
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 
 const TOKEN_KEY = 'nsp.token'
@@ -38,13 +38,13 @@ async function request<T>(method: string, path: string, body?: Body): Promise<T>
   if (res.status === 401) {
     setToken(null)
     if (!location.pathname.startsWith('/login')) location.href = '/login'
-    throw new ApiError(401, 'نشست منقضی شده است')
+    throw new ApiError(401, 'Session has expired')
   }
 
   const text = await res.text()
   const data = text ? JSON.parse(text) : null
   if (!res.ok) {
-    throw new ApiError(res.status, data?.error ?? `خطای ${res.status}`, data?.details)
+    throw new ApiError(res.status, data?.error ?? `Error ${res.status}`, data?.details)
   }
   return data as T
 }
@@ -55,16 +55,16 @@ export const api = {
   post: <T>(path: string, body?: Body) => request<T>('POST', path, body),
   patch: <T>(path: string, body?: Body) => request<T>('PATCH', path, body),
   del: <T>(path: string) => request<T>('DELETE', path),
-  /** آدرس کامل یک مسیر (برای دانلود مستقیم گزارش‌ها با توکن در کوئری نیست — از fetch blob استفاده کنید) */
+  /** Full URL of a route (for direct report download there is no token in the query — use fetch blob) */
   url: (path: string) => `${BASE}${path}`,
 }
 
-/** دانلود یک فایل از API با هدر احراز هویت */
+/** Download a file from the API with the authentication header */
 export async function downloadFile(path: string, filename: string): Promise<void> {
   const res = await fetch(`${BASE}${path}`, {
     headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
   })
-  if (!res.ok) throw new ApiError(res.status, `دانلود ناموفق (${res.status})`)
+  if (!res.ok) throw new ApiError(res.status, `Download failed (${res.status})`)
   const blob = await res.blob()
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -76,12 +76,12 @@ export async function downloadFile(path: string, filename: string): Promise<void
   URL.revokeObjectURL(url)
 }
 
-/** باز کردن گزارش HTML قابل چاپ در تب جدید */
+/** Open the printable HTML report in a new tab */
 export async function openPrintable(path: string): Promise<void> {
   const res = await fetch(`${BASE}${path}`, {
     headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
   })
-  if (!res.ok) throw new ApiError(res.status, `دریافت گزارش ناموفق (${res.status})`)
+  if (!res.ok) throw new ApiError(res.status, `Fetching the report failed (${res.status})`)
   const html = await res.text()
   const w = window.open('', '_blank')
   if (w) {

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "بک‌اند سامانه پارک هوشمند نفت (OIPMS) — Express + node:sqlite",
+  "description": "Backend of the Oil Smart Park System (OIPMS) — Express + node:sqlite",
   "engines": {
     "node": ">=22.5"
   },

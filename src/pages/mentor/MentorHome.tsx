@@ -27,47 +27,47 @@ export default function MentorHome() {
   if (mentees.error) return <ErrorState error={mentees.error} />
 
   const rows = mentees.data ?? []
-  const active = rows.filter((m) => m.status === 'در حال انجام').length
-  const done = rows.filter((m) => m.status === 'تکمیل‌شده').length
+  const active = rows.filter((m) => m.status === 'In progress').length
+  const done = rows.filter((m) => m.status === 'Completed').length
   const avg = rows.length ? rows.reduce((s, m) => s + m.progressPercent, 0) / rows.length : 0
   const sessionsByEng = new Map<string, number>()
   for (const s of sessions.data ?? []) sessionsByEng.set(s.engagementId, (sessionsByEng.get(s.engagementId) ?? 0) + 1)
 
   return (
     <div>
-      <PageHeader title="میز منتورینگ" subtitle="پیگیری شرکت‌های تحت پوشش، ثبت جلسات و به‌روزرسانی پیشرفت" />
+      <PageHeader title="Mentoring desk" subtitle="Track covered companies, log sessions and update progress" />
 
       {msg && <div className="mb-4 rounded-xl bg-petro-600/10 px-4 py-3 text-sm text-petro-700 dark:text-petro-300">{msg}</div>}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="شرکت‌های تحت پوشش" value={rows.length} icon={Users} />
-        <Kpi label="در حال انجام" value={active} icon={GraduationCap} tone="brand" />
-        <Kpi label="تکمیل‌شده" value={done} icon={CheckCircle2} tone="gold" />
-        <Kpi label="میانگین پیشرفت" value={pct(avg)} icon={NotebookPen} />
+        <Kpi label="Covered companies" value={rows.length} icon={Users} />
+        <Kpi label="In progress" value={active} icon={GraduationCap} tone="brand" />
+        <Kpi label="Completed" value={done} icon={CheckCircle2} tone="gold" />
+        <Kpi label="Average progress" value={pct(avg)} icon={NotebookPen} />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {rows.map((m) => (
           <Card key={m.id} title={<span>{m.companyName} — {m.area}</span>}>
             <div className="mb-2 flex items-center justify-between text-sm">
-              <Badge tone={m.status === 'تکمیل‌شده' ? 'green' : m.status === 'متوقف' ? 'red' : 'blue'}>{m.status}</Badge>
-              <span className="fa-nums text-[rgb(var(--muted))]">جلسه بعدی: {jDateShort(m.nextSession)}</span>
+              <Badge tone={m.status === 'Completed' ? 'green' : m.status === 'Suspended' ? 'red' : 'blue'}>{m.status}</Badge>
+              <span className="fa-nums text-[rgb(var(--muted))]">Next session: {jDateShort(m.nextSession)}</span>
             </div>
             <ProgressBar value={m.progressPercent} />
             <p className="fa-nums mt-1 text-xs text-[rgb(var(--muted))]">
-              پیشرفت {pct(m.progressPercent, 0)} · {nf(sessionsByEng.get(m.id) ?? 0)} جلسه ثبت‌شده
+              Progress {pct(m.progressPercent, 0)} · {nf(sessionsByEng.get(m.id) ?? 0)} sessions logged
             </p>
             <div className="mt-3 flex gap-2">
               <button className="btn !text-xs" onClick={() => setEdit(m)}>
-                به‌روزرسانی پیشرفت
+                Update progress
               </button>
               <button className="btn !text-xs" onClick={() => setLog(m)}>
-                <NotebookPen className="h-3.5 w-3.5" /> ثبت جلسه
+                <NotebookPen className="h-3.5 w-3.5" /> Log session
               </button>
             </div>
           </Card>
         ))}
-        {rows.length === 0 && <p className="text-sm text-[rgb(var(--muted))]">شرکتی به شما تخصیص داده نشده است.</p>}
+        {rows.length === 0 && <p className="text-sm text-[rgb(var(--muted))]">No company has been assigned to you.</p>}
       </div>
 
       {edit && (
@@ -116,30 +116,30 @@ function ProgressModal({
     setBusy(true)
     try {
       await api.patch(`/api/mentor/mentees/${engagement.id}`, { progressPercent: Number(progress), status })
-      onDone('پیشرفت به‌روزرسانی شد.')
+      onDone('Progress updated.')
     } catch (e2) {
-      setErr(e2 instanceof ApiError ? e2.message : 'خطا')
+      setErr(e2 instanceof ApiError ? e2.message : 'Error')
       setBusy(false)
     }
   }
 
   return (
-    <Modal onClose={onClose} title={`پیشرفت — ${engagement.companyName}`}>
+    <Modal onClose={onClose} title={`Progress — ${engagement.companyName}`}>
       <form onSubmit={submit} className="space-y-3">
         <label className="block text-sm">
-          <span className="mb-1 block text-[rgb(var(--muted))]">درصد پیشرفت: {progress.toLocaleString('fa-IR')}٪</span>
+          <span className="mb-1 block text-[rgb(var(--muted))]">Progress percentage: {progress.toLocaleString('fa-IR')}%</span>
           <input type="range" min={0} max={100} step={5} value={progress} onChange={(e) => setProgress(+e.target.value)} className="w-full" />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block text-[rgb(var(--muted))]">وضعیت</span>
+          <span className="mb-1 block text-[rgb(var(--muted))]">Status</span>
           <select className="inp" value={status} onChange={(e) => setStatus(e.target.value as MentoringEngagement['status'])}>
-            {(['در حال انجام', 'تکمیل‌شده', 'برنامه‌ریزی‌شده', 'متوقف'] as const).map((s) => (
+            {(['In progress', 'Completed', 'Planned', 'Suspended'] as const).map((s) => (
               <option key={s}>{s}</option>
             ))}
           </select>
         </label>
         {err && <p className="text-sm text-oil-rust">{err}</p>}
-        <button className="btn btn-primary w-full justify-center" disabled={busy}>ثبت</button>
+        <button className="btn btn-primary w-full justify-center" disabled={busy}>Record</button>
       </form>
     </Modal>
   )
@@ -170,30 +170,30 @@ function SessionModal({
         durationMinutes: Number(duration),
         notes,
       })
-      onDone('جلسه منتورینگ ثبت شد.')
+      onDone('Mentoring session recorded.')
     } catch (e2) {
-      setErr(e2 instanceof ApiError ? e2.message : 'خطا')
+      setErr(e2 instanceof ApiError ? e2.message : 'Error')
       setBusy(false)
     }
   }
 
   return (
-    <Modal onClose={onClose} title={`ثبت جلسه — ${engagement.companyName}`}>
+    <Modal onClose={onClose} title={`Record session — ${engagement.companyName}`}>
       <form onSubmit={submit} className="space-y-3">
         <label className="block text-sm">
-          <span className="mb-1 block text-[rgb(var(--muted))]">تاریخ جلسه (میلادی)</span>
+          <span className="mb-1 block text-[rgb(var(--muted))]">Session date (Gregorian)</span>
           <input type="date" required className="inp" value={date} onChange={(e) => setDate(e.target.value)} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block text-[rgb(var(--muted))]">مدت (دقیقه)</span>
+          <span className="mb-1 block text-[rgb(var(--muted))]">Duration (minutes)</span>
           <input type="number" min={15} max={480} step={15} className="inp" value={duration} onChange={(e) => setDuration(+e.target.value)} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block text-[rgb(var(--muted))]">شرح و مصوبات جلسه</span>
+          <span className="mb-1 block text-[rgb(var(--muted))]">Session description and resolutions</span>
           <textarea required rows={4} className="inp" value={notes} onChange={(e) => setNotes(e.target.value)} />
         </label>
         {err && <p className="text-sm text-oil-rust">{err}</p>}
-        <button className="btn btn-primary w-full justify-center" disabled={busy}>ثبت جلسه</button>
+        <button className="btn btn-primary w-full justify-center" disabled={busy}>Record session</button>
       </form>
     </Modal>
   )

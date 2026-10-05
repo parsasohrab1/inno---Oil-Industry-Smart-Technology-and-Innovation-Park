@@ -13,7 +13,7 @@ import {
 import { PageHeader, Kpi, Card, Badge, ProgressBar } from '@/components/ui'
 import { rial, nf } from '@/lib/format'
 
-type ListingType = 'عرض فناوری' | 'نیاز فناوری'
+type ListingType = 'Technology supply' | 'Technology need'
 
 type Listing = {
   id: number
@@ -27,136 +27,136 @@ type Listing = {
   price: number
   tags: string[]
   matches: number
-  status: 'فعال' | 'در مذاکره' | 'تکمیل‌شده'
+  status: 'Active' | 'In negotiation' | 'Completed'
 }
 
 const listings: Listing[] = [
   {
     id: 1,
-    type: 'عرض فناوری',
-    title: 'سامانه پایش هوشمند تجهیزات دوار',
-    provider: 'شرکت پایش‌گران انرژی پارس',
-    category: 'نگهداشت و پایش وضعیت',
-    description: 'پایش ارتعاش، دما و وضعیت تجهیز با تحلیل هوشمند برای کاهش خرابی و توقف تولید.',
-    maturity: 'تجاری',
+    type: 'Technology supply',
+    title: 'Smart condition monitoring system for rotating equipment',
+    provider: 'Pars Energy Monitors Company',
+    category: 'Maintenance and condition monitoring',
+    description: 'Vibration, temperature and equipment condition monitoring with smart analysis to reduce failures and production downtime.',
+    maturity: 'Commercial',
     trl: 9,
     price: 18500000000,
-    tags: ['هوش مصنوعی', 'پایش وضعیت', 'تجهیزات دوار'],
+    tags: ['Artificial intelligence', 'Condition monitoring', 'Rotating equipment'],
     matches: 8,
-    status: 'فعال',
+    status: 'Active',
   },
   {
     id: 2,
-    type: 'عرض فناوری',
-    title: 'پلتفرم دوقلوی دیجیتال واحدهای فرایندی',
-    provider: 'استارتاپ فرآیندنو',
-    category: 'دوقلوی دیجیتال',
-    description: 'مدل‌سازی دارایی‌ها و نمایش وضعیت عملیاتی برای تصمیم‌گیری و شبیه‌سازی سناریوها.',
-    maturity: 'در حال توسعه بازار',
+    type: 'Technology supply',
+    title: 'Digital twin platform for process units',
+    provider: 'Farayandno Startup',
+    category: 'Digital twin',
+    description: 'Asset modeling and display of operational status for decision-making and scenario simulation.',
+    maturity: 'Market development',
     trl: 7,
     price: 32000000000,
-    tags: ['Digital Twin', 'تحلیل داده', 'شبیه‌سازی'],
+    tags: ['Digital Twin', 'Data analytics', 'Simulation'],
     matches: 5,
-    status: 'در مذاکره',
+    status: 'In negotiation',
   },
   {
     id: 3,
-    type: 'نیاز فناوری',
-    title: 'کاهش مصرف انرژی در کمپرسورهای فرایندی',
-    provider: 'پارک فناوری و نوآوری نفت',
-    category: 'انرژی و بهینه‌سازی',
-    description: 'نیاز به راهکار قابل‌پیاده‌سازی برای پایش و بهینه‌سازی مصرف انرژی کمپرسورها.',
-    maturity: 'مسئله صنعتی',
+    type: 'Technology need',
+    title: 'Reducing energy consumption in process compressors',
+    provider: 'Oil Technology and Innovation Park',
+    category: 'Energy and optimization',
+    description: 'A need for an implementable solution to monitor and optimize the energy consumption of compressors.',
+    maturity: 'Industrial problem',
     trl: 0,
     price: 50000000000,
-    tags: ['بهینه‌سازی انرژی', 'کمپرسور', 'کاهش هزینه'],
+    tags: ['Energy optimization', 'Compressor', 'Cost reduction'],
     matches: 12,
-    status: 'فعال',
+    status: 'Active',
   },
   {
     id: 4,
-    type: 'عرض فناوری',
-    title: 'بازرسی هوشمند خطوط لوله با بینایی ماشین',
-    provider: 'نگین صنعت هوشمند',
-    category: 'بازرسی و ایمنی',
-    description: 'تشخیص خودکار عیوب سطحی و خوردگی با استفاده از تصویربرداری و بینایی ماشین.',
-    maturity: 'آزمایش صنعتی',
+    type: 'Technology supply',
+    title: 'Smart pipeline inspection with machine vision',
+    provider: 'Negin Smart Industry',
+    category: 'Inspection and safety',
+    description: 'Automatic detection of surface defects and corrosion using imaging and machine vision.',
+    maturity: 'Industrial pilot',
     trl: 8,
     price: 12500000000,
-    tags: ['بینایی ماشین', 'خوردگی', 'ایمنی'],
+    tags: ['Machine vision', 'Corrosion', 'Safety'],
     matches: 10,
-    status: 'فعال',
+    status: 'Active',
   },
   {
     id: 5,
-    type: 'نیاز فناوری',
-    title: 'راهکار بومی پایش خوردگی مخازن',
-    provider: 'مجتمع‌های نفت و گاز همکار',
-    category: 'مواد و خوردگی',
-    description: 'راهکار بومی، برخط و کم‌هزینه برای پایش خوردگی و هشدار پیشگیرانه مخازن.',
-    maturity: 'مسئله صنعتی',
+    type: 'Technology need',
+    title: 'Domestic tank corrosion monitoring solution',
+    provider: 'Partner oil and gas complexes',
+    category: 'Materials and corrosion',
+    description: 'A domestic, online and low-cost solution for tank corrosion monitoring and preventive alerts.',
+    maturity: 'Industrial problem',
     trl: 0,
     price: 28000000000,
-    tags: ['خوردگی', 'IoT', 'پایش برخط'],
+    tags: ['Corrosion', 'IoT', 'Online monitoring'],
     matches: 7,
-    status: 'فعال',
+    status: 'Active',
   },
   {
     id: 6,
-    type: 'عرض فناوری',
-    title: 'حسگر بی‌سیم صنعتی مقاوم در محیط نفت و گاز',
-    provider: 'سنسوران صنعت',
-    category: 'اینترنت اشیای صنعتی',
-    description: 'حسگرهای صنعتی برای جمع‌آوری داده از تجهیزات و ارسال امن اطلاعات به سامانه مرکزی.',
-    maturity: 'تجاری',
+    type: 'Technology supply',
+    title: 'Rugged industrial wireless sensor for oil and gas environments',
+    provider: 'Industrial Sensors Co.',
+    category: 'Industrial Internet of Things',
+    description: 'Industrial sensors for collecting data from equipment and securely sending information to the central system.',
+    maturity: 'Commercial',
     trl: 9,
     price: 6900000000,
-    tags: ['IoT', 'حسگر', 'شبکه صنعتی'],
+    tags: ['IoT', 'Sensor', 'Industrial network'],
     matches: 14,
-    status: 'تکمیل‌شده',
+    status: 'Completed',
   },
 ]
 
-const categories = ['همه', ...Array.from(new Set(listings.map((x) => x.category)))]
+const categories = ['All', ...Array.from(new Set(listings.map((x) => x.category)))]
 
 export default function TechBazaar() {
-  const [type, setType] = useState<'همه' | ListingType>('همه')
-  const [category, setCategory] = useState('همه')
+  const [type, setType] = useState<'All' | ListingType>('All')
+  const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return listings.filter((item) => {
-      const typeOk = type === 'همه' || item.type === type
-      const categoryOk = category === 'همه' || item.category === category
+      const typeOk = type === 'All' || item.type === type
+      const categoryOk = category === 'All' || item.category === category
       const queryOk = !q || `${item.title} ${item.provider} ${item.description} ${item.tags.join(' ')}`.toLowerCase().includes(q)
       return typeOk && categoryOk && queryOk
     })
   }, [type, category, query])
 
-  const active = listings.filter((x) => x.status === 'فعال').length
-  const supply = listings.filter((x) => x.type === 'عرض فناوری').length
-  const demand = listings.filter((x) => x.type === 'نیاز فناوری').length
+  const active = listings.filter((x) => x.status === 'Active').length
+  const supply = listings.filter((x) => x.type === 'Technology supply').length
+  const demand = listings.filter((x) => x.type === 'Technology need').length
   const matches = listings.reduce((sum, x) => sum + x.matches, 0)
 
   return (
     <div>
       <PageHeader
-        title="فن بازار فناوری و نوآوری"
-        subtitle="بازار دیجیتال عرضه و تقاضای فناوری برای اتصال مسائل صنعتی به راهکارهای شرکت‌های دانش‌بنیان و فناور"
+        title="Technology and Innovation Bazaar"
+        subtitle="A digital marketplace for technology supply and demand connecting industrial problems to the solutions of knowledge-based and technology companies"
         actions={
           <div className="flex gap-2">
-            <button className="btn btn-primary"><Lightbulb className="h-4 w-4" /> ثبت عرضه فناوری</button>
-            <button className="btn"><Target className="h-4 w-4" /> ثبت نیاز فناوری</button>
+            <button className="btn btn-primary"><Lightbulb className="h-4 w-4" /> Register technology supply</button>
+            <button className="btn"><Target className="h-4 w-4" /> Register technology need</button>
           </div>
         }
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="آگهی‌های فعال" value={active} icon={ShoppingBag} />
-        <Kpi label="عرضه‌های فناوری" value={supply} icon={Lightbulb} tone="gold" />
-        <Kpi label="نیازهای صنعتی" value={demand} icon={Target} tone="rust" />
-        <Kpi label="تطبیق‌های ایجادشده" value={matches} icon={Handshake} tone="brand" />
+        <Kpi label="Active listings" value={active} icon={ShoppingBag} />
+        <Kpi label="Technology supplies" value={supply} icon={Lightbulb} tone="gold" />
+        <Kpi label="Industrial needs" value={demand} icon={Target} tone="rust" />
+        <Kpi label="Matches created" value={matches} icon={Handshake} tone="brand" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_300px]">
@@ -168,11 +168,11 @@ export default function TechBazaar() {
                 className="input w-full pr-9"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="جستجو در فناوری، شرکت، مسئله صنعتی..."
+                placeholder="Search technology, company, industrial problem..."
               />
             </div>
             <div className="flex gap-2">
-              {(['همه', 'عرض فناوری', 'نیاز فناوری'] as const).map((item) => (
+              {(['All', 'Technology supply', 'Technology need'] as const).map((item) => (
                 <button key={item} className={`btn ${type === item ? 'btn-primary' : ''}`} onClick={() => setType(item)}>
                   {item}
                 </button>
@@ -181,7 +181,7 @@ export default function TechBazaar() {
           </div>
         </Card>
 
-        <Card title="دسته‌بندی فناوری">
+        <Card title="Technology categories">
           <div className="space-y-1">
             {categories.map((item) => (
               <button
@@ -200,8 +200,8 @@ export default function TechBazaar() {
         {filtered.map((item) => (
           <Card key={item.id} className="flex flex-col" title={
             <div className="flex items-center gap-2">
-              <Badge tone={item.type === 'عرض فناوری' ? 'blue' : 'amber'}>{item.type}</Badge>
-              <Badge tone={item.status === 'فعال' ? 'green' : item.status === 'در مذاکره' ? 'amber' : 'gray'}>{item.status}</Badge>
+              <Badge tone={item.type === 'Technology supply' ? 'blue' : 'amber'}>{item.type}</Badge>
+              <Badge tone={item.status === 'Active' ? 'green' : item.status === 'In negotiation' ? 'amber' : 'gray'}>{item.status}</Badge>
             </div>
           }>
             <div className="flex h-full flex-col">
@@ -213,8 +213,8 @@ export default function TechBazaar() {
 
               <div className="mt-4 rounded-xl bg-black/[.025] p-3 dark:bg-white/[.03]">
                 <div className="flex items-center justify-between text-xs">
-                  <span>سطح آمادگی فناوری (TRL)</span>
-                  <strong className="fa-nums">{item.trl ? `${nf(item.trl)} از ۹` : 'مسئله صنعتی'}</strong>
+                  <span>Technology readiness level (TRL)</span>
+                  <strong className="fa-nums">{item.trl ? `${nf(item.trl)} of 9` : 'Industrial problem'}</strong>
                 </div>
                 {item.trl > 0 && <div className="mt-2"><ProgressBar value={(item.trl / 9) * 100} /></div>}
               </div>
@@ -225,16 +225,16 @@ export default function TechBazaar() {
 
               <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-3 text-xs">
                 <div>
-                  <span className="text-[rgb(var(--muted))]">ارزش/بودجه</span>
+                  <span className="text-[rgb(var(--muted))]">Value/budget</span>
                   <div className="mt-1 fa-nums font-bold">{rial(item.price)}</div>
                 </div>
                 <div>
-                  <span className="text-[rgb(var(--muted))]">تطبیق هوشمند</span>
-                  <div className="mt-1 flex items-center gap-1 font-bold"><Users className="h-3.5 w-3.5" /> <span className="fa-nums">{nf(item.matches)}</span> مورد</div>
+                  <span className="text-[rgb(var(--muted))]">Smart matching</span>
+                  <div className="mt-1 flex items-center gap-1 font-bold"><Users className="h-3.5 w-3.5" /> <span className="fa-nums">{nf(item.matches)}</span> items</div>
                 </div>
               </div>
 
-              <button className="btn mt-4 w-full justify-center"><Sparkles className="h-4 w-4" /> مشاهده و ایجاد ارتباط</button>
+              <button className="btn mt-4 w-full justify-center"><Sparkles className="h-4 w-4" /> View and connect</button>
             </div>
           </Card>
         ))}
@@ -242,29 +242,29 @@ export default function TechBazaar() {
 
       {filtered.length === 0 && (
         <Card className="mt-4">
-          <div className="py-10 text-center text-sm text-[rgb(var(--muted))]">موردی با فیلترهای انتخاب‌شده پیدا نشد.</div>
+          <div className="py-10 text-center text-sm text-[rgb(var(--muted))]">No item was found for the selected filters.</div>
         </Card>
       )}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card title="فرآیند فن بازار">
+        <Card title="Tech Bazaar process">
           <div className="space-y-3 text-sm">
-            {['ثبت نیاز یا عرضه فناوری', 'اعتبارسنجی و ارزیابی فناوری', 'تطبیق هوشمند عرضه و تقاضا', 'مذاکره، پایلوت و قرارداد', 'ثبت نتیجه و تجاری‌سازی'].map((step, i) => (
+            {['Register a technology need or supply', 'Technology validation and assessment', 'Smart matching of supply and demand', 'Negotiation, pilot and contract', 'Recording the result and commercialization'].map((step, i) => (
               <div key={step} className="flex items-center gap-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-petro-600/10 text-xs font-bold text-petro-700">{i + 1}</span>{step}</div>
             ))}
           </div>
         </Card>
-        <Card title="شاخص‌های تجاری‌سازی">
+        <Card title="Commercialization indicators">
           <div className="space-y-4 text-sm">
-            <div><div className="mb-1 flex justify-between"><span>تبدیل نیاز به پایلوت</span><b className="fa-nums">۳۸٪</b></div><ProgressBar value={38} /></div>
-            <div><div className="mb-1 flex justify-between"><span>تبدیل پایلوت به قرارداد</span><b className="fa-nums">۲۴٪</b></div><ProgressBar value={24} tone="gold" /></div>
-            <div><div className="mb-1 flex justify-between"><span>رضایت از راهکارها</span><b className="fa-nums">۸۷٪</b></div><ProgressBar value={87} tone="rust" /></div>
+            <div><div className="mb-1 flex justify-between"><span>Need-to-pilot conversion</span><b className="fa-nums">38%</b></div><ProgressBar value={38} /></div>
+            <div><div className="mb-1 flex justify-between"><span>Pilot-to-contract conversion</span><b className="fa-nums">24%</b></div><ProgressBar value={24} tone="gold" /></div>
+            <div><div className="mb-1 flex justify-between"><span>Satisfaction with solutions</span><b className="fa-nums">87%</b></div><ProgressBar value={87} tone="rust" /></div>
           </div>
         </Card>
-        <Card title="اتصال به اکوسیستم پارک">
+        <Card title="Connection to the park ecosystem">
           <div className="space-y-3 text-sm text-[rgb(var(--muted))]">
-            <p>فن بازار به‌عنوان لایه اتصال، اطلاعات شرکت‌های مستقر، توسعه بازار، جذب سرمایه، داوری و ارزش‌گذاری و منتورینگ را برای تجاری‌سازی فناوری کنار هم قرار می‌دهد.</p>
-            <div className="flex items-center gap-2 font-semibold text-[rgb(var(--text))]"><BadgeDollarSign className="h-4 w-4" /> از «ایده» تا «قرارداد» در یک زنجیره قابل‌ردیابی</div>
+            <p>As a connecting layer, the Tech Bazaar brings together the information of resident companies, market development, fundraising, judging and valuation, and mentoring for technology commercialization.</p>
+            <div className="flex items-center gap-2 font-semibold text-[rgb(var(--text))]"><BadgeDollarSign className="h-4 w-4" /> From "idea" to "contract" in one traceable chain</div>
           </div>
         </Card>
       </div>

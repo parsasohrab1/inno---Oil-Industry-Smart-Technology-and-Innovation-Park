@@ -13,7 +13,7 @@ export default function InternationalMarket() {
   const [selected, setSelected] = useState<string | null>(null)
 
   const rows = useMemo(
-    () => (data ? [...data.markets].filter((m) => m.region !== 'داخلی') : []),
+    () => (data ? [...data.markets].filter((m) => m.region !== 'Domestic') : []),
     [data],
   )
 
@@ -28,33 +28,33 @@ export default function InternationalMarket() {
   const topMarkets = [...rows]
     .sort((a, b) => b.marketSizeUsd - a.marketSizeUsd)
     .slice(0, 10)
-    .map((m) => ({ country: m.country, 'اندازه بازار (میلیارد دلار)': +(m.marketSizeUsd / 1e9).toFixed(1) }))
+    .map((m) => ({ country: m.country, 'Market size (billion dollars)': +(m.marketSizeUsd / 1e9).toFixed(1) }))
 
   const sel = selected ? rows.find((m) => m.country === selected) : rows[0]
   const radarData = sel
     ? [
-        { axis: 'رشد بازار', value: Math.min(100, sel.growthRate * 4) },
-        { axis: 'سهولت کسب‌وکار', value: sel.easeOfBusiness },
-        { axis: 'آمادگی فناوری', value: sel.techReadiness },
-        { axis: 'ثبات سیاسی', value: sel.politicalStability },
-        { axis: 'سهم نفت و گاز', value: sel.oilGasShare },
-        { axis: 'تعرفه پایین', value: 100 - sel.tariffRate * 3 },
+        { axis: 'Market growth', value: Math.min(100, sel.growthRate * 4) },
+        { axis: 'Ease of doing business', value: sel.easeOfBusiness },
+        { axis: 'Technology readiness', value: sel.techReadiness },
+        { axis: 'Political stability', value: sel.politicalStability },
+        { axis: 'Oil and gas share', value: sel.oilGasShare },
+        { axis: 'Low tariff', value: 100 - sel.tariffRate * 3 },
       ]
     : []
 
   const cols: Column<MarketRow>[] = [
-    { key: 'country', header: 'کشور', sortValue: (r) => r.country },
-    { key: 'region', header: 'منطقه', align: 'center', sortValue: (r) => r.region },
+    { key: 'country', header: 'Country', sortValue: (r) => r.country },
+    { key: 'region', header: 'Region', align: 'center', sortValue: (r) => r.region },
     {
       key: 'marketSizeUsd',
-      header: 'اندازه بازار',
+      header: 'Market size',
       align: 'end',
       sortValue: (r) => r.marketSizeUsd,
       render: (r) => <span className="fa-nums">{usd(r.marketSizeUsd)}</span>,
     },
     {
       key: 'growthRate',
-      header: 'نرخ رشد',
+      header: 'Growth rate',
       align: 'center',
       sortValue: (r) => r.growthRate,
       render: (r) => (
@@ -63,25 +63,25 @@ export default function InternationalMarket() {
     },
     {
       key: 'tariffRate',
-      header: 'تعرفه',
+      header: 'Tariff',
       align: 'center',
       sortValue: (r) => r.tariffRate,
       render: (r) => <span className="fa-nums">{pct(r.tariffRate)}</span>,
     },
     {
       key: 'competitorCount',
-      header: 'رقبا',
+      header: 'Competitors',
       align: 'center',
       sortValue: (r) => r.competitorCount,
       render: (r) => <span className="fa-nums">{nf1(r.competitorCount)}</span>,
     },
     {
       key: 'action',
-      header: 'تحلیل',
+      header: 'Analysis',
       align: 'center',
       render: (r) => (
         <button className="text-xs text-petro-600 hover:underline" onClick={() => setSelected(r.country)}>
-          نمایش رادار
+          Show radar
         </button>
       ),
     },
@@ -90,34 +90,34 @@ export default function InternationalMarket() {
   return (
     <div>
       <PageHeader
-        title="توسعه بازار بین‌المللی"
-        subtitle="تحلیل بازارهای هدف صادراتی، تعرفه‌ها و شاخص‌های جذابیت"
+        title="International market development"
+        subtitle="Analysis of export target markets, tariffs and attractiveness indicators"
       />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="کل بازار قابل‌دسترس (TAM)" value={usd(totalTam)} icon={Globe2} />
-        <Kpi label="میانگین نرخ رشد" value={pct(avgGrowth)} icon={ArrowUpRight} tone="gold" />
-        <Kpi label="بازارهای جذاب" value={attractive} unit="کشور" icon={Gauge} tone="brand" />
-        <Kpi label="کشورهای هدف" value={rows.length} icon={ShieldCheck} />
+        <Kpi label="Total accessible market (TAM)" value={usd(totalTam)} icon={Globe2} />
+        <Kpi label="Average growth rate" value={pct(avgGrowth)} icon={ArrowUpRight} tone="gold" />
+        <Kpi label="Attractive markets" value={attractive} unit="countries" icon={Gauge} tone="brand" />
+        <Kpi label="Target countries" value={rows.length} icon={ShieldCheck} />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <ChartFrame title="بزرگ‌ترین بازارهای هدف" subtitle="میلیارد دلار">
+          <ChartFrame title="Largest target markets" subtitle="Billion dollars">
             <Bars
               data={topMarkets}
               xKey="country"
-              series={[{ key: 'اندازه بازار (میلیارد دلار)', name: 'اندازه بازار' }]}
+              series={[{ key: 'Market size (billion dollars)', name: 'Market size' }]}
               format={(n) => nf1(n)}
             />
           </ChartFrame>
         </div>
-        <ChartFrame title={`نیم‌رخ جذابیت — ${sel?.country ?? ''}`} height={320}>
-          <RadarBox data={radarData} angleKey="axis" series={[{ key: 'value', name: 'امتیاز' }]} />
+        <ChartFrame title={`Attractiveness profile — ${sel?.country ?? ''}`} height={320}>
+          <RadarBox data={radarData} angleKey="axis" series={[{ key: 'value', name: 'Score' }]} />
         </ChartFrame>
       </div>
 
       <div className="mt-4">
-        <Card title="جدول کامل بازارهای بین‌المللی">
+        <Card title="Complete table of international markets">
           <DataTable columns={cols} rows={rows} pageSize={12} initialSort={{ key: 'marketSizeUsd', dir: 'desc' }} />
         </Card>
       </div>

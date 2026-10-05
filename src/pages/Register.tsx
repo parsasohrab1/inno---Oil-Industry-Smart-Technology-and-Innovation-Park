@@ -8,10 +8,10 @@ import { ApiError } from '@/lib/api'
 type PublicRole = Exclude<Role, 'admin' | 'operator'>
 
 const ROLE_LABELS: Record<PublicRole, string> = {
-  company: 'مدیر شرکت مستقر',
-  startup: 'بنیان‌گذار استارتاپ',
-  investor: 'سرمایه‌گذار',
-  mentor: 'منتور / مشاور',
+  company: 'Resident company manager',
+  startup: 'Startup founder',
+  investor: 'Investor',
+  mentor: 'Mentor / Consultant',
 }
 
 export default function Register() {
@@ -45,7 +45,7 @@ export default function Register() {
       })
       navigate('/', { replace: true })
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'خطا در ثبت‌نام')
+      setError(err instanceof ApiError ? err.message : 'Registration error')
     } finally {
       setBusy(false)
     }
@@ -54,13 +54,13 @@ export default function Register() {
   return (
     <div className="grid min-h-screen place-items-center bg-[rgb(var(--bg))] px-4 py-10">
       <div className="w-full max-w-md">
-        <h1 className="mb-1 text-center font-display text-xl font-bold">ثبت‌نام در سامانه پارک هوشمند نفت</h1>
+        <h1 className="mb-1 text-center font-display text-xl font-bold">Register in the Oil Smart Park System</h1>
         <p className="mb-6 text-center text-sm text-[rgb(var(--muted))]">
-          مخصوص شرکت‌های مستقر، استارتاپ‌ها، سرمایه‌گذاران و منتورها
+          For resident companies, startups, investors and mentors
         </p>
 
         <form onSubmit={submit} className="card card-pad space-y-4">
-          <Field label="نام و نام خانوادگی">
+          <Field label="Full name">
             <input
               required
               value={form.name}
@@ -68,7 +68,7 @@ export default function Register() {
               className="inp"
             />
           </Field>
-          <Field label="ایمیل">
+          <Field label="Email">
             <input
               type="email"
               required
@@ -78,7 +78,7 @@ export default function Register() {
               className="inp"
             />
           </Field>
-          <Field label="رمز عبور (حداقل ۸ کاراکتر)">
+          <Field label="Password (at least 8 characters)">
             <input
               type="password"
               required
@@ -89,7 +89,7 @@ export default function Register() {
               className="inp"
             />
           </Field>
-          <Field label="نقش">
+          <Field label="Role">
             <select
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value as PublicRole })}
@@ -103,14 +103,14 @@ export default function Register() {
             </select>
           </Field>
           {needsCompany && (
-            <Field label="شرکت مرتبط">
+            <Field label="Related company">
               <select
                 required
                 value={form.companyId}
                 onChange={(e) => setForm({ ...form, companyId: e.target.value })}
                 className="inp"
               >
-                <option value="">— انتخاب کنید —</option>
+                <option value="">— Select —</option>
                 {companies.data?.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -122,12 +122,12 @@ export default function Register() {
           {error && <p className="rounded-lg bg-oil-rust/10 px-3 py-2 text-sm text-oil-rust">{error}</p>}
           <button type="submit" disabled={busy} className="btn btn-primary w-full justify-center disabled:opacity-60">
             <UserPlus className="h-4 w-4" />
-            {busy ? 'در حال ثبت…' : 'ثبت‌نام'}
+            {busy ? 'Registering…' : 'Register'}
           </button>
           <p className="text-center text-xs text-[rgb(var(--muted))]">
-            حساب دارید؟{' '}
+            Already have an account?{' '}
             <Link to="/login" className="text-petro-600 hover:underline">
-              ورود
+              Log in
             </Link>
           </p>
         </form>

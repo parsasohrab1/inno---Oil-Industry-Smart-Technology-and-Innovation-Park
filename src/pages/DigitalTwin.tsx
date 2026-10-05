@@ -15,15 +15,15 @@ interface Block {
   label: string
 }
 
-// چیدمان شماتیک پارک — بلوک‌های ساختمانی
+// schematic layout of the park — building blocks
 const BLOCKS: Block[] = [
-  { id: 'A', x: 20, y: 20, w: 150, h: 90, label: 'ساختمان نوآوری A' },
-  { id: 'B', x: 190, y: 20, w: 150, h: 90, label: 'ساختمان فناوری B' },
-  { id: 'C', x: 360, y: 20, w: 120, h: 90, label: 'مرکز رشد C' },
-  { id: 'D', x: 20, y: 130, w: 110, h: 110, label: 'کارگاه‌های D' },
-  { id: 'E', x: 150, y: 130, w: 190, h: 110, label: 'ساختمان مرکزی E' },
-  { id: 'F', x: 360, y: 130, w: 120, h: 110, label: 'پاویون نوآوری F' },
-  { id: 'G', x: 20, y: 260, w: 460, h: 60, label: 'محوطه باز و پارکینگ' },
+  { id: 'A', x: 20, y: 20, w: 150, h: 90, label: 'Innovation Building A' },
+  { id: 'B', x: 190, y: 20, w: 150, h: 90, label: 'Technology Building B' },
+  { id: 'C', x: 360, y: 20, w: 120, h: 90, label: 'Incubator Center C' },
+  { id: 'D', x: 20, y: 130, w: 110, h: 110, label: 'Workshops D' },
+  { id: 'E', x: 150, y: 130, w: 190, h: 110, label: 'Central Building E' },
+  { id: 'F', x: 360, y: 130, w: 120, h: 110, label: 'Innovation Pavilion F' },
+  { id: 'G', x: 20, y: 260, w: 460, h: 60, label: 'Open area and parking' },
 ]
 
 export default function DigitalTwin() {
@@ -34,7 +34,7 @@ export default function DigitalTwin() {
     if (!data) return {}
     const map: Record<string, Company[]> = {}
     data.companies.forEach((c, i) => {
-      const blk = BLOCKS[i % (BLOCKS.length - 1)] // به‌جز محوطه باز
+      const blk = BLOCKS[i % (BLOCKS.length - 1)] // except the open area
       ;(map[blk.id] ??= []).push(c)
     })
     return map
@@ -63,19 +63,19 @@ export default function DigitalTwin() {
   return (
     <div>
       <PageHeader
-        title="دوقلوی دیجیتال پارک"
-        subtitle="نمای شماتیک پارک با داده‌های لحظه‌ای اشغال، تردد و مصرف"
+        title="Park digital twin"
+        subtitle="Schematic view of the park with real-time occupancy, traffic and consumption data"
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi label="ضریب اشغال فضا" value={pct(occupancy)} icon={Building2} tone="gold" />
-        <Kpi label="خودرو داخل پارک" value={insideVehicles} icon={Boxes} />
-        <Kpi label="جلسات در حال برگزاری" value={activeBookings} icon={Users} tone="brand" />
-        <Kpi label="بار مصرف برآوردی" value={pct(58 + occupancy / 8)} icon={Zap} tone="rust" />
+        <Kpi label="Space occupancy ratio" value={pct(occupancy)} icon={Building2} tone="gold" />
+        <Kpi label="Vehicles inside the park" value={insideVehicles} icon={Boxes} />
+        <Kpi label="Meetings in progress" value={activeBookings} icon={Users} tone="brand" />
+        <Kpi label="Estimated consumption load" value={pct(58 + occupancy / 8)} icon={Zap} tone="rust" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2" title="نقشه شماتیک پارک — بار حرارتی نیروی انسانی">
+        <Card className="lg:col-span-2" title="Schematic map of the park — workforce thermal load">
           <svg viewBox="0 0 500 340" className="w-full">
             <rect x="0" y="0" width="500" height="340" fill="transparent" />
             {BLOCKS.map((b) => {
@@ -103,24 +103,24 @@ export default function DigitalTwin() {
                   </text>
                   {b.id !== 'G' && (
                     <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 12} textAnchor="middle" fontSize="10" fontFamily="Vazirmatn" fill="rgb(var(--muted))">
-                      {nf(load.count)} شرکت · {nf(load.emp)} نفر
+                      {nf(load.count)} companies · {nf(load.emp)} people
                     </text>
                   )}
                 </g>
               )
             })}
-            {/* گیت ورودی */}
+            {/* entrance gate */}
             <rect x="230" y="322" width="40" height="12" rx={3} fill="#b4531f" />
             <text x="250" y="332" textAnchor="middle" fontSize="8" fontFamily="Vazirmatn" fill="#fff">
-              گیت اصلی
+              Main gate
             </text>
           </svg>
         </Card>
 
-        <Card title={hover ? `شرکت‌های ${BLOCKS.find((b) => b.id === hover)?.label}` : 'جزئیات بلوک'}>
+        <Card title={hover ? `Companies of ${BLOCKS.find((b) => b.id === hover)?.label}` : 'Block details'}>
           {hoveredCompanies.length === 0 ? (
             <p className="text-sm text-[rgb(var(--muted))]">
-              نشانگر را روی یک بلوک نگه دارید تا شرکت‌های مستقر آن نمایش داده شوند.
+              Hover over a block to show its resident companies.
             </p>
           ) : (
             <ul className="space-y-2">
@@ -128,8 +128,8 @@ export default function DigitalTwin() {
                 <li key={c.id} className="flex items-center justify-between gap-2 text-sm">
                   <span className="truncate">{c.name}</span>
                   <div className="flex shrink-0 gap-1">
-                    {c.isKnowledgeBased && <Badge tone="green">دانش‌بنیان</Badge>}
-                    <span className="fa-nums text-xs text-[rgb(var(--muted))]">{nf(c.areaM2)} م²</span>
+                    {c.isKnowledgeBased && <Badge tone="green">Knowledge-based</Badge>}
+                    <span className="fa-nums text-xs text-[rgb(var(--muted))]">{nf(c.areaM2)} m²</span>
                   </div>
                 </li>
               ))}
@@ -139,11 +139,11 @@ export default function DigitalTwin() {
       </div>
 
       <div className="mt-4">
-        <Card title="بیلان تجمیعی شرکت‌های مستقر (استخراج خودکار)">
+        <Card title="Aggregated balance sheet of resident companies (automatic extraction)">
           <div className="grid gap-4 sm:grid-cols-3">
-            <Metric label="کل درآمد" value={rial(data.balanceSheets.reduce((s, b) => s + b.revenue, 0))} />
-            <Metric label="کل سود خالص" value={rial(data.balanceSheets.reduce((s, b) => s + b.netProfit, 0))} />
-            <Metric label="کل دارایی‌ها" value={rial(data.balanceSheets.reduce((s, b) => s + b.assets, 0))} />
+            <Metric label="Total revenue" value={rial(data.balanceSheets.reduce((s, b) => s + b.revenue, 0))} />
+            <Metric label="Total net profit" value={rial(data.balanceSheets.reduce((s, b) => s + b.netProfit, 0))} />
+            <Metric label="Total assets" value={rial(data.balanceSheets.reduce((s, b) => s + b.assets, 0))} />
           </div>
         </Card>
       </div>

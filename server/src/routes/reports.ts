@@ -21,22 +21,22 @@ reportsRouter.get('/:id.:format', async (req, res) => {
   const def = REPORTS[req.params.id]
   const format = req.params.format
   if (!def) {
-    res.status(404).json({ error: 'گزارش یافت نشد' })
+    res.status(404).json({ error: 'Report not found' })
     return
   }
   const role = req.auth!.role
   if (def.scope === 'all' && !can(role, 'reports:generate:all')) {
-    res.status(403).json({ error: 'دسترسی به این گزارش مجاز نیست' })
+    res.status(403).json({ error: 'Access to this report is not allowed' })
     return
   }
-  // گزارش‌های با دامنه own برای کاربران شرکت فقط داده خودشان
+  // reports with own scope show only their own data to company users
   const companyId =
     def.scope === 'own' && !can(role, 'reports:generate:all')
       ? (req.auth!.companyId ?? undefined)
       : (typeof req.query.companyId === 'string' ? req.query.companyId : undefined)
 
   if (def.scope === 'own' && !can(role, 'reports:generate:all') && !companyId) {
-    res.status(403).json({ error: 'این حساب به شرکتی متصل نیست' })
+    res.status(403).json({ error: 'This account is not linked to a company' })
     return
   }
 
@@ -66,5 +66,5 @@ reportsRouter.get('/:id.:format', async (req, res) => {
     res.send(toPrintableHtml(def, rows))
     return
   }
-  res.status(400).json({ error: 'فرمت پشتیبانی نمی‌شود (html | csv | xlsx)' })
+  res.status(400).json({ error: 'Format not supported (html | csv | xlsx)' })
 })

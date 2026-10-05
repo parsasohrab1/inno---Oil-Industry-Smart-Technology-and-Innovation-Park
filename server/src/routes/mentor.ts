@@ -35,25 +35,25 @@ mentorRouter.get('/sessions', requirePermission('mentoring:read:assigned'), (req
 
 const progressSchema = z.object({
   progressPercent: z.number().int().min(0).max(100),
-  status: z.enum(['در حال انجام', 'تکمیل‌شده', 'برنامه‌ریزی‌شده', 'متوقف']).optional(),
+  status: z.enum(['In progress', 'Completed', 'Planned', 'Suspended']).optional(),
   nextSession: z.string().date().optional(),
 })
 
 mentorRouter.patch('/mentees/:id', requirePermission('mentoring:update-progress'), (req, res) => {
   const eng = getEntity<MentoringEngagement>('mentoring', req.params.id)
   if (!eng || eng.mentorName !== req.auth!.name) {
-    res.status(404).json({ error: 'مسیر منتورینگ یافت نشد' })
+    res.status(404).json({ error: 'Mentoring path not found' })
     return
   }
   const parsed = progressSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات نامعتبر است' })
+    res.status(400).json({ error: 'Data is invalid' })
     return
   }
   eng.progressPercent = parsed.data.progressPercent
   if (parsed.data.status) eng.status = parsed.data.status
   if (parsed.data.nextSession) eng.nextSession = parsed.data.nextSession
-  if (eng.progressPercent === 100) eng.status = 'تکمیل‌شده'
+  if (eng.progressPercent === 100) eng.status = 'Completed'
   putEntity('mentoring', eng.id, eng.companyId, eng)
   audit({ userId: req.auth!.userId, role: req.auth!.role, action: 'mentoring.update-progress', target: eng.id })
   res.json({ ok: true, engagement: eng })
@@ -69,12 +69,12 @@ const sessionSchema = z.object({
 mentorRouter.post('/sessions', requirePermission('mentoring:log-session'), (req, res) => {
   const parsed = sessionSchema.safeParse(req.body)
   if (!parsed.success) {
-    res.status(400).json({ error: 'اطلاعات جلسه نامعتبر است', details: parsed.error.flatten() })
+    res.status(400).json({ error: 'Session data is invalid', details: parsed.error.flatten() })
     return
   }
   const eng = getEntity<MentoringEngagement>('mentoring', parsed.data.engagementId)
   if (!eng || eng.mentorName !== req.auth!.name) {
-    res.status(404).json({ error: 'مسیر منتورینگ یافت نشد یا متعلق به شما نیست' })
+    res.status(404).json({ error: 'Mentoring path not found or does not belong to you' })
     return
   }
   const session: MentorSession = {
